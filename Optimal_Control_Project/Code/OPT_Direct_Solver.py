@@ -12,22 +12,6 @@ from pyomo.environ import exp
 
 
 
-
-# def add(a,c):
-#     b = a+c
-#     return b
-
-# z = add(x,y)
-
-
-
-
-
-
-
-
-
-
 def hypersonic_problem(RandNo):
     # test control for simulation: 11 degrees AOA
     def alpha_test(t):
