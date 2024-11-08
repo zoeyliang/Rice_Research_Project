@@ -1,0 +1,173 @@
+\documentclass[final,3p,times,11pt]{elsarticle}
+\usepackage[USenglish]{babel}
+\usepackage{amsmath,amssymb,amsthm, mathrsfs}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{stmaryrd}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{cancel}
+\usepackage{ulem}
+\usepackage{tabularx}
+\usepackage{comment}
+%\usepackage{subcaption}
+%\usepackage[show]{ed}
+%\usepackage{showkeys}
+%\usepackage{showlabels}
+%\usepackage[notcite,notref]{showkeys}
+%\usepackage{refcheck}
+% \usepackage[ruled,vlined]{algorithm2e}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\definecolor{Myblue}{rgb}{.2 0.4 1}
+
+\usepackage{hyperref}
+\hypersetup{
+    %bookmarks=true,         % show bookmarks bar?
+    colorlinks = true,       % false: boxed links; true: colored links
+    % linkcolor=green
+     %linkcolor=red,          % color of internal links (change box color with linkbordercolor)
+     %citecolor=green,        % color of links to bibliography
+    %filecolor=magenta,      % color of file links
+    %urlcolor=cyan           % color of external links
+}
+%\usepackage{wrapfig}
+%% The lineno packages adds line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers after \end{frontmatter}.
+%\usepackage{lineno}
+
+
+% ==============   Macros  ====================
+\newcommand{\mynabla}{\widetilde{\nabla}} 
+\newcommand{\jump}[1]{[\![#1]\!]}
+\newcommand{\HEcolor}[1]{{\textcolor{blue}{#1}}}
+\newcommand{\TSVcolor}[1]{{\textcolor{orange}{#1}}}
+\newcommand{\JLcolor}[1]{{\textcolor{violet}{#1}}} %violet
+\newcommand{\Grids}{\boldsymbol{\chi}}
+
+\newtheorem{theorem}{Theorem}%[section]
+\newtheorem{VariationalForm}[theorem]{Variational Formulation}
+% =============================================
+
+\journal{}
+\makeatletter
+\def\ps@pprintTitle{%
+ \let\@oddhead\@empty
+ \let\@evenhead\@empty
+ \def\@oddfoot{}%
+ \let\@evenfoot\@oddfoot}
+\makeatother
+
+
+
+
+\begin{document}
+\begin{frontmatter}
+\title{Optimal control with uncertainty quantification write-up}
+% \begin{abstract}
+% XX
+% \end{abstract}
+\end{frontmatter}
+
+
+
+
+\section{The initial value problem with random parameters}\label{sec:Problem_setup}
+Let $I = [t_0,t_f]\subseteq \mathbb{R}, \;t_0<t_f,$ be the time interval, $\boldsymbol{\xi}=[\xi_1,\cdots, \xi_{d}], d\ge1$, be a set of parameters characterizing the uncertainty random inputs. We treat them as mutually independent random variables such that
+\[
+\boldsymbol{\xi}:\Omega\rightarrow W \subseteq \mathbb{R}^d, \quad \boldsymbol{\xi}(\omega) =  \left[\xi_1(\omega),\cdots, \xi_{d}(\omega) \right],
+\]
+where $\Omega$ is the set of possible outcomes in the probabilistic description and $W$ is the parameter space. 
+% Suppose the distribution of random variable $\boldsymbol{\xi}$ has a probability density function $\rho:W\rightarrow \mathbb{R}$, the expectation of a measurable function $g: W\rightarrow \mathbb{R}$ can be represented as
+% \[
+% \mathbb{E}[g(\boldsymbol{\xi})] = \int_{W} g(\boldsymbol{\xi})\rho(\boldsymbol{\xi}) d\boldsymbol{\xi}.
+% \]
+Our problem involves solving a stochastic initial value problem with the form
+\begin{equation}\label{eq:IVP}
+    \begin{array}{ll}
+        \displaystyle\frac{d}{dt}x(t) = f \left(t,x(t),\boldsymbol{\xi} \right),&t\in I,\\[6pt]
+        \displaystyle x(t_0) = x_0, & t=t_0.
+    \end{array}
+\end{equation}
+The solution space to the initial value problem \eqref{eq:IVP} is $H_0^1(I)$.  We seek a random function $x: I\times \Omega\rightarrow H_0^1(I)$ such that \eqref{eq:IVP} holds almost surely. 
+
+% Let $\{\Phi_k\}_{k\in \mathbb{N}}$ be a set of orthogonal polynomials with $\Phi_k: W\rightarrow \mathbb{R}$ and weight function $\rho$ that satisfy $\mathbb{E}(\Phi_i(\boldsymbol{\xi})\Phi_j(\boldsymbol{\xi})) = \delta_{ij}$ (Kronecker delta). Assume the time-dependent random function $x$ exhibits finite second moments for all $t\in I$, it can be expanded in a $N-$th degree generalized polynomial chaos \cite{Xiu:2010} as
+% \[
+% x^N(t,\boldsymbol{\xi}) = \sum_{k=0}^N c_k(t)\Phi_k(\boldsymbol{\xi}).
+% \]
+
+
+
+
+\subsection{Bochnor space and norm}
+The fully specified problem \eqref{eq:IVP} is given on a space defined in terms of both the spatial space $Z$ (for our problem is $H_0^1(I)$) and a parameter space $W$. This space is known as a {\it Bochner space}. Given a complete and separable probability space $\left(W,\Sigma,\mathbb{P}\right)$ and a Banach space ($Z$,$\|\cdot\|_Z$), the Bochner space contains the set of strongly measurable r-summable mappings $u(\cdot,\boldsymbol{\omega} ): W\rightarrow Z$ such that the corresponding norm is finite:
+\[
+L^r(W, Z):=\{u(\cdot,\boldsymbol{\omega} ):W\rightarrow Z\;\big\vert \; u(\cdot,\boldsymbol{\omega} ) \text{ strongly measurable,}\;\;\|u\|_{L^r(W,Z)}<\infty\}.
+\]
+This space is equipped with a norm 
+\begin{equation*}
+    \left\Vert u \right\Vert_{L^r(W,Z)} = 
+    \left\{\begin{array}{ll} %cr
+    \left(\int_W \left\Vert u(\cdot,\boldsymbol{\omega} ) \right\Vert_{Z}^r d\mathbb{P}(\boldsymbol{\omega}) \right)^{1/r} = \left(\mathbb{E}\left[\left\Vert u(\cdot,\boldsymbol{\omega}) \right\Vert_{Z}^r\right]\right)^{1/r} & \text{if } 0 <r<\infty,  \\
+\text{ess}\sup_{\boldsymbol{\omega}\in W} \left\Vert u(\cdot,\boldsymbol{\omega}) \right\Vert_Z& \text{if } r=\infty.
+\end{array}\right.
+\end{equation*}
+
+\subsection{Stochastic collocation method}
+Let $\{\boldsymbol{\xi}^{(i)}\}_{i=1}^N$ be a set of nodes in the random space with $N$ nodes, and let $\{x(\cdot,\boldsymbol{\xi}^{(i)})\}$ represent the realizations of \eqref{eq:IVP} for each sample $i$. We seek an approximation $\widehat{x}(\cdot, \boldsymbol{\xi})$ in a proper polynomial space such that $\widehat{x}(t,\boldsymbol{\xi}^{(i)}) = x(t, \boldsymbol{\xi}^{(i)})$ for all $i=1,\cdots, N$ and $\widehat{x}(\cdot, \boldsymbol{\xi})$ is an approximation to the true solution $x(\cdot, \boldsymbol{\xi})$ in the sense that the difference measured in $L^p$ norm is sufficiently small. Using a Lagrangian interpolation approach, we express the interpolant as
+\[
+\widehat{x}(t,\boldsymbol{\xi}) = \sum_{i=1}^N x(t, \boldsymbol{\xi}^{(i)})\ell_i(\boldsymbol{\xi}),
+\]
+where $\ell_i$ are the Lagrangian interpolating polynomials satisfying $\ell_i(\boldsymbol{\xi}^{(j)})=\delta_{i,j}$, the Kronecker delta.
+
+\section{Construction of the surrogate function}
+We now present a brief overview of the sparse grid stochastic collocation method \cite{BaNoRi:2000, KlBa:2005, MaNi:2009, Sm:1963} for approximating the solution to \eqref{eq:IVP} with stochastic parameters. We will describe the method in terms of a generic solution $u$. This method uses a set of $m_i$ nested nodes $X^i = \left\{x_1^i,\ldots, x_{m_i}^i\right\}$ within $[0,1]$ such that $X^{i}\subset X^{i+1}$. This setup allows for the generation of {\it sparse grid nodes} for dimension $d$ and {\it level} $q\; (\text{with }q\ge d)$ as 
+%
+\begin{equation}
+\label{eq:NestedColPts}
+H(q,d) = \bigcup_{q-d+1\le|\boldsymbol{i}|\le q} \left(X^{i_1}\times \cdots\times X^{i_d}\right)\in [0,1]^d, 
+\end{equation}
+where  $|\boldsymbol{i}| = i_1+\ldots+i_d$. This set of interpolation points is a direct consequence of the construction of the  Smolyak quadrature formula, defined by 
+\begin{equation}
+\label{eq: Smolyak_Quad_formula}
+\mathscr{S}_{q,d}[u] = \sum_{q+1\le |\boldsymbol{i}|\le q+d} (-1)^{q+d-|\boldsymbol{i}|} \binom{d-1}{q+d-|\boldsymbol{i}|}\cdot \left(\mathrm I_{X^{i_1}}\otimes\cdots\otimes \mathrm I_{X^{i_d}}\right) [u].
+\end{equation} 
+where $I_{X^{i}}[u]:=\sum_{j=1}^{m_{i}} u(x_j^i,\cdot)\phi_j$ represents the univariate quadrature, and the basis functions $\phi_k(x_j^i)$ is Kronecker delta, equating to 1 when $k=j$.
+
+ 
+For our model problem, the sparse grid stochastic collocation method constructs the surrogate function $\widehat{u}$ as per \eqref{eq: Smolyak_Quad_formula} by computing the direct solution of the discrete version of \eqref{eq:IVP} at isotropic sparse grid nodes \eqref{eq:NestedColPts} with the Clenshaw-Curtis quadrature abscissa  \cite{BaNoRi:2000,ClCu:1960}. 
+
+\subsection{Interpolation error}
+As stated in \cite{NoTeWe:2008,TeJaWe:2015}, consider $u \in C^0(W,H_0^1(I))$. Let the single-dimensional interval along the $k$-th dimension be 
+\[
+W_k = \left[I_k-\tau \left\vert I_k\right\vert, I_k+\tau \left\vert I_k\right\vert\right],
+\]
+with its corresponding complementary multi-dimensional parameter space being 
+\[
+W_k^c = \prod_{i=1, i\neq k}^d W_i.
+\]
+Given an arbitrary element $\omega_k^c$ in $W_k^c$, and for each $\omega_k$ in $W_k$, we assume the function $u(\cdot,\omega_k,\omega_k^c): W_k \rightarrow C^0(W_k^c;Z)$ admits an analytic extension  $u(\cdot, z,\omega_k^c)$ in the region 
+\[
+W_k^{*}:=\{z\in \mathbb{C}: \text{dist} (z,W_k)\le \iota_k \;\text{ for some } \iota_k>0\}
+\]
+of the complex plane, then the interpolation error exhibits an algebraic convergence rate
+%
+\begin{equation} \label{eq:coll-error-bound_2}
+  \big\|u-\widehat{u}\big\|_\infty \le C P^{-\nu},
+\end{equation}
+%
+where $P$ denotes the number of nodes in the sparse grid ($P=\text{dim}(H(q,d))$), $C$ is a positive constant and the power $\nu$ is an increasing function of the size of the domain of definition of the function's analytic extension in the complex plane. On the other hand, if the mapping is less regular with respect to the stochastic parameter $\boldsymbol\xi$, for instance of class $C^k(\boldsymbol W,Z)$, then \cite[Theorem~8]{BaNoRi:2000}
+\begin{equation}
+\label{eq:coll-error-bound-2}
+  \big\|u-\widehat{u}\,\big\|_\infty \leq C P^{-k} |\log P|^{(k+2)(d-1)+1}\,,
+\end{equation}
+where $\mathcal{I}_d$ is the identity operator in a d-dimensional space.
+
+\section{Appendix}\label{sec:Appendix}
+
+
+
+\bibliographystyle{abbrv}
+\bibliography{references}
+\end{document}
+
+
