@@ -117,11 +117,11 @@ where $\alpha_k$ are the coefficients to weight the correction term. In each cor
 \[
 A^{\text{MFMC}} = A^{\text{MC}}_{1,N_1} +  \sum_{k=2}^K \alpha_k\left[\left(\frac{N_{k-1}}{N_{k}}-1\right)A_{k,N_{k-1}}^{\text{MC}}+\left(1-\frac{N_{k-1}}{N_{k}}\right) A_{k,N_k-N_{k-1}}^{\text{MC}}\right],
 \]
-Now, the samples in $A_{k,N_{k-1}}^{\text{MC}}$ and $A_{k,N_k-N_{k-1}}^{\text{MC}}$ are independent. Define $Y_1 :=A^{\text{MC}}_{1,N_1},\; Y_k:=\left(\frac{N_{k-1}}{N_{k}}-1\right)A_{k,N_{k-1}}^{\text{MC}}+\left(1-\frac{N_{k-1}}{N_{k}}\right) A_{k,N_k-N_{k-1}}^{\text{MC}}$ for $k=2\ldots, K$.  Note that $Y_k$ are independent with each other for $k=2,\ldots, K$. Then 
+Now, the samples in $A_{k,N_{k-1}}^{\text{MC}}$ and $A_{k,N_k-N_{k-1}}^{\text{MC}}$ are independent with each other. Define $Y_1 :=A^{\text{MC}}_{1,N_1},\; Y_k:=\left(\frac{N_{k-1}}{N_{k}}-1\right)A_{k,N_{k-1}}^{\text{MC}}+\left(1-\frac{N_{k-1}}{N_{k}}\right) A_{k,N_k-N_{k-1}}^{\text{MC}}$ for $k=2\ldots, K$.  Note that $Y_k$ are independent with each other for $k=2,\ldots, K$. Then 
 \[
 A^{\text{MFMC}} = Y_1 + \sum_{k=2}^K \alpha_k Y_k.
 \]
-So $\mathbb{E}(Y_k) = 0$ for $k\ge 2$ and $\mathbb{E}(A^{\text{MFMC}}) = \mathbb{E}(f_1) $. For independent random variable, since each realization is uncorrelated to each other, this indicates that the sum of sample realizations and variance is interchangeable, therefore
+So $\mathbb{E}(Y_k) = 0$ for $k\ge 2$ and $\mathbb{E}(A^{\text{MFMC}}) = \mathbb{E}(f_1) $. For independent random variable, since each realization is uncorrelated to each other, this indicates that the sum of sample realizations and variance are interchangeable, therefore
 \[
 \mathbb{V}\left(Y_1\right) = \frac{\sigma_1^2}{N_1}, \quad \mathbb{V}\left(Y_k\right) = \left(\frac{N_{k-1}}{N_{k}}-1\right)^2\frac{\sigma_k^2}{N_{k-1}}+\left(\frac{N_{k-1}}{N_{k}}-1\right)^2\frac{\sigma_k^2}{N_k-N_{k-1}} = \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\sigma_k^2.
 \]
@@ -133,7 +133,7 @@ So,
     &=\mathbb{V}\left(Y_1\right) + \sum_{k=2}^K \alpha_k^2 \mathbb{V}\left(Y_k\right)+2\sum_{2\le k<j\le K} \alpha_k\alpha_j\; \text{Cov}(Y_k,Y_j) +2\sum_{k=2}^K \alpha_k\;\text{Cov}\left(Y_1, Y_k\right),\\
     &=\frac{\sigma_1^2}{N_1} + \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\left(\alpha_k^2\sigma_k^2 - 2\alpha_i\rho_{1,i}\sigma_1\sigma_i\right),
 \end{align}
-where we use the fact that $Y_k$ and $Y_j$ are independent with each other and \cite[Lemma~3.2]{PeWiGu:2016}
+where we use the fact that $Y_k$ and $Y_j$ are independent with each other for $k\ge 2$ and \cite[Lemma~3.2]{PeWiGu:2016}
 \[
 \text{Cov}(Y_1,Y_k) = \text{Cov}\left(A^{\text{MC}}_{1,N_1},A^{\text{MC}}_{k,N_k}\right) - \text{Cov}\left(A^{\text{MC}}_{1,N_1},A^{\text{MC}}_{k,N_{k-1}}\right) = -2 \sum_{k=2}^K \alpha_k \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\rho_{1,i}\sigma_1\sigma_i.
 \]
@@ -150,7 +150,7 @@ Our next goal is to determine the sample size $N_k$ such that the MFMC estimatio
     \begin{array}{lll}
     \displaystyle\min_{N_1,\ldots N_K\in \mathbb{R}, \alpha_2,\ldots,\alpha_K\in \mathbb{R}} &\sum_{k=1}^K C_kN_k,\\
        \text{s.t.} &\displaystyle -N_1\le 0, \\%[6pt]
-        &\displaystyle N_{k-1}-N_k\le 0 &k=2\ldots,K,\\
+        &\displaystyle N_{k-1}-N_k\le 0, &k=2\ldots,K,\\
         &\mathbb{V}\left(A^{\text{MFMC}}\right)\le \left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2.
     \end{array}
 \end{equation}
@@ -179,7 +179,7 @@ Our objective function
 \[
 J^* = \sum_{k=1}^K C_kN_k^* = \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2
 \]
-Consider another local minimum $\alpha_k^+$ and $N_k^+$ of \eqref{eq:Optimization_pb} such that $N_{k-1}^+ = N_{k}^+$ for some $k\ge 2$.
+Consider another local minimum $\alpha_k^+$ and $N_k^+$ of \eqref{eq:Optimization_pb} such that $N_{k-1}^+ = N_{k}^+$ for some $k\ge 2$. Let index $j_i$ be the first entry followed by equality for $N_{k}$, 
 \[
 N_{k_i}
 \]
