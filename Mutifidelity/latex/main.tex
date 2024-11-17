@@ -231,12 +231,7 @@ Substitute $\sqrt{\lambda_0}$ into $N_k$ for $k=1\ldots,K$,
 \[
 N_k = \sigma_1\sqrt{\lambda_0}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}= \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}\sum_{j=1}^{K} \left(\sqrt{\frac{C_j}{\rho_{1,j}^2-\rho_{1,j+1}^2}} - \sqrt{\frac{C_{j-1}}{\rho_{1,j-1}^2-\rho_{1,j}^2}}\right)\rho_{1,j}^2.
 \]
-Note that by requiring condition $(ii)$, we can guarantee that $N_k$ is strictly increasing as $k$ increase. Using the optimal sample estimation $N_k$, we obtain the total sampling cost of multifidelity estimator (value of the objective function) as
-\begin{equation}\label{eq:MFMC_sampling_cost}
-    \mathcal{W}_\text{MFMC} = \sum_{k=1}^K C_kN_k = \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2.
-\end{equation}
-
-
+Note that by requiring condition $(ii)$, we can guarantee that $N_k$ is strictly increasing as $k$ increase. 
 
 Next we want to show this local minimizer is global.
 
@@ -248,6 +243,23 @@ Next we want to show this local minimizer is global.
 % N_{k_i}
 % \]
 \end{proof}
+Consider the  sample size estimation in Theorem \ref{thm:Sample_size_est} found from optimization problem \ref{eq:Optimization_pb_sample_size}. In reality, the sample size estimation should be integer. We will use the ceiling of $N_k$ as the sample size estimation. Note that 
+\[
+\sum_{k=1}^K C_kN_k\le \sum_{k=1}^K C_k \left\lceil N_k\right\rceil<\sum_{k=1}^K C_kN_k + \sum_{k=1}^K C_k,
+\]
+where the term $\sum_{k=1}^K C_k$ results from the fact that $N_k\le \left\lceil N_k\right\rceil< N_k+1$. In the asymptotic regime when $N_k$ is large, we should expect the impact of $\sum_{k=1}^K C_k$ is negligible compared to $\sum_{k=1}^K C_kN_k$ and thus the sampling cost behaves as \eqref{eq:MFMC_sampling_cost}. This indicates that 
+\begin{equation}\label{eq:Asymptotic_cost_constraint}
+    \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2\ge \sum_{k=1}^K C_k.
+\end{equation}
+
+Using the optimal sample estimation $\left\lceil N_k\right\rceil$, we obtain the total sampling cost of multifidelity estimator (value of the objective function) as
+\begin{equation}\label{eq:MFMC_sampling_cost}
+    \mathcal{W}_\text{MFMC} = \sum_{k=1}^K C_k \left\lceil N_k\right\rceil = \sum_{k=1}^K C_k N_k = \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2.
+\end{equation}
+
+
+
+
 
 The total sampling cost efficiency of the multifidelity Monte Carlo (MFMC) estimator relative to the standard Monte Carlo (MC) estimator is
 \[
@@ -260,14 +272,7 @@ Further more, we observe that
 \end{align*}
 This implies that if both Monte Carlo and multifidelity Monte Carlo have  a same sampling cost, then $\gamma=  \mathbb{V}\left(A^{\text{MFMC}}\right)/\mathbb{V}\left(A^{\text{MC}}\right)$. Therefore, this ratio also quantifies the variance reduction achieved by the MFMC estimator. The quantity of gamma is determined by the cost per sample for various models and the correlation parameters. The smaller the value of $\gamma$, the more effective the MFMC estimator.
 
-Consider the  sample size estimation in Theorem \ref{thm:Sample_size_est} found from optimization problem \ref{eq:Optimization_pb_sample_size}. In reality, the sample size estimation should be integer. We will use the ceiling of $N_k$ as the sample size estimation. Note that 
-\[
-\sum_{k=1}^K C_kN_k\le \sum_{k=1}^K C_k \left\lceil N_k\right\rceil<\sum_{k=1}^K C_kN_k + \sum_{k=1}^K C_k,
-\]
-where the term $\sum_{k=1}^K C_k$ results from the fact that $N_k\le \left\lceil N_k\right\rceil< N_k+1$. In the asymptotic regime when $N_k$ is large, we should expect the impact of $\sum_{k=1}^K C_k$ is negligible compared to $\sum_{k=1}^K C_kN_k$ and thus the sampling cost behaves as \eqref{eq:MFMC_sampling_cost}. This indicates that 
-\begin{equation}\label{eq:Asymptotic_cost_constraint}
-    \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2\ge \sum_{k=1}^K C_k.
-\end{equation}
+
 
 \subsection{Model selection}
 In order to maximize the capability of multifidelity Monte Carlo estimator  compared to the Monte Carlo estimator, we need to select the models from the available set such that the ratio $\gamma$ is as small as possible. Let $S=\{1, \ldots, K\}$ be the indices of $K$ available models. We seek a subset $S_1=\{i_1,i_2, \ldots,i_{K_1}\}\subseteq S (K_1\le K)$ of indices that minimizes the sampling cost of multifidelity Monte Carlo estimator. This lead to the following optimization problem to determine the index set $S_1$ for the selected models.
