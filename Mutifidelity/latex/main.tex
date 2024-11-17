@@ -64,7 +64,7 @@
 \begin{frontmatter}
 \title{Multifidelity write-up}
 \begin{abstract}
-We derived the explicit sample size estimation in terms of the desired accuracy requirement.
+We derived the explicit sample size estimation in terms of the desired accuracy requirement. We make an improvement on the efficiency gain estimate and model selection approach compared to \cite{PeWiGu:2016}.
 \end{abstract}
 \end{frontmatter}
 
@@ -91,13 +91,13 @@ where $\mathbb{E}(A^{\text{MC}}_{k,N_k}) = \mathbb{E}(f_k)$, $\mathbb{V}(A^{\tex
 \[
 \mathcal{W}_\text{MC}^k  = C_kN_k.
 \]
-We define the \textit{normalized mean squared error}  (nMSE), denoted as $\mathcal{E}_{A}^2$, with normalizing factor $\left\Vert\mathbb{E}(f) \right\Vert_{Z}^2$ for estimator $A$ as
+We define the \textit{mean squared error}  (nMSE), denoted as $\mathcal{E}_{A}^2$, with normalizing factor $\left\Vert\mathbb{E}(f) \right\Vert_{Z}^2$ for estimator $A$ as
  \[
 \mathcal{E}_{A}^2:=\frac{\mathbb E\left[\left\Vert\mathbb{E}(f)-A \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(f) \right\Vert_{Z}^2}.
 \] 
 If we use a Monte Carlo estimator to estimate $\mathbb{E}\left(f_1(\boldsymbol{\omega})\right)$, 
 \[
-\mathcal{E}_{A^{\text{MC}}_{1,N_1}}^2=\frac{\mathbb E\left[\left\Vert\mathbb{E}(f_1)-A^{\text{MC}}_{1,N_1} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2} = \frac{\left\Vert\mathbb{E}(f_1)-\mathbb{E}(A^{\text{MC}}_{1,N_1}) \right\Vert_{Z}^2+\mathbb E\left[\left\Vert\mathbb{E}(A^{\text{MC}}_{1,N_1})-A^{\text{MC}}_{1,N_1} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2} = \frac{\mathbb{V}\left(f_1\right)}{N_1\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}.
+\mathcal{E}_{A^{\text{MC}}_{1,N_1}}^2=\frac{\mathbb E\left[\left\Vert\mathbb{E}(f_1)-A^{\text{MC}}_{1,N_1} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2} = \frac{\left\Vert\mathbb{E}(f_1)-\mathbb{E}(A^{\text{MC}}_{1,N_1}) \right\Vert_{Z}^2+\mathbb E\left[\left\Vert\mathbb{E}(A^{\text{MC}}_{1,N_1})-A^{\text{MC}}_{1,N_1} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2} = \frac{\mathbb{V}\left(A^{\text{MC}}\right)}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}=\frac{\mathbb{V}\left(f_1\right)}{N_1\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}.
 \]
 Given a target tolerance $\epsilon^2$ for the nMSE, the sample size $N_1$ is estimated as 
 \[
@@ -105,13 +105,13 @@ N_1 =  \frac{\sigma_1^2}{\epsilon^2\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}\
 \]
 So the total expense of sampling with $N_1$ samples using Monte Carlo method for $\mathbb{E}\left(f_1(\boldsymbol{\omega})\right)$ is 
 \[
-\mathcal{W}_\text{MC}^1  = C_1N_1=\frac{C_1\sigma_1^2}{\epsilon^2\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}.
+\mathcal{W}_\text{MC}  = C_1N_1=\frac{C_1\sigma_1^2}{\epsilon^2\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}.
 \]
 
 \section{Multifidelity Monte Carlo}
 The Multifidelity Monte Carlo (MFMC) estimator is defined as
 \begin{equation}\label{eq:MFMC_estimator}
-    A_{\text{MFMC}} := A^{\text{MC}}_{1,N_1} + \sum_{k=2}^K \alpha_k\left(A^{\text{MC}}_{k,N_k} - A^{\text{MC}}_{k,N_{k-1}} \right),
+    A^{\text{MFMC}} := A^{\text{MC}}_{1,N_1} + \sum_{k=2}^K \alpha_k\left(A^{\text{MC}}_{k,N_k} - A^{\text{MC}}_{k,N_{k-1}} \right),
 \end{equation}
 where $\alpha_k$ are the coefficients to weight the correction term. In each correction term, the two Monte Carlo estimators are dependent in the sense that $A^{\text{MC}}_{k,N_{k-1}}$ recycles the first $N_{k-1}$ samples of $A^{\text{MC}}_{k,N_{k}}$ so we require $N_{k-1}\le N_k$ for $k=2,\ldots,K$. Using this property and \eqref{eq:MC_estimator}, we can remove the dependent samples and rewrite \eqref{eq:MFMC_estimator} as
 \begin{equation}\label{eq:MFMC_estimator_independent}
@@ -119,7 +119,7 @@ where $\alpha_k$ are the coefficients to weight the correction term. In each cor
 \end{equation}
 
 
-Now, the weights in the new correction terms involve a sample ratio and the importance of this reformulation is that the samples to estimate $A_{k,N_{k-1}}^{\text{MC}}$ and $A_{k,N_k-N_{k-1}}^{\text{MC}}$ are independent with each other with the same model $f_k$. Define $Y_1 :=A^{\text{MC}}_{1,N_1},\; Y_k:=(\frac{N_{k-1}}{N_{k}}-1)(A_{k,N_{k-1}}^{\text{MC}}- A_{k,N_k-N_{k-1}}^{\text{MC}})$ for $k=2\ldots, K$, but $Y_1$ and $Y_k$ may not necessarily independent with each other.  Note that $Y_k$ are independent with each other for $k=2,\ldots, K$. Using the new notation, \eqref{eq:MFMC_estimator_independent} can be simplified as 
+Now, the weights in the new correction terms involve a sample ratio and the importance of this reformulation is that the samples to estimate $A_{k,N_{k-1}}^{\text{MC}}$ and $A_{k,N_k-N_{k-1}}^{\text{MC}}$ are independent with each other with the same model $f_k$. Define $Y_1 :=A^{\text{MC}}_{1,N_1},\; Y_k:=(\frac{N_{k-1}}{N_{k}}-1)(A_{k,N_{k-1}}^{\text{MC}}- A_{k,N_k-N_{k-1}}^{\text{MC}})$ for $k=2\ldots, K$, but $Y_1$ and $Y_k$ may not necessarily uncorrelated with each other.  Note that $Y_k$ are independent of each other for $k=2,\ldots, K$. Using the new notation, \eqref{eq:MFMC_estimator_independent} can be simplified as 
 \[
 A^{\text{MFMC}} = Y_1 + \sum_{k=2}^K \alpha_k Y_k.
 \]
@@ -133,6 +133,8 @@ So,
     \mathbb{V}\left(A^{\text{MFMC}}\right) &= \mathbb{V}\left(Y_1\right) + \mathbb{V}\left(\sum_{k=2}^K \alpha_kY_k\right)+2\;\text{Cov}\left(Y_1,\sum_{k=2}^K \alpha_k Y_k \right),\\
     \nonumber
     &=\mathbb{V}\left(Y_1\right) + \sum_{k=2}^K \alpha_k^2 \mathbb{V}\left(Y_k\right)+2\sum_{2\le k<j\le K} \alpha_k\alpha_j\; \text{Cov}(Y_k,Y_j) +2\sum_{k=2}^K \alpha_k\;\text{Cov}\left(Y_1, Y_k\right),\\
+    \nonumber
+    &=\mathbb{V}\left(Y_1\right) + \sum_{k=2}^K \alpha_k^2 \mathbb{V}\left(Y_k\right) +2\sum_{k=2}^K \alpha_k\;\text{Cov}\left(Y_1, Y_k\right),\\
     \label{eq:MFMC_variance}
     &=\frac{\sigma_1^2}{N_1} + \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\left(\alpha_k^2\sigma_k^2 - 2\alpha_k\rho_{1,k}\sigma_1\sigma_k\right),
 \end{align}
@@ -149,7 +151,7 @@ Unlike multilevel Monte Carlo, the normalize mean square error splitting has a b
 \sum_{k=1}^K C_kN_k.
 \]
 Our next goal is to determine the sample size $N_k$ such that the MFMC estimation satisfy the accuracy threshold $\mathcal{E}_{A^{\text{MFMC}}}^2= \epsilon^2$. We formulate an following optimization problem to minimize the sampling cost subject to a bounded variance of MFMC estimator, and solve for sample size $N_k\in \mathbb{R}$ for $k=1\dots, K$ and $\alpha_k\in \mathbb{R}$ for $k=2\dots, K$ as
-\begin{equation}\label{eq:Optimization_pb}
+\begin{equation}\label{eq:Optimization_pb_sample_size}
     \begin{array}{lll}
     \displaystyle\min_{N_1,\ldots N_K\in \mathbb{R}, \alpha_2,\ldots,\alpha_K\in \mathbb{R}} &\sum_{k=1}^K C_kN_k,\\
        \text{s.t.} &\mathbb{V}\left(A^{\text{MFMC}}\right)- \left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2 = 0,\\
@@ -167,7 +169,7 @@ Let $f_k$ be $K$ models that satisfy the following conditions
     &(ii)\;\; \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2},\;\;k=2,\ldots,K.
 \end{alignat*}
 %
-Then the global minimizer to \eqref{eq:Optimization_pb} is 
+Then the global minimizer to \eqref{eq:Optimization_pb_sample_size} is 
 \begin{align*}
     &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k}, \quad k=2\ldots, K,\\
     &N_k^*=\frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sqrt{\frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{C_k}}\sum_{j=1}^K\left(\sqrt{\frac{C_j}{\rho_{1,j}^2 - \rho_{1,j+1}^2}} - \sqrt{\frac{C_{j-1}}{\rho_{1,{j-1}}^2 - \rho_{1,j}^2}}\right)\rho_{1,j}^2, \quad k=1\ldots, K,
@@ -227,13 +229,14 @@ solve for $\sqrt{\lambda_0}$, we have
 \]
 Substitute $\sqrt{\lambda_0}$ into $N_k$ for $k=1\ldots,K$,
 \[
-N_k^* = \sigma_1\sqrt{\lambda_0}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}= \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}\sum_{j=1}^{K} \left(\sqrt{\frac{C_j}{\rho_{1,j}^2-\rho_{1,j+1}^2}} - \sqrt{\frac{C_{j-1}}{\rho_{1,j-1}^2-\rho_{1,j}^2}}\right)\rho_{1,j}^2.
+N_k = \sigma_1\sqrt{\lambda_0}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}= \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}\sum_{j=1}^{K} \left(\sqrt{\frac{C_j}{\rho_{1,j}^2-\rho_{1,j+1}^2}} - \sqrt{\frac{C_{j-1}}{\rho_{1,j-1}^2-\rho_{1,j}^2}}\right)\rho_{1,j}^2.
 \]
-Note that by requiring condition $(ii)$, we can guarantee that $N_k$ is strictly increasing as $k$ increase. Our objective function
-
+Note that by requiring condition $(ii)$, we can guarantee that $N_k$ is strictly increasing as $k$ increase. Using the optimal sample estimation $N_k$, we obtain the total sampling cost of multifidelity estimator (value of the objective function) as
 \begin{equation}\label{eq:MFMC_sampling_cost}
-    J^* = \sum_{k=1}^K C_kN_k^* = \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2
+    \mathcal{W}_\text{MFMC} = \sum_{k=1}^K C_kN_k = \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2.
 \end{equation}
+
+
 
 Next we want to show this local minimizer is global.
 
@@ -246,7 +249,69 @@ Next we want to show this local minimizer is global.
 % \]
 \end{proof}
 
+The total sampling cost efficiency of the multifidelity Monte Carlo (MFMC) estimator relative to the standard Monte Carlo (MC) estimator is
+\[
+\JLcolor{\gamma = \frac{\mathcal{W}_\text{MFMC}}{\mathcal{W}_\text{MC}} = \frac{1}{C_1} \sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2.}
+\]
+Further more, we observe that
+\begin{align*}
+    \mathcal{W}_\text{MC}\mathbb{V}\left(A^{\text{MC}}\right) &=\frac{C_1\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2},\\
+ \mathcal{W}_\text{MFMC}\mathbb{V}\left(A^{\text{MFMC}}\right) &=  \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2.
+\end{align*}
+This implies that if both Monte Carlo and multifidelity Monte Carlo have  a same sampling cost, then $\gamma=  \mathbb{V}\left(A^{\text{MFMC}}\right)/\mathbb{V}\left(A^{\text{MC}}\right)$. Therefore, this ratio also quantifies the variance reduction achieved by the MFMC estimator. The quantity of gamma is determined by the cost per sample for various models and the correlation parameters. The smaller the value of $\gamma$, the more effective the MFMC estimator.
 
+Consider the  sample size estimation in Theorem \ref{thm:Sample_size_est} found from optimization problem \ref{eq:Optimization_pb_sample_size}. In reality, the sample size estimation should be integer. We will use the ceiling of $N_k$ as the sample size estimation. Note that 
+\[
+\sum_{k=1}^K C_kN_k\le \sum_{k=1}^K C_k \left\lceil N_k\right\rceil<\sum_{k=1}^K C_kN_k + \sum_{k=1}^K C_k,
+\]
+where the term $\sum_{k=1}^K C_k$ results from the fact that $N_k\le \left\lceil N_k\right\rceil< N_k+1$. In the asymptotic regime when $N_k$ is large, we should expect the impact of $\sum_{k=1}^K C_k$ is negligible compared to $\sum_{k=1}^K C_kN_k$ and thus the sampling cost behaves as \eqref{eq:MFMC_sampling_cost}. This indicates that 
+\begin{equation}\label{eq:Asymptotic_cost_constraint}
+    \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2\ge \sum_{k=1}^K C_k.
+\end{equation}
+
+\subsection{Model selection}
+In order to maximize the capability of multifidelity Monte Carlo estimator  compared to the Monte Carlo estimator, we need to select the models from the available set such that the ratio $\gamma$ is as small as possible. Let $S=\{1, \ldots, K\}$ be the indices of $K$ available models. We seek a subset $S_1=\{i_1,i_2, \ldots,i_{K_1}\}\subseteq S (K_1\le K)$ of indices that minimizes the sampling cost of multifidelity Monte Carlo estimator. This lead to the following optimization problem to determine the index set $S_1$ for the selected models.
+
+\begin{equation}\label{eq:Optimization_pb_model_selection}
+    \begin{array}{lll}
+    \displaystyle\min_{S_1} &\displaystyle \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k\in S_1}\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k\in S_1}\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2,\\
+       \text{s.t.} &\displaystyle |\rho_{1,1}|>\ldots>|\rho_{1,K}|,\\
+       &\displaystyle \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2}, \quad k=2,\ldots,K,\\
+       &\JLcolor{\displaystyle \frac{\sum_{k\in S_1}\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}}{\sum_{k\in S_1} C_k}\sum_{k\in S_1}\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2\ge \frac{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}{\sigma_1^2},}\\
+        &\displaystyle \rho_{1,0}=\infty \;\text{ and } \;\rho_{1,K+1}=0. \\%[6pt]
+    \end{array}
+\end{equation}
+
+Note that $S_1$ is non-empty and $i_1=1$ since the high fidility model must be included.
+
+
+
+% \begin{theorem}
+% \label{thm:Sampling_cost_est}
+% Let $f_k$ be $K$ models that satisfy the following conditions
+% %
+% \begin{alignat*}{8}
+%     &(i)\;\; |\rho_{1,1}|>\ldots>|\rho_{1,K}|& \qquad \qquad
+%     &(ii)\;\; \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2},\;\;k=2,\ldots,K.
+% \end{alignat*}
+% %
+% Suppose there exists $0<s<q<1$ such that 
+% $C_k = c_s s^{k}$, $\rho_{1,k}^2 = q^{ k-1}$, then 
+% \begin{equation*}
+%     \mathcal{W}_\text{MFMC} = 
+% \end{equation*}
+
+% \end{theorem}
+% \begin{proof}
+% Since $q>s$, condition (ii) is satisfied.
+% \begin{align*}
+% \rho_{1,k}^2 - \rho_{1,k+1}^2&=q^k\left(\frac1 q-1\right),\quad \rho_{1,k-1}^2 - \rho_{1,k}^2=q^k\frac 1 q\left(\frac1 q-1\right)\\
+%     \mathcal{W}_\text{MFMC} &= \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2,\\
+%     &=\frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2} \sum_{k=1}^K\sqrt{q^{k}s^{ k}}\left(\sqrt{\frac{s(1-q)}{1-\rho_{1,2}^2}} + \sum_{k=2}^K\left(\sqrt{\frac{s^{k}}{q^{ k}}} - \sqrt{\frac{q s^{ k}}{s q^{ k}}}\right)q^{k} + \left(\sqrt{\frac{s^{ K}(1-q)}{q^{K}}}-\sqrt{\frac{q s^{ K}}{s q^{K}}}\right)q^{K}\right)\\
+%     &\propto \frac{1}{\epsilon^2} \sum_{k=1}^K\left(q^{\frac{1}{2}}s^{\frac{1}{2}}\right)^k
+% \end{align*}
+    
+% \end{proof}
 
 % ========================================
 % \section{Numerical experiments}\label{sec:Num-Exp}
