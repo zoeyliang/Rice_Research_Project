@@ -62,104 +62,134 @@
 
 \begin{document}
 \begin{frontmatter}
-\title{Multifidelity write-up}
+\title{Multifidelity Monte Carlo write-up}
+
+
 \begin{abstract}
-We derived the explicit sample size estimation in terms of the desired accuracy requirement. We make an improvement on the efficiency gain estimate and model selection approach compared to \cite{PeWiGu:2016}.
+We investigate the Grad-Shafranov free boundary problem in Tokamak fusion reactors under the influence of parameter uncertainties. Using both Monte Carlo and multi-fidelity Monte Carlo sampling approaches, we quantify the impact of these uncertainties on model predictions, emphasizing the statistical characterization of solution variability across diverse parameter regimes. Our numerical results reveals that the multi-fidelity Monte Carlo estimator achieves statistical accuracy comparable to the Monte Carlo approach. However, the multi-fidelity method demonstrates superior computational efficiency, achieving a cost reduction by a factor of ..., while preserving fidelity in representing plasma boundary dynamics and geometric parameters. This work underscores the efficiency of multi-fidelity frameworks in addressing the computational demands of uncertainty quantification in complex fusion reactor models, offering a robust pathway for enhancing predictive capabilities in plasma physics. 
 \end{abstract}
 \end{frontmatter}
 
 
-
+% ====================================================
 \section{Model problem}\label{sec:Problem_setup}
-We have a high fidelity model denoted as $f_1: \Omega \rightarrow Z$ we desire, and several low fidelity models (surrogates) $f_k$ for $k\in \mathbb{N}$. Our objective is to approximate 
+% ====================================================
+To characterize the uncertainty random parameters of our model, we introduce a d-dimensional random variable 
+$\boldsymbol{\omega}=[\omega_1,\cdots, \omega_{d}]$, whose $i$-th component corresponds to the $i$-th parameter, each component is mutually independent random variables with joint distribution $\boldsymbol\pi(\boldsymbol{\omega})$. The parameter space is $W$.
+
+
+We have a high fidelity model denoted as $f_1: W \rightarrow Z$ we desire, and several low fidelity models (surrogates) $f_k$ for $k=2,\ldots,K$. Our objective is to approximate 
 \[
-\mathbb{E}\left(f_1(\boldsymbol{\omega})\right).
+\mathbb{E}\left(f_1(\boldsymbol{\omega})\right)=\int_{\boldsymbol W} f_1(r,z,\boldsymbol{\omega})\pi(\boldsymbol\omega)d\boldsymbol{\omega}\,.
 \]
-Note for each $f_i(\boldsymbol{\omega})$, its variance and Pearson product-moment correlation coefficient are 
+Note for each $f_k(\boldsymbol{\omega})$, its variance and Pearson product-moment correlation coefficient are 
 \begin{equation*}
     \sigma_k^2 = \mathbb{V}\left(f_k(\boldsymbol{\omega})\right),\qquad \rho_{k,j} = \frac{\text{Cov}\left(f_k(\boldsymbol{\omega}),f_j(\boldsymbol{\omega})\right)}{\sigma_k\sigma_j}, \quad k,j=1,\dots, K,
 \end{equation*}
-where $\mathbb{V}(f) := \mathbb{E}\left(\left\Vert f - \mathbb{E}(f)\right\Vert_Z^2\right)$. Note that $\rho_{k,k}=1$.
+where $\mathbb{V}(f) := \mathbb{E}\left(\left\Vert f - \mathbb{E}(f)\right\Vert_Z^2\right)$ and $\text{Cov}\left(f_k,f_j\right) := \mathbb{E}\left(\left( f_k - \mathbb{E}(f_k), f_j - \mathbb{E}(f_j)\right)_Z\right)$. Note that $\rho_{k,k}=1$.
+
+% % ====================================================
+% \section{Construction of the surrogate function}
+% \label{sec:Surrogate_Construction}
+% % ====================================================
+% %
+% % ============================================================
+% \subsection{Sparse grid stochastic collocation}\label{sec:SC}
+% % ============================================================
 
 
-\section{Monte Carlo estimator}
-The Monte Carlo estimator for the expectation of each $f_k$ is defined as the sample mean of $N_k$ i.i.d realizations $\boldsymbol{\omega}_1,\ldots,\boldsymbol{\omega}_N$
+% ====================================================
+\section{Monte Carlo estimator}\label{sec:MC}
+% ====================================================
+Let $u_h$ be the discretized solution to \eqref{eq:FreeBoundary}. The Monte Carlo Finite-Element estimator $A^{\text{MC}}_{N}$ is defined as the sample mean of $N$ independent and identically distributed (i.i.d.) realizations $\boldsymbol{\omega}_1,\ldots,\boldsymbol{\omega}_{N}$
+%
 \begin{equation}\label{eq:MC_estimator}
-    A^{\text{MC}}_{k,N_k} := \frac{1}{N_k}\sum_{i=1}^{N_k} f_k(\boldsymbol{\omega}_i),\quad \forall k=1,\ldots, K,
+    A^{\text{MC}}_{N} := \frac{1}{N}\sum_{i=1}^{N} u_{h}(\boldsymbol{\omega}_i),
 \end{equation}
-where $\mathbb{E}(A^{\text{MC}}_{k,N_k}) = \mathbb{E}(f_k)$, $\mathbb{V}(A^{\text{MC}}_{k,N_k}) = \mathbb{V}(f_k)/{N_k}$. Let $C_k$ denote the average evaluation cost per sample for $f_k$, then the total sampling cost for each Monte Carlo estimator $A^{\text{MC}}_{k,N_k}$ is 
-\[
-\mathcal{W}_\text{MC}^k  = C_kN_k.
-\]
-We define the \textit{mean squared error}  (nMSE), denoted as $\mathcal{E}_{A}^2$, with normalizing factor $\left\Vert\mathbb{E}(f) \right\Vert_{Z}^2$ for estimator $A$ as
+%
+where $\mathbb{E}(A^{\text{MC}}_{N}) = \mathbb{E}(u_{h})$, $\mathbb{V}(A^{\text{MC}}_{N}) = \mathbb{V}( u_{h})/{N}$. 
+
+We define the normalized \textit{mean squared error}  (nMSE) to quantify the error between $\mathbb{E}(u)$ and estimator $A$, denoted as $\mathcal{E}_{A}^2$,for an estimator $A$ with a normalizing factor $\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2$  as
+%
  \[
-\mathcal{E}_{A}^2:=\frac{\mathbb E\left[\left\Vert\mathbb{E}(f)-A \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(f) \right\Vert_{Z}^2}.
+\mathcal{E}_{A}^2:=\frac{\mathbb E\left[\left\Vert\mathbb{E}(u)-A \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}.
 \] 
-If we use a Monte Carlo estimator to estimate $\mathbb{E}\left(f_1(\boldsymbol{\omega})\right)$, 
+%
+The nMSE for Monte Carlo estimator becomes
 \[
-\mathcal{E}_{A^{\text{MC}}_{1,N_1}}^2=\frac{\mathbb E\left[\left\Vert\mathbb{E}(f_1)-A^{\text{MC}}_{1,N_1} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2} = \frac{\left\Vert\mathbb{E}(f_1)-\mathbb{E}(A^{\text{MC}}_{1,N_1}) \right\Vert_{Z}^2+\mathbb E\left[\left\Vert\mathbb{E}(A^{\text{MC}}_{1,N_1})-A^{\text{MC}}_{1,N_1} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2} = \frac{\mathbb{V}\left(A^{\text{MC}}\right)}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}=\frac{\mathbb{V}\left(f_1\right)}{N_1\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}.
+\mathcal{E}_{A^{\text{MC}}_{N}}^2 = \frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(u_{h}) \right\Vert_{Z}^2+\mathbb E\left[\left\Vert \mathbb{E}(u_{h}) -A^{\text{MC}}_{N} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2} = \frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(u_{h}) \right\Vert_{Z}^2}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}+\frac{\mathbb{V}\left( u_{h}\right)}{N\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}=\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2,
 \]
-Given a target tolerance $\epsilon^2$ for the nMSE, the sample size $N_1$ is estimated as 
+Given a target tolerance $\epsilon^2$ for the nMSE, the required sample size $N$ is estimated as 
 \[
-N_1 =  \frac{\sigma_1^2}{\epsilon^2\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}\simeq \epsilon^{-2}.
+N =  \frac{\sigma_1^2}{\epsilon^2\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}\simeq \epsilon^{-2}.
 \]
-So the total expense of sampling with $N_1$ samples using Monte Carlo method for $\mathbb{E}\left(f_1(\boldsymbol{\omega})\right)$ is 
+Let $C$ denote the average evaluation cost per sample for $u_{h}$. The total sampling cost using $N$ samples with the Monte Carlo method for $\mathbb{E}\left(u_h(\boldsymbol{\omega})\right)$ is 
 \[
-\mathcal{W}_\text{MC}  = C_1N_1=\frac{C_1\sigma_1^2}{\epsilon^2\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}.
+\mathcal{W}_\text{MC}  = CN=\frac{C\sigma_1^2}{\epsilon^2\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}.
 \]
 
-\section{Multifidelity Monte Carlo}
-The Multifidelity Monte Carlo (MFMC) estimator is defined as
+
+% ====================================================
+\section{Multifidelity Monte Carlo}\label{sec:MFMC}
+% ====================================================
+The Multi-fidelity Monte Carlo (MFMC) estimator is defined as
 \begin{equation}\label{eq:MFMC_estimator}
-    A^{\text{MFMC}} := A^{\text{MC}}_{1,N_1} + \sum_{k=2}^K \alpha_k\left(A^{\text{MC}}_{k,N_k} - A^{\text{MC}}_{k,N_{k-1}} \right),
+    A^{\text{MF}} := A^{\text{MC}}_{1,N_1} + \sum_{k=2}^K \alpha_k\left(A^{\text{MC}}_{k,N_k} - A^{\text{MC}}_{k,N_{k-1}} \right),
 \end{equation}
-where $\alpha_k$ are the coefficients to weight the correction term. In each correction term, the two Monte Carlo estimators are dependent in the sense that $A^{\text{MC}}_{k,N_{k-1}}$ recycles the first $N_{k-1}$ samples of $A^{\text{MC}}_{k,N_{k}}$ so we require $N_{k-1}\le N_k$ for $k=2,\ldots,K$. Using this property and \eqref{eq:MC_estimator}, we can remove the dependent samples and rewrite \eqref{eq:MFMC_estimator} as
+where $\alpha_k$ are coefficients weighting the correction terms. In each correction term, the two Monte Carlo estimators are dependent, as $A^{\text{MC}}_{k,N_{k-1}}$ reuses the first $N_{k}$ samples of $A^{\text{MC}}_{k,N_{k}}$, requiring $N_{k-1}\le N_k$ for $k=2,\ldots, K$. Exploiting this dependence, we can separate $N_k$ samples into a disjoint union of $N_{k-1}$ and $N_k - N_{k-1}$ samples and rewrite \eqref{eq:MFMC_estimator} as 
 \begin{equation}\label{eq:MFMC_estimator_independent}
-    A^{\text{MFMC}} = A^{\text{MC}}_{1,N_1} +  \sum_{k=2}^K \alpha_k\left[\left(\frac{N_{k-1}}{N_{k}}-1\right)A_{k,N_{k-1}}^{\text{MC}}+\left(1-\frac{N_{k-1}}{N_{k}}\right) A_{k,N_k-N_{k-1}}^{\text{MC}}\right],
+    A^{\text{MF}} = A^{\text{MC}}_{1,N_1} +  \sum_{k=2}^K \alpha_k\left[\left(\frac{N_{k-1}}{N_{k}}-1\right)A_{k,N_{k-1}}^{\text{MC}}+\left(1-\frac{N_{k-1}}{N_{k}}\right) A_{k,N_k\backslash N_{k-1}}^{\text{MC}}\right],
 \end{equation}
-
-
-Now, the weights in the new correction terms involve a sample ratio and the importance of this reformulation is that the samples to estimate $A_{k,N_{k-1}}^{\text{MC}}$ and $A_{k,N_k-N_{k-1}}^{\text{MC}}$ are independent with each other with the same model $f_k$. Define $Y_1 :=A^{\text{MC}}_{1,N_1},\; Y_k:=(\frac{N_{k-1}}{N_{k}}-1)(A_{k,N_{k-1}}^{\text{MC}}- A_{k,N_k-N_{k-1}}^{\text{MC}})$ for $k=2\ldots, K$, but $Y_1$ and $Y_k$ may not necessarily uncorrelated with each other.  Note that $Y_k$ are independent of each other for $k=2,\ldots, K$. Using the new notation, \eqref{eq:MFMC_estimator_independent} can be simplified as 
+where the weights in the correction terms now depend on the sample ratio. This reformulation is significant because we partition the  $N_k$ samples into two disjoint sets such that  the samples used to estimate $A_{k,N_{k-1}}^{\text{MC}}$ and $A_{k,N_k\backslash N_{k-1}}^{\text{MC}}$ are independent. If we define the following notations
 \[
-A^{\text{MFMC}} = Y_1 + \sum_{k=2}^K \alpha_k Y_k.
+Y_1 :=A^{\text{MC}}_{1,N_1},\quad Y_k:=\left(\frac{N_{k-1}}{N_{k}}-1\right)\left(A_{k,N_{k-1}}^{\text{MC}}- A_{k,N_k\backslash N_{k-1}}^{\text{MC}}\right), k=2\ldots, K,
 \]
-So $\mathbb{E}(Y_k) = 0$ for $k\ge 2$ and $\mathbb{E}(A^{\text{MFMC}}) = \mathbb{E}(f_1) $. For independent random variable, since each realization is uncorrelated to each other, this indicates that the sum of sample realizations and variance are interchangeable, therefore
+then the multifidelity Monte Carlo estimator in \eqref{eq:MFMC_estimator_independent} boils down to 
 \[
-\mathbb{V}\left(Y_1\right) = \frac{\sigma_1^2}{N_1}, \quad \mathbb{V}\left(Y_k\right) = \left(\frac{N_{k-1}}{N_{k}}-1\right)^2\frac{\sigma_k^2}{N_{k-1}}+\left(\frac{N_{k-1}}{N_{k}}-1\right)^2\frac{\sigma_k^2}{N_k-N_{k-1}} = \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\sigma_k^2.
+A^{\text{MF}} = Y_1 + \sum_{k=2}^K \alpha_k Y_k,
 \]
-So,
+where $\mathbb{E}(Y_k) = 0$ for $k\ge 2$, $\mathbb{E}(A^{\text{MF}}) = \mathbb{E}(u_{h,1}) $ and
+% Since the samples in For independent random variables, since each realization is uncorrelated with the others, the sum of sample realizations and variance are interchangeable. Therefore
+\[
+\mathbb{V}\left(Y_1\right) = \frac{\sigma_1^2}{N_1}, \quad \mathbb{V}\left(Y_k\right) = \left(\frac{N_{k-1}}{N_{k}}-1\right)^2\left(\frac{\sigma_k^2}{N_{k-1}}+\frac{\sigma_k^2}{N_k-N_{k-1}}\right) = \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\sigma_k^2.
+\]
+Even though the samples in $Y_k$ and $Y_j$ for $k\neq j, k,j=2,\cdots, K$ are dependent, it can be shown that $Y_k$ and $Y_j$ are uncorrelated using the fact that samples in the two disjoint groups are independent. However, $Y_1$ may not necessarily be uncorrelated with $Y_k$. Using this fact and the covariance relation established in \cite[Lemma~3.2]{PeWiGu:2016},
+% \[
+% \text{Cov}(Y_1,Y_k) = \text{Cov}\left(A^{\text{MC}}_{1,N_1},A^{\text{MC}}_{k,N_k}\right) - \text{Cov}\left(A^{\text{MC}}_{1,N_1},A^{\text{MC}}_{k,N_{k-1}}\right) = - \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\rho_{1,k}\sigma_1\sigma_k.
+% \]
+the variance of the multi-fidelity Monte Carlo estimator can be found as
 \begin{align}
     \nonumber
-    \mathbb{V}\left(A^{\text{MFMC}}\right) &= \mathbb{V}\left(Y_1\right) + \mathbb{V}\left(\sum_{k=2}^K \alpha_kY_k\right)+2\;\text{Cov}\left(Y_1,\sum_{k=2}^K \alpha_k Y_k \right),\\
+    \mathbb{V}\left(A^{\text{MF}}\right) &= \mathbb{V}\left(Y_1\right) + \mathbb{V}\left(\sum_{k=2}^K \alpha_kY_k\right)+2\;\text{Cov}\left(Y_1,\sum_{k=2}^K \alpha_k Y_k \right),\\
     \nonumber
     &=\mathbb{V}\left(Y_1\right) + \sum_{k=2}^K \alpha_k^2 \mathbb{V}\left(Y_k\right)+2\sum_{2\le k<j\le K} \alpha_k\alpha_j\; \text{Cov}(Y_k,Y_j) +2\sum_{k=2}^K \alpha_k\;\text{Cov}\left(Y_1, Y_k\right),\\
-    \nonumber
-    &=\mathbb{V}\left(Y_1\right) + \sum_{k=2}^K \alpha_k^2 \mathbb{V}\left(Y_k\right) +2\sum_{k=2}^K \alpha_k\;\text{Cov}\left(Y_1, Y_k\right),\\
+    % \nonumber
+    % &=\mathbb{V}\left(Y_1\right) + \sum_{k=2}^K \alpha_k^2 \mathbb{V}\left(Y_k\right) +2\sum_{k=2}^K \alpha_k\;\text{Cov}\left(Y_1, Y_k\right),\\
     \label{eq:MFMC_variance}
-    &=\frac{\sigma_1^2}{N_1} + \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\left(\alpha_k^2\sigma_k^2 - 2\alpha_k\rho_{1,k}\sigma_1\sigma_k\right),
+    &=\frac{\sigma_1^2}{N_1} + \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\left(\alpha_k^2\sigma_k^2 - 2\alpha_k\rho_{1,k}\sigma_1\sigma_k\right).
 \end{align}
-where we use the fact that $Y_k$ and $Y_j$ are independent with each other for $k\ge 2$ and \cite[Lemma~3.2]{PeWiGu:2016}
+
+
+The nMSE error to approximate \eqref{eq:QoI} for the multi-fidelity Monte Carlo estimator is
 \[
-\text{Cov}(Y_1,Y_k) = \text{Cov}\left(A^{\text{MC}}_{1,N_1},A^{\text{MC}}_{k,N_k}\right) - \text{Cov}\left(A^{\text{MC}}_{1,N_1},A^{\text{MC}}_{k,N_{k-1}}\right) = - \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\rho_{1,k}\sigma_1\sigma_k.
+\mathcal{E}_{A^{\text{MF}}}^2= \frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(A^{\text{MF}}) \right\Vert_{Z}^2+\mathbb E\left[\left\Vert\mathbb{E}(A^{\text{MF}})-A^{\text{MF}} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2} =\frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(A^{\text{MF}}) \right\Vert_{Z}^2}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}+ \frac{\mathbb{V}\left(A^{\text{MF}}\right)}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}=\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2,
 \]
-The nMSE error for the multifidelity Monte Carlo estimator is
+The total sampling cost for the MFMC estimator is 
 \[
-\mathcal{E}_{A^{\text{MFMC}}}^2=\frac{\mathbb E\left[\left\Vert\mathbb{E}(f_1)-A^{\text{MFMC}} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2} = \frac{\left\Vert\mathbb{E}(f_1)-\mathbb{E}(A^{\text{MFMC}}) \right\Vert_{Z}^2+\mathbb E\left[\left\Vert\mathbb{E}(A^{\text{MFMC}})-A^{\text{MFMC}} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2} = \frac{\mathbb{V}\left(A^{\text{MFMC}}\right)}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}.
+\mathcal{W}^{\text{MF}} = \sum_{k=1}^K C_kN_k.
 \]
-Unlike multilevel Monte Carlo, the normalize mean square error splitting has a bias term representing the discretization error, for multifidelity Monte Carlo, the bias term reflects the difference between $f_1$ and multifidelity models. Since the multifidelity Monte Carlo estimator is unbiased, so the nMSE only reflects the statistical error. The total sampling cost for MFMC estimator is 
-\[
-\sum_{k=1}^K C_kN_k.
-\]
-Our next goal is to determine the sample size $N_k$ such that the MFMC estimation satisfy the accuracy threshold $\mathcal{E}_{A^{\text{MFMC}}}^2= \epsilon^2$. We formulate an following optimization problem to minimize the sampling cost subject to a bounded variance of MFMC estimator, and solve for sample size $N_k\in \mathbb{R}$ for $k=1\dots, K$ and $\alpha_k\in \mathbb{R}$ for $k=2\dots, K$ as
+Our next goal is to determine the sample sizes $N_k$ and weights $\alpha_k$ such that the MFMC estimator satisfies a user-specified accuracy requirement, $\mathcal{E}_{A^{\text{MFMC}}}^2= \epsilon^2$. Towards this goal, we formulate a constrained optimization problem aimed at minimize the total sampling cost while ensuring that the variance of the MFMC estimator remains within the target threshold. Additionally, the constraints enforce the ordering of sample sizes $N_{k-1}\le N_k$ for $k=2,\ldots, K$, and that all sample sizes are non-negative. The resulting optimization problem is formulated as
 \begin{equation}\label{eq:Optimization_pb_sample_size}
     \begin{array}{lll}
     \displaystyle\min_{N_1,\ldots N_K\in \mathbb{R}, \alpha_2,\ldots,\alpha_K\in \mathbb{R}} &\sum_{k=1}^K C_kN_k,\\
-       \text{s.t.} &\mathbb{V}\left(A^{\text{MFMC}}\right)- \left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2 = 0,\\
+       \text{s.t.} &\mathbb{V}\left(A^{\text{MF}}\right)- \left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2 = 0,\\
         &\displaystyle N_{k-1}-N_k\le 0, &k=2\ldots,K,\\
         &\displaystyle -N_1\le 0. \\%[6pt]
     \end{array}
 \end{equation}
 
+
+Theorem \ref{thm:Sample_size_est} gives the solution to \eqref{eq:Optimization_pb_sample_size}.
 \begin{theorem}
 \label{thm:Sample_size_est}
 Let $f_k$ be $K$ models that satisfy the following conditions
@@ -169,12 +199,14 @@ Let $f_k$ be $K$ models that satisfy the following conditions
     &(ii)\;\; \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2},\;\;k=2,\ldots,K.
 \end{alignat*}
 %
-Then the global minimizer to \eqref{eq:Optimization_pb_sample_size} is 
-\begin{align*}
-    &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k}, \quad k=2\ldots, K,\\
-    &N_k^*=\frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sqrt{\frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{C_k}}\sum_{j=1}^K\left(\sqrt{\frac{C_j}{\rho_{1,j}^2 - \rho_{1,j+1}^2}} - \sqrt{\frac{C_{j-1}}{\rho_{1,{j-1}}^2 - \rho_{1,j}^2}}\right)\rho_{1,j}^2, \quad k=1\ldots, K,
-\end{align*}
-with $\rho_{1,0}=\infty$ and $\rho_{1,K+1}=0$.
+Then for $k=1\ldots, K$, the global minimizer to \eqref{eq:Optimization_pb_sample_size} is 
+\begin{align}
+    \label{eq:MFMC_coefficients}
+    &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k},\\
+    \label{eq:MFMC_SampleSize}
+    &N_k^*=\frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}\sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2-\rho_{1,j+1}^2\right)}, \quad \rho_{1,K+1}=0.
+\end{align}
+
 
 \end{theorem}
 \begin{proof}
@@ -190,13 +222,13 @@ and its partial derivatives with respect to $\alpha_k,N_k$
 We can see that $\alpha_k^*=(\rho_{1,k}\sigma_1)/\sigma_k$ satisfy $\partial L/\partial \alpha_k=0$. Substitute $\alpha_k^*$ into $\partial L/\partial N_k=0$, we have
 
 \begin{equation*}
-    C_1=\frac{\lambda_0\sigma_1^2}{N_1^2}\left(1-\rho_{1,2}^2\right)+\lambda_1-\lambda_2,\quad C_k=\frac{\lambda_0\sigma_1^2}{N_k^2}\left(\rho_{1,k}^2-\rho_{1,k+1}^2\right)+\lambda_k-\lambda_{k+1},\quad C_K=\frac{\lambda_0\sigma_1^2}{N_K^2}\rho_{1,K}^2+\lambda_K.
+    C_k=\frac{\lambda_0\sigma_1^2}{N_k^2}\left(\rho_{1,k}^2-\rho_{1,k+1}^2\right)+\lambda_k-\lambda_{k+1},\quad \text{for} \quad k=1,\ldots,K-1,\quad C_K=\frac{\lambda_0\sigma_1^2}{N_K^2}\rho_{1,K}^2+\lambda_K.
 \end{equation*}
 
 Karush-Kuhn-Tucker (KKT) conditions
 \begin{align*}
 \frac{\partial L}{\partial \alpha_j}=0,\quad \frac{\partial L}{\partial N_k}&=0,\quad j=2\ldots,K, \quad k=1\ldots,K,\\
-\mathbb{V}\left(A^{\text{MFMC}}\right)- \left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2 &= 0,\\
+\mathbb{V}\left(A^{\text{MF}}\right)- \left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2 &= 0,\\
     N_{k-1}-N_k&\le 0, \quad k=2\ldots,K,\\
     -N_1&\le 0,\\[6pt]
     \lambda_1,\ldots,\lambda_K &\ge 0,\\
@@ -204,58 +236,139 @@ Karush-Kuhn-Tucker (KKT) conditions
     \lambda_1 N_1&=0.
 \end{align*}
 
-
-If the inequality constraints are inactive ($\lambda_k$=0, $k=1,\dots, K$) in the complementary slackness condition, then 
-\[
-N_1 = \sigma_1\sqrt{\lambda_0}\sqrt{\frac{1-\rho_{1,2}^2}{C_1}}, \quad N_k = \sigma_1\sqrt{\lambda_0}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}, \quad N_K = \sigma_1\sqrt{\lambda_0}\sqrt{\frac{\rho_{1,K}^2}{C_K}},
-\]
-or we can simplify the notation as
-\[
-N_k = \sigma_1\sqrt{\lambda_0}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}},\quad  \frac{1}{N_k} = \frac{1}{\sigma_1\sqrt{\lambda_0}}\sqrt{\frac{C_k}{\rho_{1,k}^2-\rho_{1,k+1}^2}}, \quad k=0,\ldots,K.
-\]
-with $\rho_{1,0}=\infty, \rho_{1,K+1}=0$.
-
-
-substitute $\frac{1}{N_k}$ for $k=1,\ldots, K$ into \eqref{eq:MFMC_variance}
-\begin{align*}
-    \mathbb{V}\left(A^{\text{MFMC}}\right)&=\frac{\sigma_1^2}{N_1} + \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\left(\alpha_k^2\sigma_k^2 - 2\alpha_k\rho_{1,k}\sigma_1\sigma_k\right)\\
-    &=\frac{\sigma_1^2}{N_1} - \sigma_1^2\sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\rho_{1,k}^2 = \sigma_1^2\left(\frac{\rho_{1,1}^2}{N_1} +\sum_{k=2}^K \left( \frac{1}{N_k} - \frac{1}{N_{k-1}}\right)\rho_{1,k}^2\right)\\
-    &= \sigma_1^2\sum_{k=1}^K \left( \frac{1}{N_k} - \frac{1}{N_{k-1}}\right)\rho_{1,k}^2, \text{with } N_0=0\\
-    &=\frac{\sigma_1}{\sqrt{\lambda_0}}\sum_{k=1}^{K} \left(\sqrt{\frac{C_k}{\rho_{1,k}^2-\rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,k-1}^2-\rho_{1,k}^2}}\right)\rho_{1,k}^2 =\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2\\
-\end{align*}
-solve for $\sqrt{\lambda_0}$, we have 
-\[
-\sqrt{\lambda_0} = \frac{\sigma_1}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^{K} \left(\sqrt{\frac{C_k}{\rho_{1,k}^2-\rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,k-1}^2-\rho_{1,k}^2}}\right)\rho_{1,k}^2,
-\]
-Substitute $\sqrt{\lambda_0}$ into $N_k$ for $k=1\ldots,K$,
-\[
-N_k = \sigma_1\sqrt{\lambda_0}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}= \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}\sum_{j=1}^{K} \left(\sqrt{\frac{C_j}{\rho_{1,j}^2-\rho_{1,j+1}^2}} - \sqrt{\frac{C_{j-1}}{\rho_{1,j-1}^2-\rho_{1,j}^2}}\right)\rho_{1,j}^2.
-\]
-Note that by requiring condition $(ii)$, we can guarantee that $N_k$ is strictly increasing as $k$ increase. 
-
-Next we want to show this local minimizer is global.
-
-% First consider the case when $N_1=\ldots=N_K$, then $N_k=\sigma_1^2/(\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2)$, $J = \sigma_1^2/(\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2) \sum_{k=1}^K C_k$
-
-
-% Consider another local minimum $\alpha_k^+$ and $N_k^+$ of \eqref{eq:Optimization_pb} such that $N_{k-1}^+ = N_{k}^+$ for some $k\ge 2$. Let index $j_i$ be the first entry followed by equality sign for $N_{k}$, 
+ Reference \cite{PeWiGu:2016} has shown that the global minimizer is achieved with the constraints enforce the ordering of sample sizes $N_{k-1}< N_k$ for $k=2,\ldots, K$, 
+this indicates that the inequality constraints are inactive ($\lambda_k$=0, $k=1,\dots, K$) in the complementary slackness condition and
 % \[
-% N_{k_i}
+% N_1 = \sigma_1\sqrt{\lambda_0}\sqrt{\frac{1-\rho_{1,2}^2}{C_1}}, \quad N_k = \sigma_1\sqrt{\lambda_0}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}, \quad N_K = \sigma_1\sqrt{\lambda_0}\sqrt{\frac{\rho_{1,K}^2}{C_K}},
 % \]
-\end{proof}
-Consider the  sample size estimation in Theorem \ref{thm:Sample_size_est} found from optimization problem \ref{eq:Optimization_pb_sample_size}. In reality, the sample size estimation should be integer. We will use the ceiling of $N_k$ as the sample size estimation. Note that 
+% or we can simplify the notation as
+\begin{equation}
+\label{eq:sample_size_1}
+    N_k = \sigma_1\sqrt{\lambda_0}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}},\quad \text{with}\quad  \rho_{1,K+1}=0 \quad k=1,\ldots,K.
+\end{equation}
+% \frac{1}{N_k} = \frac{1}{\sigma_1\sqrt{\lambda_0}}\sqrt{\frac{C_k}{\rho_{1,k}^2-\rho_{1,k+1}^2}},
+Therefore, the variance of multifidelity Monte Carlo estimator \eqref{eq:MFMC_variance} becomes
+\begin{align}
+\nonumber
+    \mathbb{V}\left(A^{\text{MF}}\right)&=\frac{\sigma_1^2}{N_1} + \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\left(\alpha_k^2\sigma_k^2 - 2\alpha_k\rho_{1,k}\sigma_1\sigma_k\right),\\
+    \label{eq:MFMC_variance2}
+    &=\sigma_1^2\sum_{k=1}^{K} \frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{N_k} = \frac{\sigma_1}{\sqrt{\lambda_0}}\sum_{k=1}^K\sqrt{C_k\left(\rho_{1,k}^2-\rho_{1,k+1}^2\right)},\quad \text{with}\;\;\rho_{K+1}=0.
+\end{align}
+If the normalized mean square error achieves a given tolerance $\epsilon^2$, we can solve for $\sqrt{\lambda_0}$ as
 \[
-\sum_{k=1}^K C_kN_k\le \sum_{k=1}^K C_k \left\lceil N_k\right\rceil<\sum_{k=1}^K C_kN_k + \sum_{k=1}^K C_k,
+\sqrt{\lambda_0} = \frac{\sigma_1}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{C_k\left(\rho_{1,k}^2-\rho_{1,k+1}^2\right)},
 \]
-where the term $\sum_{k=1}^K C_k$ results from the fact that $N_k\le \left\lceil N_k\right\rceil< N_k+1$. In the asymptotic regime when $N_k$ is large, we should expect the impact of $\sum_{k=1}^K C_k$ is negligible compared to $\sum_{k=1}^K C_kN_k$ and thus the sampling cost behaves as \eqref{eq:MFMC_sampling_cost}. This indicates that 
-\begin{equation}\label{eq:Asymptotic_cost_constraint}
-    \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2\ge \sum_{k=1}^K C_k.
+substitute $\sqrt{\lambda_0}$ into \eqref{eq:sample_size_1} so the sample size estimation $N_k$ can be estimated as
+\[
+N_k = \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}\sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2-\rho_{1,j+1}^2\right)}.
+\]
+Note that by requiring condition $(ii)$, we can guarantee that $N_k$ is strictly increasing as $k$ increases. 
+\end{proof}
+
+Using sample size $N_k\in \mathbb{R}$ derived in Theorem \eqref{eq:Optimization_pb_sample_size}, the total sampling cost becomes
+\begin{equation}\label{eq:MFMC_sampling_cost}
+    \mathcal{W}^\text{MF} = \sum_{k=1}^K C_k N_k = \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\left(\sum_{k=1}^K\sqrt{C_k\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)}\right)^2.
 \end{equation}
 
-Using the optimal sample estimation $\left\lceil N_k\right\rceil$, we obtain the total sampling cost of multifidelity estimator (value of the objective function) as
-\begin{equation}\label{eq:MFMC_sampling_cost}
-    \mathcal{W}_\text{MFMC} = \sum_{k=1}^K C_k \left\lceil N_k\right\rceil = \sum_{k=1}^K C_k N_k = \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2.
+In reality, the correlation parameters and cost in  the sample size estimation \eqref{eq:MFMC_SampleSize} are unknown and we will approximate these quantities by the sample estimates. Moreover, the sample sizes should be round to integers. We will use the ceiling of $N_k$, denoted as $\left\lceil N_k \right\rceil$, as the sample size estimation. This leads to
+\begin{equation}\label{eq:sampling_cost_bound}
+    \sum_{k=1}^K C_kN_k\le \sum_{k=1}^K C_k \left\lceil N_k\right\rceil<\sum_{k=1}^K C_kN_k + \sum_{k=1}^K C_k,
 \end{equation}
+where the term $\sum_{k=1}^K C_k$ results from the fact that $N_k\le \left\lceil N_k\right\rceil< N_k+1$. Let $B_k = C_k\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right), k=1,\dots, K$. In general, the behavior of $B_k$ depends on the product of $C_k$ and $\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)$. $B_k$ can decay, grow and stay the same as $k$ increases. The total sampling cost \eqref{eq:MFMC_sampling_cost} can be rewritten as 
+%
+\begin{equation*}\label{eq:MFMC_sampling_cost_2}
+    \mathcal{W}^{\text{MF}} = \sum_{k=1}^K C_k N_k = \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\left(\sum_{k=1}^K\sqrt{B_k} \right)^2.
+\end{equation*}
+%
+Then condition (ii) indicates that
+\begin{equation}
+    \frac{\sqrt{B_{k}}}{\sqrt{B_{k-1}}}>\frac{C_{k}}{C_{k-1}}, \quad k=2,\ldots,K.
+\end{equation}
+In the asymptotic regime when $K$ is large, the behavior of $\sqrt{B_k}$ can decay, grow, or stay the same. If $\sqrt{B_k}$ decays as $k$ increases, the decay of $\sqrt{B_k}$ is slower than the decay of $C_k$. This indicates that in all scenarios, as $k$ grows, we should expect the impact of $\sum_{k=1}^K C_k$  in \eqref{eq:sampling_cost_bound} is negligible  as $\sum_{k=1}^K C_kN_k$. As a result, the sampling cost using the integer sample size should behave like \eqref{eq:MFMC_sampling_cost}. Thus, using the optimal sample estimation $\left\lceil N_k\right\rceil$, we obtain the total sampling cost of multifidelity estimator (value of the objective function) as
+\begin{equation}\label{eq:MFMC_sampling_cost_efficiency}
+    \mathcal{W}^\text{MF} = \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\left(\sum_{k=1}^K\sqrt{C_k\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)}\right)^2.
+\end{equation}
+
+% Moreover, the inequality \eqref{eq:Theorem_cond_ii} also indicates that
+% \[
+% 0<\frac{C_L}{\sqrt{B_L}}\le \frac{C_k}{\sqrt{B_k}}<\frac{C_{k-1}}{\sqrt{B_{k-1}}}\le\frac{C_1}{\sqrt{B_1}},\quad k=2,\dots, L
+% \]
+% Therefore, the sequence $\frac{C_k}{\sqrt{B_k}} - \frac{C_{k-1}}{\sqrt{B_{k-1}}}\in (\frac{C_L}{\sqrt{B_L}} - \frac{C_{1}}{\sqrt{B_{1}}},0)$  is bounded. 
+
+% Note that
+% \[
+% H_1:=\sum_{k=1}^L\sqrt{B_k}, \quad \sqrt{\frac{1-\rho_{1,2}^2}{C_1}}\sum_{k=1}^L C_k\le \sum_{k=1}^L\sqrt{B_k}\le \sqrt{\frac{\rho_{1,L}^2}{C_L}}\sum_{k=1}^L C_k, \quad H_1\uparrow \sqrt{\frac{\rho_{1,L}^2}{C_L}}\sum_{k=1}^L C_k \;\;\text{as}\;\; L\rightarrow \infty
+% \]
+% \[
+% H_2:=\sum_{j=1}^L\left(\frac{C_j}{\sqrt{B_j}} - \frac{C_{j-1}}{\sqrt{B_{j-1}}}\right)\rho_{1,j}^2, \quad  0<H_2\le \sqrt{\frac{C_1}{1-\rho_{1,2}^2}}, \quad H_2\downarrow 0 \;\;\text{as}\;\; L\rightarrow \infty.
+% \]
+
+
+Our surrogate functions are built via stochastic collocation approach with the same sparse grid nodes on a family of spatial meshes $\{\mathcal{T}_k\}$ of decreasing resolution, with a decreasing number of grid nodes $\{M_k,\}_{0\le k \le K}$ that, we will assume, satisfy
+%
+\begin{equation}
+\label{eq:MeshGrowth}
+M_k = s M_{k-1} \qquad \text{ for } s>1.
+\end{equation}
+%
+We will also assume that the sample-wise discretization error is bounded as
+
+\vspace{.1cm}
+\begin{subequations}
+\label{eq:Assumption_uh}
+% \noindent\begin{minipage}{.5\linewidth}
+\begin{equation} \label{eq:Assumption_uhA}
+\|u(\boldsymbol\omega^{(i)})-u_h(\boldsymbol\omega^{(i)})\|_Z\leq c_m(\boldsymbol\omega^{(i)})M^{-\alpha}\,,
+\end{equation}
+% \end{minipage}%
+\end{subequations}
+where $\alpha$ is the order of the sample-wise discretization error; the constants $c_m(\boldsymbol\omega^{(i)})$ depends only on the problem geometry and the particular realization $\boldsymbol\omega^{(i)}$. We remark that in what follows, when describing the different approaches to surrogate-building, the associated values of the constants $c_m$ and $\alpha$ may vary from section to section.
+
+
+To ensure that the discretization error falls below $\theta\epsilon$, we estimate the number of points on the finest grid $M_K$ and the required spatial grid level $K$ as 
+%
+\begin{equation}
+    \label{eq:SLSGC_MLS_SpatialGridsNo}
+    M_K = M_1s^{-K} \ge \left(\frac{\theta\epsilon}{c_m}\right)^{-\frac 1 {\alpha}} \qquad \text{ and } \qquad     K = \left\lceil \frac{1}{\alpha}\log_s \left(\frac{c_m M_1^\alpha}{\theta\epsilon}\right) \right\rceil,
+\end{equation}
+%
+where $\left\lceil\cdot\right\rceil$ denotes the ceiling function.
+
+
+\begin{theorem}
+\label{thm:Sample_cost_est}
+Let $f_k$ be $K$ models that satisfy the following conditions
+Suppose there exist positive constants $\alpha, \beta, \gamma$ such that
+%
+\begin{alignat*}{8}
+    &(i)\;\; |\rho_{1,1}|>\ldots>|\rho_{1,K}|,& \qquad \qquad
+    &(ii)\;\; \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2},\;\;k=2,\ldots,K, \quad \rho_{1,K+1}=0,\\
+    &(iii)\;\; \left\Vert\mathbb{E}\left(u-u_k\right)\right\Vert_Z=\mathcal{O}\left( M_k^{-\alpha}\right),& \qquad \qquad
+    &(iv)\;\; C_k=\mathcal{O}\left( M_k^{-\gamma}\right),\\
+    &(v)\;\; \rho_{1,k-1}^2-\rho_{1,k}^2=\mathcal{O}\left( M_k^{\beta}\right).
+\end{alignat*}
+%
+%
+Then for $0<\epsilon$ there exist spatial grid level $K$ and sample size $N_\ell$ for which the multi-fidelity estimator $A^{\text{MF}}$ satisfies
+\[
+\left\Vert\mathbb{E}(u)-A^{\text{MF}} \right\Vert_{L^2(\boldsymbol W,Z)}<\epsilon\,\left\Vert\mathbb{E}(u) \right\Vert_{L^2( \boldsymbol W,Z)},
+\]
+with total sampling work bounded as
+\begin{equation*}
+    \mathcal{W}^{\text{MF}} \simeq 
+%     \left\{\begin{array}{ll}
+% \epsilon^{-2-\frac{\delta}{\nu}}, & \beta_1>1,\\
+% \epsilon^{-2-\frac{\delta}{\nu}}\left\vert \log \epsilon \right\vert^2, & \beta_1 = 1,\\
+% \epsilon^{-2-\frac{\delta}{\nu}-\frac{1 - \beta_1}{\alpha}}, & \beta_1<1.
+% \end{array}
+% \right.
+\end{equation*}
+\end{theorem}
+\begin{proof}\label{eq:Sample_cost_est}
+\end{proof}
+
+
+
 
 
 
@@ -263,65 +376,257 @@ Using the optimal sample estimation $\left\lceil N_k\right\rceil$, we obtain the
 
 The total sampling cost efficiency of the multifidelity Monte Carlo (MFMC) estimator relative to the standard Monte Carlo (MC) estimator is
 \[
-\JLcolor{\gamma = \frac{\mathcal{W}_\text{MFMC}}{\mathcal{W}_\text{MC}} = \frac{1}{C_1} \sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2.}
+\mu = \frac{\mathcal{W}_\text{MFMC}}{\mathcal{W}_\text{MC}} = \frac{1}{C_1} \left(\sum_{k=1}^K\sqrt{C_k\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)}\right)^2
 \]
-Further more, we observe that
-\begin{align*}
-    \mathcal{W}_\text{MC}\mathbb{V}\left(A^{\text{MC}}\right) &=\frac{C_1\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2},\\
- \mathcal{W}_\text{MFMC}\mathbb{V}\left(A^{\text{MFMC}}\right) &=  \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2.
-\end{align*}
-This implies that if both Monte Carlo and multifidelity Monte Carlo have  a same sampling cost, then $\gamma=  \mathbb{V}\left(A^{\text{MFMC}}\right)/\mathbb{V}\left(A^{\text{MC}}\right)$. Therefore, this ratio also quantifies the variance reduction achieved by the MFMC estimator. The quantity of gamma is determined by the cost per sample for various models and the correlation parameters. The smaller the value of $\gamma$, the more effective the MFMC estimator.
+% Further more, we observe that
+% \begin{align*}
+%     \mathcal{W}_\text{MC}\mathbb{V}\left(A^{\text{MC}}\right) &=\frac{C_1\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2},\\
+%  \mathcal{W}_\text{MFMC}\mathbb{V}\left(A^{\text{MFMC}}\right) &=  \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2.
+% \end{align*}
+% This implies that if both Monte Carlo and multifidelity Monte Carlo have  a same sampling cost, then $\mu=  \mathbb{V}\left(A^{\text{MFMC}}\right)/\mathbb{V}\left(A^{\text{MC}}\right)$. Therefore, 
+This ratio also quantifies the variance reduction achieved by the MFMC estimator given the same computational budget. The quantity of gamma is determined by the cost per sample for various models and the correlation parameters. The smaller the value of $\gamma$, the more effective the MFMC estimator.
 
 
 
 \subsection{Model selection}
-In order to maximize the capability of multifidelity Monte Carlo estimator  compared to the Monte Carlo estimator, we need to select the models from the available set such that the ratio $\gamma$ is as small as possible. Let $S=\{1, \ldots, K\}$ be the indices of $K$ available models. We seek a subset $S_1=\{i_1,i_2, \ldots,i_{K_1}\}\subseteq S (K_1\le K)$ of indices that minimizes the sampling cost of multifidelity Monte Carlo estimator. This lead to the following optimization problem to determine the index set $S_1$ for the selected models.
+In order to maximize the capability of multifidelity Monte Carlo estimator  compared to the Monte Carlo estimator, we need to select the models from the available set such that the ratio $\gamma$ is as small as possible. Let $S=\{1, \ldots, K\}$ be the indices of $K$ available models. We seek a subset $S_1=\{i_1,i_2, \ldots,i_{K^*}\}\subseteq S (K^*\le K)$ of indices that minimizes the sampling cost of multifidelity Monte Carlo estimator. Note that $S_1$ is non-empty and $i_1=1$ since the high fidelity model must be included. This lead to the following optimization problem to determine the index set $S_1$ for the selected models. We will follow the exhaustive algorithm in \cite[Algorithm~1]{PeWiGu:2016} for $2^{K-1}$ subsets of $S$ but with the target to minimize the sampling cost $\mathcal{W}_\text{MFMC}$. This algorithm gives the optimal $K^*$ that satisfies \eqref{eq:Optimal_K}.
 
-\begin{equation}\label{eq:Optimization_pb_model_selection}
+\begin{equation*}\label{eq:Optimization_pb_model_selection}
     \begin{array}{lll}
-    \displaystyle\min_{S_1} &\displaystyle \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k\in S_1}\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k\in S_1}\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2,\\
+    \displaystyle\min_{k\in S} &\displaystyle \mathcal{W}^\text{MF},\\
        \text{s.t.} &\displaystyle |\rho_{1,1}|>\ldots>|\rho_{1,K}|,\\
-       &\displaystyle \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2}, \quad k=2,\ldots,K,\\
-       &\JLcolor{\displaystyle \frac{\sum_{k\in S_1}\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}}{\sum_{k\in S_1} C_k}\sum_{k\in S_1}\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2\ge \frac{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}{\sigma_1^2},}\\
-        &\displaystyle \rho_{1,0}=\infty \;\text{ and } \;\rho_{1,K+1}=0. \\%[6pt]
+       &\displaystyle \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2}, \quad k=2,\ldots,K, \quad \rho_{1,K+1}=0,\\
+       % &\JLcolor{\displaystyle \frac{\sum_{k\in S_1}\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}}{\sum_{k\in S_1} C_k}\sum_{k\in S_1}\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2\ge \frac{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}{\sigma_1^2},}\\
+       % &\JLcolor{\displaystyle \log_s\left\{\frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2\right\}\ge \gamma,}\\
+        % &\displaystyle \rho_{1,0}=\infty \;\text{ and } \;\rho_{1,K+1}=0. \\%[6pt]
     \end{array}
-\end{equation}
-
-Note that $S_1$ is non-empty and $i_1=1$ since the high fidility model must be included.
+\end{equation*}
 
 
-
-% \begin{theorem}
-% \label{thm:Sampling_cost_est}
-% Let $f_k$ be $K$ models that satisfy the following conditions
-% %
-% \begin{alignat*}{8}
-%     &(i)\;\; |\rho_{1,1}|>\ldots>|\rho_{1,K}|& \qquad \qquad
-%     &(ii)\;\; \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2},\;\;k=2,\ldots,K.
-% \end{alignat*}
-% %
-% Suppose there exists $0<s<q<1$ such that 
-% $C_k = c_s s^{k}$, $\rho_{1,k}^2 = q^{ k-1}$, then 
-% \begin{equation*}
-%     \mathcal{W}_\text{MFMC} = 
-% \end{equation*}
-
-% \end{theorem}
-% \begin{proof}
-% Since $q>s$, condition (ii) is satisfied.
-% \begin{align*}
-% \rho_{1,k}^2 - \rho_{1,k+1}^2&=q^k\left(\frac1 q-1\right),\quad \rho_{1,k-1}^2 - \rho_{1,k}^2=q^k\frac 1 q\left(\frac1 q-1\right)\\
-%     \mathcal{W}_\text{MFMC} &= \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2,\\
-%     &=\frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2} \sum_{k=1}^K\sqrt{q^{k}s^{ k}}\left(\sqrt{\frac{s(1-q)}{1-\rho_{1,2}^2}} + \sum_{k=2}^K\left(\sqrt{\frac{s^{k}}{q^{ k}}} - \sqrt{\frac{q s^{ k}}{s q^{ k}}}\right)q^{k} + \left(\sqrt{\frac{s^{ K}(1-q)}{q^{K}}}-\sqrt{\frac{q s^{ K}}{s q^{K}}}\right)q^{K}\right)\\
-%     &\propto \frac{1}{\epsilon^2} \sum_{k=1}^K\left(q^{\frac{1}{2}}s^{\frac{1}{2}}\right)^k
-% \end{align*}
+\normalem
+\begin{algorithm}[!ht]
+\label{algo:MFMC_Algo_model_selection}
+\DontPrintSemicolon    
+   \KwIn{$K$ models $f_k$, initial sample size 
+    $ N_0$.}\vspace{1ex}
     
-% \end{proof}
+    \KwOut{Number of models $K^*$ in  $\mathcal{S}^*$, model $f_i$ in $\mathcal{S}^*$, coefficients $\rho_i$, $\alpha_i$ and $C_i$ for each model $f_i$.}\vspace{1ex}
+    \hrule \vspace{1ex}
+
+   Estimate $\rho_{1,k}$ and $C_k$ for each model $f_k$ using $N_0$ samples.
+   
+   
+   Sort $f_k$ by decreasing $\rho_{1,k}$ to create $\mathcal{S}=\{f_k\}_{k=1}^K$. 
+   
+   Initialize $w^*=C_1$, $\mathcal{S}^*=\{f_1\}$. Let $ \mathcal{\widehat S}$ be all $2^{K-1}$ ordered subsets of $\mathcal{S}$, each containing $f_1$. 
+   % Set $ \mathcal{\widehat S}_1=\mathcal{S}^*$.
+
+    % $(2 \le j \le 2^{K-1})$
+    \For{each subset $\mathcal{\widehat S}_j$\,}{
+
+    {
+    \If{ condition $(ii)$ from Theorem \ref{thm:Sample_size_est} is satisfied}{
+    Compute the objective function value $w$ using \eqref{eq:Optimal_K}.
+    
+    \If{$w<w^*$}{
+    {
+    Update $\mathcal{S}^* = \mathcal{\widehat S}_j$ and $w^* = w$.
+    }
+    } 
+    }
+    }
+    $j=j+1$.
+    }
+    Compute $\alpha_i$ for $\mathcal{S}^*$, $i=2,\dots, K^*$ by \eqref{eq:MFMC_coefficients}.
+\caption{Multi-fidelity Model Selection}
+\end{algorithm}
+\ULforem
+
+\normalem
+\begin{algorithm}[!ht]
+\label{algo:MFMC_Algo}
+\DontPrintSemicolon
+
+    
+   \KwIn{Models $f_k$ in $\mathcal{S}^*$, parameters $\rho_k$, $\alpha_k$ and $C_k$ for each $f_k$ in $\mathcal{S}^*$,  tolerance $\epsilon$. }\vspace{1ex}
+    
+    \KwOut{Sample sizes $N_k$ for $K^*$ models, expectation 
+    estimate $A^{\text{MFMC}}$.}\vspace{1ex}
+    \hrule \vspace{1ex}
+    
+
+    Compute the sample size $N_k$ for $1\leq k\leq K^*$ by \eqref{eq:MFMC_SampleSize}.
+
+    Evaluate $f_1$ to obtain $f_1(\boldsymbol{\omega}^i)$ for $i = 1,\ldots,N_1$ and compute $A_{1,N_1}^{\text{MC}}$ by \eqref{eq:MC_estimator}. Store $N_1$ samples.
+    
+    \For{$k = 2,\ldots,K^* $\,}{
+
+    Evaluate $f_k$ to obtain $f_k(\boldsymbol{\omega}^i)$ for $i = 1,\ldots,N_{k-1}$ and compute $A_{k,N_{k-1}}^{\text{MC}}$ by \eqref{eq:MC_estimator}.
+
+    Evaluate $f_k$ to obtain $f_k(\boldsymbol{\omega}^i)$ for $i = 1,\ldots,N_k-N_{k-1}$ and compute $A_{k,N_k\backslash N_{k-1}}^{\text{MC}}$ by \eqref{eq:MC_estimator}.
+
+    Store $N_{k-1}$ and $N_{k}-N_{k-1}$ samples as $N_k$ samples.
+    }
+
+    Compute $A^{\text{MF}}$ by \eqref{eq:MFMC_estimator_independent}.
+    
+\caption{Multifidelity Monte Carlo}
+\end{algorithm}
+\ULforem
+
+
+
+
+
+% In general we can consider an estimator 
+% \begin{equation}\label{eq:Estimator_A}
+%     A = A^{\text{MC}}_{1,N_1}+\sum_{k=2}^L \rho_k\left(\left(\frac{\beta  N_{k-1}}{N_k}-\beta \right)A^{\text{MC}}_{k,\beta N_{k-1}}+\frac{N_k-\beta N_{k-1}}{N_k}A^{\text{MC}}_{k,N_k\backslash \beta N_{k-1}}+(\beta-1)A^{\text{MC}}_{k,N_{k-1}\backslash\beta N_{k-1}}\right),
+% \end{equation}
+% where $\beta$ represents the percentage of samples such that $A^{\text{MC}}_{k,N_{k-1}}$ reuses the first $\beta N_{k-1}$ samples of $A^{\text{MC}}_{k,N_{k}}$; $\rho_k$ is the weighted parameter for the correction terms. Let $Y_k$ denotes the term in the bracket of estimator $A$. Then $\mathbb{E}(Y_k) = 0$ and $\mathbb{V}(Y_k) = \sigma_k^2((1-2\beta)/N_k+1/N_{k-1})$. If $\beta=0, \rho_k=1$, namely no recycled samples, $A$ denotes the multilevel Monte Carlo estimator; if $\beta=1$, namely recycle all available samples, then $A$ denotes the multi-fidelity Monte Carlo estimator.
 
 % ========================================
-% \section{Numerical experiments}\label{sec:Num-Exp}
+\section{Numerical experiments}\label{sec:Num-Exp}
 % ========================================
+%
+\begin{table}[ht]
+\centering
+\scalebox{0.8}{
+\begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\cline{1-7}	
+\multicolumn{1}{|c|}{Dof} &$1934365$&$484080$&$120697$&$30449$&$8019$&$2685$\\
+\hline
+\multicolumn{1}{|c|}{Model $k$} &$f_1$&$f_2$&$f_3$&$f_4$&$f_5$&$f_6$\\
+\hline
+\multicolumn{1}{|c|}{$C_k$ direct solve}&1.2029e+02&2.6478e+01&5.3710e+00&1.1269e+00&2.9300e-01&9.6419e-02\\
+\hline
+\multicolumn{1}{|c|}{$C_k$ surrog evaluation(24 nodes)}&1.2595e-01&2.9694e-02&9.1085e-03&3.0580e-03&1.1869e-03&2.5127e-04\\
+\hline
+% \multicolumn{1}{|c|}{$\rho_{1,k}$ (24 nodes), ref l=3}&&&0.9709&0.9702&0.9696&0.948\\
+% \hline
+% \multicolumn{1}{|c|}{$\alpha_1 = 1.4026e-04, \alpha_{k}$}&&&1.1466e-04&1.1842e-04&1.3128e-04&8.7847e-05\\
+% \hline
+% \multicolumn{1}{|c|}{$\alpha_{k}$}&&&&\\
+% \hline
+\end{tabular}}
+\caption{Number of spatial grid points $M_\ell$ at increasing spatial grid level $\ell = 0$ to 5.}
+\label{Tab:Dof}
+\end{table}
+%
 
+%
+\begin{table}[ht]
+\centering
+\scalebox{0.8}{
+\begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\cline{1-7}	
+\multicolumn{1}{|c|}{Dof} &$1934365$&$484080$&$120697$&$30449$&$8019$&$2685$\\
+\hline
+\multicolumn{1}{|c|}{Model $k$} &$f_1$&$f_2$&$f_3$&$f_4$&$f_5$&$f_6$\\
+% \hline
+% \multicolumn{1}{|c|}{$C_k$ direct solve}&1.2029e+02&2.6478e+01&5.3710e+00&1.1269e+00&2.9300e-01&9.6419e-02\\
+% \hline
+% \multicolumn{1}{|c|}{$C_k$ surrog evaluation(24 nodes)}&1.2595e-01&2.9694e-02&9.1085e-03&3.0580e-03&1.1869e-03&2.5127e-04\\
+\hline
+\multicolumn{1}{|c|}{$\rho_{1,k}$ (24 nodes), ref l=3}&&&0.9709&0.9702&0.9696&0.9482\\
+\hline
+\multicolumn{1}{|c|}{$\sigma_{k}$}&&&1.1466e-04&1.1842e-04&1.3128e-04&8.7847e-05\\
+\hline
+\multicolumn{1}{|c|}{Covariance}&&&1.0525e-04&1.3157e-04&1.2503e-04&1.2312e-04\\
+\hline
+\end{tabular}}
+\caption{High fidelity model: finite element solution on mesh with 30449 grid nodes. $\sigma_1 = 1.4026e-04$. The data are estimated using 500 samples.}
+% \label{Tab:Dof}
+\end{table}
+%
+
+
+%
+\begin{table}[ht]
+\centering
+\scalebox{0.8}{
+\begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\cline{1-7}	
+\multicolumn{1}{|c|}{Dof} &$1934365$&$484080$&$120697$&$30449$&$8019$&$2685$\\
+\hline
+\multicolumn{1}{|c|}{Model $k$} &$f_1$&$f_2$&$f_3$&$f_4$&$f_5$&$f_6$\\
+% \hline
+% \multicolumn{1}{|c|}{$C_k$ direct solve}&1.2029e+02&2.6478e+01&5.3710e+00&1.1269e+00&2.9300e-01&9.6419e-02\\
+% \hline
+% \multicolumn{1}{|c|}{$C_k$ surrog evaluation(24 nodes)}&1.2595e-01&2.9694e-02&9.1085e-03&3.0580e-03&1.1869e-03&2.5127e-04\\
+\hline
+\multicolumn{1}{|c|}{$\rho_{1,k}$ (24 nodes), ref l=3}&&&0.9984&0.9976&0.9958&0.9802\\
+\hline
+\multicolumn{1}{|c|}{$\sigma_{k}$}&&&1.2016e-04&1.2405e-04&1.374e-04&9.3826e-05\\
+\hline
+\multicolumn{1}{|c|}{Covariance}&&&1.2457e-04&1.2646e-04&1.3283e-04&1.0807e-04\\
+\hline
+\end{tabular}}
+\caption{High fidelity model: finite element solution on mesh with 120697 grid nodes. $\sigma_1 = 1.2955e-04$. The data are estimated using 500 samples.}
+% \label{Tab:Dof}
+\end{table}
+%
+
+\begin{table}[ht]
+	\centering
+			\scalebox{0.62}{
+   \begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|}
+	    \cline{2-7}	
+		&\multicolumn{6}{|c|}{ Level $\ell$}\\
+			\hline
+			\multicolumn{1}{|c|}{$\epsilon$}&0&1&2&3&4&5\\
+			\hline
+			\multicolumn{1}{|c|}{$8\times 10^{-3} $}&&&5&&&\\
+			\multicolumn{1}{|c|}{$6\times 10^{-3} $}&&&7&&&\\
+			\multicolumn{1}{|c|}{$4\times 10^{-3} $}&&&&22&&\\
+			\multicolumn{1}{|c|}{$2\times 10^{-3} $}&&&&83&&\\
+			\multicolumn{1}{|c|}{$10^{-3} $}&&&&&322&\\
+			\multicolumn{1}{|c|}{$8\times 10^{-4} $}&&&&&527&\\
+			\multicolumn{1}{|c|}{$6\times 10^{-4} $}&&&&&869&\\
+                \multicolumn{1}{|c|}{$4\times 10^{-4} $}&&&&&1980&\\
+                \multicolumn{1}{|c|}{$2\times 10^{-4} $}&&&&&& 8000$^{\ast}$\!\!\\
+			\hline
+	\end{tabular}
+ \qquad
+		\begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|}
+	    \cline{2-7}	
+		&\multicolumn{6}{|c|}{ Level $\ell$}\\
+			\hline
+			\multicolumn{1}{|c|}{$\epsilon$}&0&1&2&3&4&5\\
+			\hline
+			\multicolumn{1}{|c|}{$8\times 10^{-3} $}&10     &2     &2&&&\\
+			\multicolumn{1}{|c|}{$6\times 10^{-3} $}&12     &3     &2&&&\\
+			\multicolumn{1}{|c|}{$4\times 10^{-3} $}&32     &5     &2     &2&&\\
+			\multicolumn{1}{|c|}{$2\times 10^{-3} $}&152    &26     &4     &2&&\\
+			\multicolumn{1}{|c|}{$10^{-3} $}&691   &109    &18     &4     &2&\\
+			\multicolumn{1}{|c|}{$8\times 10^{-4} $}&841   &129    &23     &3     &2&\\
+			\multicolumn{1}{|c|}{$6\times 10^{-4} $}&1610         &231          &40           &8           &2&\\
+                \multicolumn{1}{|c|}{$4\times 10^{-4} $}&3791         &589         &104          &15           &3&\\
+                \multicolumn{1}{|c|}{$2\times 10^{-4} $}&15859        &2344         &375          &62          &13           &2\\
+			\hline
+	\end{tabular}
+ \qquad
+		\begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+	    \cline{2-7}	
+		&\multicolumn{6}{|c|}{ Level $\ell$}\\
+			\hline
+			\multicolumn{1}{|c|}{$\epsilon$}&0&1&2&3&4&5\\
+			\hline
+			\multicolumn{1}{|c|}{$8\times 10^{-3} $}&&&&&&\\
+			\multicolumn{1}{|c|}{$6\times 10^{-3} $}&&&&&&\\
+			\multicolumn{1}{|c|}{$4\times 10^{-3} $}&&&&&&\\
+			\multicolumn{1}{|c|}{$2\times 10^{-3} $}&&&&&&\\
+			\multicolumn{1}{|c|}{$10^{-3} $}&&&&&&\\
+			\multicolumn{1}{|c|}{$8\times 10^{-4} $}&&&&&&\\
+                \multicolumn{1}{|c|}{$6\times 10^{-4} $}&&&&&&\\
+			\multicolumn{1}{|c|}{$4\times 10^{-4} $}&&&&&&\\
+                \multicolumn{1}{|c|}{$2\times 10^{-4} $}&&&&&&\\
+			\hline
+	\end{tabular}
+ 
+ }
+	\caption{The optimal sample size estimation for MC-FE (left), uniform MLMC-FE (middle), and MFMC-FE (right). The simulations were conducted for a variety of choices of $\epsilon$. The computational cost associated with a tolerance of $\epsilon = 2\times 10^{-4}$ for Monte Carlo was prohibitive; the entry in the table for this tolerance (with an asterisk) is an estimate.}
+	\label{Tab:SampleSize}
+\end{table}
 
 \section{Appendix}\label{sec:Appendix}
 
