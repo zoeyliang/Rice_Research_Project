@@ -1,0 +1,108 @@
+\begin{thebibliography}{10}
+
+\bibitem{BaNoRi:2000}
+V.~Barthelmann, E.~Novak, and K.~Ritter.
+\newblock High dimensional polynomial interpolation on sparse grids.
+\newblock {\em Advances in Computational Mathematics}, 12:273--288, 2000.
+
+\bibitem{ClCu:1960}
+C.~W. Clenshaw and A.~R. Curtis.
+\newblock A method for numerical integration on an automatic computer.
+\newblock {\em Numer. Math.}, 2:197--205, 1960.
+
+\bibitem{ElLiSa:2022}
+H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
+\newblock Surrogate approximation of the {G}rad-{S}hafranov free boundary
+  problem via stochastic collocation on sparse grids.
+\newblock {\em Journal of Computational Physics}, 448:110699, 20, 2022.
+
+\bibitem{ElLiSa:2023}
+H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
+\newblock Multilevel {M}onte {C}arlo methods for the {G}rad-{S}hafranov free
+  boundary problem.
+\newblock {\em Computer Physics Communications}, 298:109099, 2024.
+
+\bibitem{FaHe:2017}
+B.~Faugeras and H.~Heumann.
+\newblock {FEM-BEM} coupling methods for {T}okamak plasma axisymmetric
+  free-boundary equilibrium computations in unbounded domains.
+\newblock {\em Journal of Computational Physics}, 343:201 -- 216, 2017.
+
+\bibitem{GrRu:1958}
+H.~Grad and H.~Rubin.
+\newblock Hydromagnetic equilibria and force{-}free fields.
+\newblock In {\em Proc. Second international conference on the peaceful uses of
+  atomic energy, Geneva}, volume 31,190, New York, Oct 1958. United Nations.
+
+\bibitem{Gr:1999}
+V.~Grandgirard.
+\newblock Modelisation de l'equilibre d'un plasma de tokamak.
+\newblock Technical report, Universit\'e de {F}ranche-{C}omt\'e, 1999.
+
+\bibitem{Heumann:feeqsm}
+H.~Heumann.
+\newblock {FEEQS.M}.
+\newblock http://www-sop.inria.fr/members/Holger.Heumann/Software.html.
+
+\bibitem{CEDRES}
+H.~Heumann, J.~Blum, C.~Boulbe, B.~Faugeras, G.~Selig, J.-M. Ané, S.~Brémond,
+  V.~Grandgirard, P.~Hertout, E.~Nardon, and et~al.
+\newblock Quasi-static free-boundary equilibrium of toroidal plasma with
+  {CEDRES}: Computational methods and applications.
+\newblock {\em Journal of Plasma Physics}, 81(3):905810301, 2015.
+
+\bibitem{KlBa:2005}
+A.~Klimke and B.~Wohlmuth.
+\newblock Algorithm 847: spinterp: piecewise multilinear hierarchical sparse
+  grid interpolation in {MATLAB}.
+\newblock {\em Association for Computing Machinery. Transactions on
+  Mathematical Software}, 31(4):561--579, 2005.
+
+\bibitem{LuSc:1957}
+R.~L\"{u}st and A.~Schl\"{u}ter.
+\newblock Axialsymmetrische magnetohydrodynamische
+  {G}leichgewichtskonfigurationen.
+\newblock {\em Z. Naturf}, 12a:850--854, 1957.
+
+\bibitem{LuBr:1982}
+J.~Luxon and B.~Brown.
+\newblock Magnetic analysis of non-circular cross-section tokamaks.
+\newblock {\em Nuclear Fusion}, 22(6):813--821, jun 1982.
+
+\bibitem{MaNi:2009}
+X.~Ma and N.~Zabaras.
+\newblock An adaptive hierarchical sparse grid collocation algorithm for the
+  solution of stochastic differential equations.
+\newblock {\em Journal of Computational Physics}, 228(8):3084--3113, 2009.
+
+\bibitem{NoTeWe:2008}
+F.~Nobile, R.~Tempone, and C.~G. Webster.
+\newblock A sparse grid stochastic collocation method for partial differential
+  equations with random input data.
+\newblock {\em SIAM Journal on Numerical Analysis}, 46(5):2309--2345, 2008.
+
+\bibitem{PeWiGu:2016}
+B.~Peherstorfer, K.~Willcox, and M.~Gunzburger.
+\newblock Optimal model management for multifidelity {M}onte {C}arlo
+  estimation.
+\newblock {\em SIAM J. Sci. Comput.}, 38(5):A3163--A3194, 2016.
+
+\bibitem{Shafranov:1958}
+V.~D. Shafranov.
+\newblock On magnetohydrodynamical equilibrium configurations.
+\newblock {\em Soviet Physics JETP}, 6:545--554, 1958.
+
+\bibitem{Sm:1963}
+S.~A. Smolyak.
+\newblock Quadrature and interpolation formulae on tensor products of certain
+  function classes.
+\newblock {\em Doklady Akademii Nauk SSSR}, 148:1042--1045, 1963.
+
+\bibitem{TeJaWe:2015}
+A.~L. Teckentrup, P.~Jantsch, C.~G. Webster, and M.~Gunzburger.
+\newblock A multilevel stochastic collocation method for partial differential
+  equations with random input data.
+\newblock {\em SIAM/ASA Journal on Uncertainty Quantification},
+  3(1):1046--1074, 2015.
+
+\end{thebibliography}
