@@ -28,6 +28,7 @@
 *.log
 *.fdb_latexmk
 *.snm
+*.spl
 *.synctex
 *.synctex.gz
 *.synctex(busy)
