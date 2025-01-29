@@ -245,6 +245,10 @@ Table \ref{Tab:Offline_cost} illustrates the total offline computational cost, m
 
 
 
+\JLcolor{According to \cite{PeGuWi:2018}, pages A3174 and A3181–A3182, perturbations in the sample variance and sample correlation coefficients have a small impact on the overall sample size and computational work. However, from my perspective, inaccurate estimation of these statistical parameters can also affect the model selection process. If these statistics are not reliably computed, low-fidelity models with misleading characteristics may be selected or rejected incorrectly, potentially undermining the efficiency and accuracy of the MFMC framework. In particular, models that exhibit inconsistent statistical properties violating the two conditions in Theorem \ref{thm:Sample_size_est} could be included, leading to suboptimal model choices for the low-fidelity approximations and, consequently, affecting the overall performance of the multi-fidelity estimator.}
+\JLcolor{Furthermore, to prevent bias in the MFMC estimator, we impose a strict separation between the samples used for statistical parameter estimation and those used for final MFMC sampling. Reusing samples for both purposes would introduce statistical dependence between the estimated parameters and the subsequent samples drawn for the MFMC approximation. Such dependence could distort statistical predictions, compromise variance reduction efficiency, and ultimately degrade the accuracy of the estimator.}
+
+
 
 %=====================================================================================
 \noindent \textbf{Plasma boundary.} 
