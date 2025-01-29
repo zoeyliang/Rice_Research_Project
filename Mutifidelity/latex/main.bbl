@@ -1,15 +1,33 @@
 \newcommand{\etalchar}[1]{$^{#1}$}
 \begin{thebibliography}{TJWG15}
 
+\bibitem[ABB{\etalchar{+}}09]{Amoskov:2009}
+V.~Amoskov, A.~Belov, V.~Belyakov, Yu. Gribov, A.~Kavin, V.~Kukhtin, E.~Lamzin,
+  K.~Lobanov, N.~Maximenkova, A.~Mineev, and S.~Sytchevsky.
+\newblock Stray magnetic field at plasma initiation produced by ferromagnetic
+  elements of the {ITER} tokamak complex.
+\newblock {\em Plasma Devices and Operations}, 17(4):238–249, December 2009.
+\newblock URL: \url{http://dx.doi.org/10.1080/10519990903043623}, \href
+  {https://doi.org/10.1080/10519990903043623}
+  {\path{doi:10.1080/10519990903043623}}.
+
 \bibitem[BNR00]{BaNoRi:2000}
 V.~Barthelmann, E.~Novak, and K.~Ritter.
 \newblock High dimensional polynomial interpolation on sparse grids.
 \newblock {\em Advances in Computational Mathematics}, 12:273--288, 2000.
 
+\bibitem[BSZ11]{BaScZo:2011}
+Andrea Barth, Christoph Schwab, and Nathaniel Zollinger.
+\newblock Multi-level {M}onte {C}arlo finite element method for elliptic {PDE}s
+  with stochastic coefficients.
+\newblock {\em Numerische Mathematik}, 119(1):123--161, 2011.
+\newblock \href {https://doi.org/10.1007/s00211-011-0377-0}
+  {\path{doi:10.1007/s00211-011-0377-0}}.
+
 \bibitem[CC60]{ClCu:1960}
 C.~W. Clenshaw and A.~R. Curtis.
 \newblock A method for numerical integration on an automatic computer.
-\newblock {\em Numer. Math.}, 2:197--205, 1960.
+\newblock {\em Numerische Mathematik}, 2:197--205, 1960.
 \newblock \href {https://doi.org/10.1007/BF01386223}
   {\path{doi:10.1007/BF01386223}}.
 
@@ -38,6 +56,13 @@ Blaise Faugeras and Holger Heumann.
   \url{http://www.sciencedirect.com/science/article/pii/S0021999117303261},
   \href {https://doi.org/https://doi.org/10.1016/j.jcp.2017.04.047}
   {\path{doi:https://doi.org/10.1016/j.jcp.2017.04.047}}.
+
+\bibitem[Gil08]{Gi:2008}
+Michael~B. Giles.
+\newblock Multilevel {M}onte {C}arlo path simulation.
+\newblock {\em Operations Research}, 56(3):607--617, 2008.
+\newblock \href {https://doi.org/10.1287/opre.1070.0496}
+  {\path{doi:10.1287/opre.1070.0496}}.
 
 \bibitem[GR58]{GrRu:1958}
 H.~Grad and H.~Rubin.
@@ -83,11 +108,17 @@ J.L. Luxon and B.B. Brown.
   {https://doi.org/10.1088/0029-5515/22/6/009}
   {\path{doi:10.1088/0029-5515/22/6/009}}.
 
+\bibitem[Lia24]{Li:2024}
+Jiaxing Liang.
+\newblock Efficient computational algorithms for magnetic equilibrium in a
+  fusion reactor.
+\newblock 2024.
+
 \bibitem[LS57]{LuSc:1957}
 R.~L\"{u}st and A.~Schl\"{u}ter.
 \newblock Axialsymmetrische magnetohydrodynamische
   {G}leichgewichtskonfigurationen.
-\newblock {\em Z. Naturf}, 12a:850--854, 1957.
+\newblock {\em Zeitschrift f{\" u}r Naturforschung}, 12a:850--854, 1957.
 
 \bibitem[MZ09]{MaNi:2009}
 Xiang Ma and Nicholas Zabaras.
@@ -105,11 +136,18 @@ F.~Nobile, R.~Tempone, and C.~G. Webster.
 \newblock \href {https://doi.org/10.1137/060663660}
   {\path{doi:10.1137/060663660}}.
 
+\bibitem[PGW18]{PeGuWi:2018}
+Benjamin Peherstorfer, Max Gunzburger, and Karen Willcox.
+\newblock Convergence analysis of multifidelity {M}onte {C}arlo estimation.
+\newblock {\em Numerische Mathematik}, 139(3):683--707, 2018.
+\newblock \href {https://doi.org/10.1007/s00211-018-0945-7}
+  {\path{doi:10.1007/s00211-018-0945-7}}.
+
 \bibitem[PWG16]{PeWiGu:2016}
 Benjamin Peherstorfer, Karen Willcox, and Max Gunzburger.
 \newblock Optimal model management for multifidelity {M}onte {C}arlo
   estimation.
-\newblock {\em SIAM J. Sci. Comput.}, 38(5):A3163--A3194, 2016.
+\newblock {\em SIAM Journal on Scientific Computing}, 38(5):A3163--A3194, 2016.
 \newblock \href {https://doi.org/10.1137/15M1046472}
   {\path{doi:10.1137/15M1046472}}.
 
@@ -132,5 +170,18 @@ A.~L. Teckentrup, P.~Jantsch, C.~G. Webster, and M.~Gunzburger.
   3(1):1046--1074, 2015.
 \newblock \href {https://doi.org/10.1137/140969002}
   {\path{doi:10.1137/140969002}}.
+
+\bibitem[Wel62]{Welford:1962}
+B.~P. Welford.
+\newblock Note on a method for calculating corrected sums of squares and
+  products.
+\newblock {\em Technometrics}, 4(3):419--420, 1962.
+\newblock URL:
+  \url{https://www.tandfonline.com/doi/abs/10.1080/00401706.1962.10490022},
+  \href
+  {http://arxiv.org/abs/https://www.tandfonline.com/doi/pdf/10.1080/00401706.1962.10490022}
+  {\path{arXiv:https://www.tandfonline.com/doi/pdf/10.1080/00401706.1962.10490022}},
+  \href {https://doi.org/10.1080/00401706.1962.10490022}
+  {\path{doi:10.1080/00401706.1962.10490022}}.
 
 \end{thebibliography}
