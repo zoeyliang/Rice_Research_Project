@@ -47,6 +47,13 @@ Howard~C. Elman, Jiaxing Liang, and Tonatiuh S\'{a}nchez-Vizuet.
 \newblock \href {https://doi.org/10.1016/j.cpc.2024.109099}
   {\path{doi:10.1016/j.cpc.2024.109099}}.
 
+\bibitem[ELSV25]{ElLiSa:2025}
+Howard~C. Elman, Jiaxing Liang, and Tonatiuh S\'{a}nchez-Vizuet.
+\newblock Surrogate-based multilevel {M}onte {C}arlo methods for uncertainty
+  quantification in the {G}rad-{S}hafranov free boundary problem.
+\newblock {\em Arxiv}, 2025.
+\newblock URL: \url{https://arxiv.org/pdf/2501.08482}.
+
 \bibitem[FH17]{FaHe:2017}
 Blaise Faugeras and Holger Heumann.
 \newblock {FEM-BEM} coupling methods for {T}okamak plasma axisymmetric
