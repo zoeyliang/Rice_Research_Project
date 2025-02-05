@@ -41,7 +41,7 @@ where the correction terms $Y_k$ are defined as
 Y_1 :=A^{\text{MC}}_{1,N_1},\quad Y_k:=\left(\frac{N_{k-1}}{N_{k}}-1\right)\left(A_{k,N_{k-1}}^{\text{MC}}- A_{k,N_k\backslash N_{k-1}}^{\text{MC}}\right), k=2\ldots, K.
 \]
 %
-It can be shown that $\mathbb{E}(Y_k) = 0$ for $k\ge 2$, which implies $\mathbb{E}(A^{\text{MF}}) = \mathbb{E}(u_{h,1})$, ensuring the unbiasedness of the estimator. Since the samples in two disjoint components of $Y_k$ are independent, the variances of $Y_k$ can be computed as
+Since $Y_k$ is the difference between two independent Monte Carlo estimators of the same model, $\mathbb{E}(Y_k) = 0$ for $k\ge 2$, which implies $\mathbb{E}(A^{\text{MF}}) = \mathbb{E}(u_{h,1})$, ensuring the unbiasedness of the estimator. Since the samples in two disjoint components of $Y_k$ are independent, the variances of $Y_k$ can be computed as
 %
 \[
 \mathbb{V}\left(Y_1\right) = \frac{\sigma_1^2}{N_1}, \quad \mathbb{V}\left(Y_k\right) = \left(\frac{N_{k-1}}{N_{k}}-1\right)^2\left(\frac{\sigma_k^2}{N_{k-1}}+\frac{\sigma_k^2}{N_k-N_{k-1}}\right) = \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\sigma_k^2.
