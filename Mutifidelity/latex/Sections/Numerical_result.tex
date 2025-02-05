@@ -32,7 +32,7 @@ The number of the available spatial grid nodes are shown in the first row of Tab
 
 The splitting ratio $\theta$ is set to 0.5 to reflect a balance between discretization and statistical errors. The tolerances for the normalized mean square error are selected to slightly exceed the discretization error on the finest available mesh $(\ell=5)$, with specific values being $\epsilon=2\times 10^{-4}, 4\times 10^{-4}, 6\times 10^{-4}, 8\times 10^{-4}, 1\times 10^{-3}, 2\times 10^{-3}, 4\times 10^{-3}, 8\times 10^{-3}$. For each tolerance, the corresponding spatial grid level required to satisfy the discretization error thresholds is determined using the relation described in \eqref{eq:SLSGC_MLS_SpatialGridsNo}, resulting in levels $L = 5, 4, 4, 4, 4, 3, 3, 2, 2$. The high-fidelity model for each tolerance corresponds to the finite element solution of \eqref{eq:FreeBoundary} on the spatial grid level $L$. For each high-fidelity model defined on the spatial grid level $L$, candidate low-fidelity surrogates are constructed using the sparse grid stochastic collocation approach outlined in Section \ref{sec:SC}. These surrogates are generated using sparse grid nodes \eqref{eq:NestedColPts} of level $q=1$, and are defined over a sequence of spatial meshes with grid levels ranging from $0$ to $L-1$, where $L$ denotes the spatial grid level of the corresponding high-fidelity model. 
 
-To perform MFMC sampling, accurately estimating the statistical parameters, such as the mean and correlation coefficients that characterize the correlation between high- and low-fidelity models is of critical importance. The calculation of correlation coefficients requires the knowledge of variance and covariance. To achieve robust and numerically stable updates for these sample statistics, Welford's algorithm \cite{Welford:1962} is used for both high- and low-fidelity models. The initialization of the proxies for the mean and variance of the high- and low-fidelity models is set to $m_w^{(1)}=0$, $v_w^{(1)}=0$, $\widehat m_w^{(1)}=0$, and $\widehat v_w^{(1)}=0$, respectively.  For the high-fidelity model  $\widehat u_{h,1}=u_h$, the proxies for the sample mean and variance are updated iteratively as new samples are incorporated through the recurrence relations
+\JLcolor{To perform MFMC sampling, accurately estimating the statistical parameters, such as the mean and correlation coefficients that characterize the correlation between high- and low-fidelity models is of critical importance.} The calculation of correlation coefficients requires the knowledge of variance and covariance. To achieve robust and numerically stable updates for these sample statistics, Welford's algorithm \cite{Welford:1962} is used for both high- and low-fidelity models. The initialization of the proxies for the mean and variance of the high- and low-fidelity models is set to $m_w^{(1)}=0$, $v_w^{(1)}=0$, $\widehat m_w^{(1)}=0$, and $\widehat v_w^{(1)}=0$, respectively.  For the high-fidelity model  $\widehat u_{h,1}=u_h$, the proxies for the sample mean and variance are updated iteratively as new samples are incorporated through the recurrence relations
 %
 \[
 m_w^{(i)} = m_w^{(i-1)} + \frac{u_h\left(\boldsymbol{\omega}^{(i)}\right)-m_w^{(i-1)}}{i},\qquad v_w^{(i)} = v_w^{(i-1)} + \left\langle u_h\left(\boldsymbol{\omega}^{(i)}\right)-m_w^{(i-1)}, \;\;u_h\left(\boldsymbol{\omega}^{(i)}\right)-m_w^{(i)}\right\rangle,
@@ -58,10 +58,45 @@ Experiments were performed using MATLAB R2024a on the batch-scheduled HPC/HTC cl
 % =============================
 \subsection{Surrogate construction and parameter estimation (offline) costs}
 % =============================
-We first estimate the statistical parameters using high fidelity and candidate low-fidelity surrogate models for each given tolerance $\epsilon$. To avoid introducing statistical dependence between parameter estimates, each pairwise parameter (e.g., correlation coefficient $\rho_{1,k}$ between high-fidelity and the $k$-th low-fidelity model) is estimated using mutually independent sample sets. Specifically, for $K$ low-fidelity models where estimating each  $\rho_{1,k}$ requires $N$ independent high-fidelity samples, the total number of high-fidelity evaluations becomes $KN$. Table \ref{Tab:MFMC_parameters} presents these estimates for predetermined thresholds $\epsilon$, including standard deviations, covariance and correlation coefficients between the high-fidelity model and each candidate low-fidelity model. We implement Welford's method to iteratively update sample statistics while adaptively increasing sample sizes until convergence criteria are met, terminating when relative differences between successive updates fall below $10^{-4}$. These parameters are then used in Algorithm \ref{algo:MFMC_Algo_model_selection} to select the optimal low-fidelity models for MFMC. 
+We first estimate the statistical parameters using high fidelity and candidate low-fidelity surrogate models for each given tolerance $\epsilon$. To avoid introducing statistical dependence between parameter estimates, each pairwise parameter (e.g., correlation coefficient $\rho_{1,k}$ between high-fidelity and the $k$-th low-fidelity model) is estimated using mutually independent sample sets. Specifically, for $K$ low-fidelity models where estimating each  $\rho_{1,k}$ requires $N$ independent high-fidelity samples, the total number of high-fidelity evaluations becomes $KN$. Algorithm \ref{algo:Parameter_Estimation} shows a dynamic strategy to estimate these parameters. Table \ref{Tab:MFMC_parameters} presents these estimates for predetermined thresholds $\epsilon$, including standard deviations, covariance and correlation coefficients between the high-fidelity model and each candidate low-fidelity model. We implement Welford's method to iteratively update sample statistics while adaptively increasing sample sizes until convergence criteria are met, terminating when relative differences between successive updates fall below $10^{-4}$. These parameters are then used in Algorithm \ref{algo:MFMC_Algo_model_selection} to select the optimal low-fidelity models for MFMC. 
 
 
 % The selection of low-fidelity models, performed using Algorithm \ref{algo:MFMC_Algo_model_selection}, relies on the accurate computation of these statistical quantities, which directly impact the efficiency of the MFMC framework, the required sample size, and the overall computational cost. Errors in these estimates can lead to suboptimal model selection, excessive sampling that increases computational overhead, or insufficient sampling that compromises accuracy.
+
+\begin{algorithm}[!ht]
+\DontPrintSemicolon
+
+    \KwIn{Tolerance $\delta$, number of low-fidelity model $K$, initial sample size $N_0$, sample size correction $dN = N_0$. Initializations for Welford's algorithm: mean of high- and low-fidelity models $m_w^{(0)} = 0, \widehat m_w^{(0)} = 0$, proxy of variance of high- and low-fidelity models $v_w^{(0)}=0, \widehat v_w^{(0)}=0$, and proxy of covariance $r_w^{(0)}=0$.}
+    \KwOut{Sample size $N$, estimated parameters $\sigma_1,\sigma_k, \rho_{1,k}$.}
+
+    $p=0$
+
+    $\text{AddSample = True}$
+    
+    \While{AddSample = True}{
+    \For{$k=2,\ldots, K$}{
+    
+        \For{$i = 1,\cdots, dN $}
+    {
+    $j=p+i$
+    
+    For the $j-$the update, estimate sample mean $m_w^{(j)}, \widehat m_w^{(j)}$, standard deviation $\sigma^{(j)}, \widehat \sigma^{(j)}$, covariance $\text{Cov}^{(j)}$ and correlated coefficients $\rho_{1,k}^{(j)}$ by Welford's algorithm.
+    }
+    }
+    \If{$\left|\frac{\rho_{1,k}^{(j)}-\rho_{1,k}^{(j-1)}}{\rho_{1,k}^{(j)}}\right|<\delta$ for all $k=2,\ldots, K$ THIS NEED TO BE RECONSIDERED}
+    % $\&$ $\left|\frac{\sigma_{k}^{(j)}-\sigma_{k}^{(j-1)}}{\sigma_{k}^{(j)}}\right|<\delta$ $\&$ $\left|\frac{\widehat \sigma_{k}^{(j)}-\widehat \sigma_{k}^{(j-1)}}{\widehat \sigma_{k}^{(j)}}\right|<\delta$ for all $k=2,\ldots, K$}
+    {
+    \text{AddSample = False}
+    
+    }
+    \Else {
+    \text{AddSample = True}
+    
+     $p=p+dN$}
+    }
+    $N=j$, $\sigma_1 = \sigma_w^{(j)}$, $\sigma_k = \widehat\sigma_w^{(j)}$, $\rho_{1,k} = \rho_{1,k}^{(j)}$.
+\caption{Dynamic strategy to estimate parameters}\label{algo:Parameter_Estimation}
+\end{algorithm}
 
 
 %
