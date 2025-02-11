@@ -50,7 +50,7 @@ The correlation between the high- and low-fidelity models is quantified through 
 r_w^{(i)} = r_w^{(i-1)} + \left \langle u_{h}\left(\boldsymbol{\omega}^{(i)}\right)-m_{w}^{(i-1)},\;\;\widehat u_{h,k}\left(\boldsymbol{\omega}^{(i)}\right)-\widehat m_{w}^{(i)}\right\rangle,
 \]
 %
-These iterative updates ensure that the statistical parameters are dynamically adjusted without requiring the storage of all previous samples, thus maintaining computational efficiency. Using these updated proxies, the sample standard deviations of the high- and low-fidelity models are calculated as $\sigma^{(i)} = \sqrt{v_w^{(i)}/(i-1)}$ and $\widehat \sigma^{(i)} = \sqrt{\widehat v_w^{(i)}/(i-1)}$ respectively. The sample covariance between the high-fidelity model and each low-fidelity model is determined as $\text{Cov}^{(i)} = r_w^{(i)}/(i-1)$.
+These iterative updates ensure that the statistical parameters are dynamically adjusted without requiring the storage of all previous samples, thus maintaining computational efficiency. Using these updated proxies, the sample standard deviations of the high- and low-fidelity models are calculated as $\sigma_w^{(i)} = \sqrt{v_w^{(i)}/(i-1)}$ and $\widehat \sigma_w^{(i)} = \sqrt{\widehat v_w^{(i)}/(i-1)}$ respectively. The sample covariance between the high-fidelity model and each low-fidelity model is determined as $\text{Cov}_w^{(i)} = r_w^{(i)}/(i-1)$.
 
 Experiments were performed using MATLAB R2024a on the batch-scheduled HPC/HTC cluster NOTSx, part of the Rice Big Research Data cloud infrastructure. The system consists of 298 dual-socket compute blades housed on HPE s6500, HPE Apollo 2000, and Dell PowerEdge C6400 chassis. All nodes are interconnected via a high-speed network with 10 or 25 Gigabit Ethernet.
 
@@ -67,7 +67,7 @@ We first estimate the statistical parameters using high fidelity and candidate l
 \DontPrintSemicolon
 
     \KwIn{Tolerance $\delta$, number of low-fidelity model $K$, initial sample size $N_0$, sample size correction $dN = N_0$. Initializations for Welford's algorithm: mean of high- and low-fidelity models $m_w^{(0)} = 0, \widehat m_w^{(0)} = 0$, proxy of variance of high- and low-fidelity models $v_w^{(0)}=0, \widehat v_w^{(0)}=0$, and proxy of covariance $r_w^{(0)}=0$.}
-    \KwOut{Sample size $N$, estimated parameters $\sigma_1,\sigma_k, \rho_{1,k}$.}
+    \KwOut{Sample size $N$, estimated parameters $\sigma_1,\alpha_s, \rho_{1,s}$.}
 
     $p=0$
 
@@ -80,10 +80,15 @@ We first estimate the statistical parameters using high fidelity and candidate l
     {
     $j=p+i$
     
-    For the $j-$the update, estimate sample mean $m_w^{(j)}, \widehat m_w^{(j)}$, standard deviation $\sigma^{(j)}, \widehat \sigma^{(j)}$, covariance $\text{Cov}^{(j)}$ and correlated coefficients $\rho_{1,k}^{(j)}$ by Welford's algorithm.
+    Estimate sample means $m_w^{(j)}, \widehat m_w^{(j)}$, standard deviations $\sigma_w^{(j)}, \widehat \sigma_w^{(j)}$, covariances $\text{Cov}_w^{(j)}$ and correlated coefficients $\rho_{1,k}^{(j)}$ by Welford's algorithm.
     }
     }
-    \If{$\left|\frac{\rho_{1,k}^{(j)}-\rho_{1,k}^{(j-1)}}{\rho_{1,k}^{(j)}}\right|<\delta$ for all $k=2,\ldots, K$ THIS NEED TO BE RECONSIDERED}
+    
+    [$\mathcal{S}^*, \boldsymbol{\rho}^*, \sigma_1, \boldsymbol{C}$] = Multi-fidelity Model Selection ($\rho_{1,k}^{(j)},\sigma_w^{(j)}, \widehat \sigma_w^{(j)},C_k$).
+
+    Compute  $\xi^{(j)}$ by \eqref{eq:MFMC_sampling_cost_efficiency} with the selected $K^*$ models.
+    
+    \If{$\left|\frac{\xi^{(j)}-\xi^{(j-1)}}{\xi^{(j)}}\right|<\delta$ for all $k=2,\ldots, K^*$}
     % $\&$ $\left|\frac{\sigma_{k}^{(j)}-\sigma_{k}^{(j-1)}}{\sigma_{k}^{(j)}}\right|<\delta$ $\&$ $\left|\frac{\widehat \sigma_{k}^{(j)}-\widehat \sigma_{k}^{(j-1)}}{\widehat \sigma_{k}^{(j)}}\right|<\delta$ for all $k=2,\ldots, K$}
     {
     \text{AddSample = False}
@@ -94,6 +99,9 @@ We first estimate the statistical parameters using high fidelity and candidate l
     
      $p=p+dN$}
     }
+    
+    
+    
     $N=j$, $\sigma_1 = \sigma_w^{(j)}$, $\sigma_k = \widehat\sigma_w^{(j)}$, $\rho_{1,k} = \rho_{1,k}^{(j)}$.
 \caption{Dynamic strategy to estimate parameters}\label{algo:Parameter_Estimation}
 \end{algorithm}

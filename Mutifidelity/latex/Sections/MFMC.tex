@@ -248,18 +248,32 @@ The total sampling cost efficiency of the multi-fidelity Monte Carlo estimator r
 This ratio also quantifies reduction of computational budget achieved by the MFMC estimator given the same variance. The quantity of $\xi$ is determined by the cost per sample for various models and the correlation parameters. The lower the value of $\xi$, the more effective the MFMC estimator.
 
 
+% \subsection{Sensitivity analysis}
+% Note that
+% \[
+% \frac{d}{d\rho_{1,k}}\sqrt{\rho_{1,k}^2 - \rho_{1,k+1}^2} = \frac{\rho_{1,k}}{\sqrt{\rho_{1,k}^2 - \rho_{1,k+1}^2}}
+% \]
+% \[
+% \frac{d }{d \rho_{1,k}} \sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2 - \rho_{1,j+1}^2\right)} = \rho_{1,k}\sqrt{\frac{C_k}{\rho_{1,k}^2-\rho_{1,k+1}^2}}\left(1-\sqrt{\frac{C_{k-1}(\rho_{1,k}^2-\rho_{1,k+1}^2)}{C_k(\rho_{1,k-1}^2-\rho_{1,k}^2)}}\right)
+% \]
+
+Let $b = \frac{\sigma_1^2}{\epsilon^2(1-\theta)\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}$.
+%
+\begin{equation*}
+    \frac{d \mathcal{W}^\text{MF}}{d \rho_k} =2b\rho_{1,k}\sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2 - \rho_{1,j+1}^2\right)}\sqrt{\frac{C_k}{\rho_{1,k}^2-\rho_{1,k+1}^2}}\left(1-\sqrt{\frac{C_{k-1}(\rho_{1,k}^2-\rho_{1,k+1}^2)}{C_k(\rho_{1,k-1}^2-\rho_{1,k}^2)}}\right), \quad \forall k=2,\ldots, K.
+\end{equation*}
+%
+The term $\left(1-\sqrt{\frac{C_{k-1}(\rho_{1,k}^2-\rho_{1,k+1}^2)}{C_k(\rho_{1,k-1}^2-\rho_{1,k}^2)}}\right)$ encodes MFMC’s selection criteria, ensuring the derivative’s negativity when models are optimally ordered. This indicates that higher $\rho_{1,k}$ improves low-fidelity models’ variance reduction efficiency, reducing reliance on costly high-fidelity evaluations. This reinforces the idea that high-quality low-fidelity models—those that are more aligned with the high-fidelity results—can significantly lower the reliance on expensive high-fidelity evaluations, making the entire multi-fidelity approach more cost-effective.
+
 
 \subsection{Model selection}
-In order to maximize the capability of multi-fidelity Monte Carlo estimator  compared to the Monte Carlo estimator, we need to select the models from the available set so that the ratio $\xi$ is as small as possible. Let $S=\{1, \ldots, K\}$ be the indices of the $K$ available models. We seek a subset $S_1=\{i_1,i_2, \ldots,i_{K^*}\}\subseteq S (K^*\le K)$ of indices that minimizes the sampling cost of the multi-fidelity Monte Carlo estimator. Note that $S_1$ is nonempty and $i_1=1$ since the high-fidelity model must be included. This leads to the following optimization problem to determine the index set $S_1$ for the selected models. We will follow the exhaustive algorithm in \cite[Algorithm~1]{PeWiGu:2016} for $2^{K-1}$ subsets of $S$ but with the target to minimize the sampling cost $\mathcal{W}^\text{MF}$. This algorithm gives the indices of the selected low-fidelity models and the optimal $K^*$.
+To maximize the capability of the multi-fidelity Monte Carlo estimator relative to the Monte Carlo estimator, we aim to select a subset of models from the available set such that the cost efficiency ratio $\xi$ (or equivalently, the sampling cost $\mathcal{W}^\text{MF}$) is minimized. Let $\mathcal{S}=\{u_{h, k}\}_{k=1}^K$ denote the $K$ available models. Our goal is to identify a subset  $\mathcal{S}^*=\{u_{h, i}\}_{i=1}^{K^*} \subseteq S ( \text{ with } K^*\le K)$ that minimizes $\xi$  subject to the conditions of Theorem \ref{thm:Sample_size_est} -- noting that $\mathcal{S}^*$ is non-empty since the high-fidelity model $u_{h,1}$ is always included. Unlike the exhaustive algorithm in \cite[Algorithm~1]{PeWiGu:2016}, which incurs a computational cost of $\mathcal{O}(2^K)$, our method uses a backtracking strategy that incrementally selected the subsets and prunes branches that cannot yield valid complete solutions. This approach significantly reduces search space and lowers the computational cost to $\mathcal{O}(K^2)$, avoiding a large number of unnecessary computations for large $K$. The resulting algorithm, presented in Algorithm \ref{algo:enhanced_mfmc_selection}, returns the selected $K^*$ low-fidelity models along with their corresponding correlation coefficients $\boldsymbol{\rho}$, costs $\boldsymbol{C}$, the minimal cost efficiency ratio $\epsilon_{\text{min}}$, and weights $\alpha_i$ for $i=2\ldots, K^*$. 
 
 \begin{equation*}\label{eq:Optimization_pb_model_selection}
     \begin{array}{lll}
-    \displaystyle\min_{\{i_1,i_2, \ldots,i_{K^*}\}\in S} &\displaystyle \mathcal{W}^\text{MF},\\
+    \displaystyle\min_{\{i_1,i_2, \ldots,i_{K^*}\}\in S} &\displaystyle \xi,\\
        \text{s.t.} &\displaystyle |\rho_{1,1}|>\ldots>|\rho_{1,K^*}|,\\
        &\displaystyle \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2}, \quad k=i_1,\ldots,i_{K^*}, \quad \rho_{1,K^*+1}=0,\\
-       % &\JLcolor{\displaystyle \frac{\sum_{k\in S_1}\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}}{\sum_{k\in S_1} C_k}\sum_{k\in S_1}\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2\ge \frac{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}{\sigma_1^2},}\\
-       % &\JLcolor{\displaystyle \log_s\left\{\frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2\right\}\ge \gamma,}\\
-        % &\displaystyle \rho_{1,0}=\infty \;\text{ and } \;\rho_{1,K+1}=0. \\%[6pt]
     \end{array}
 \end{equation*}
 
@@ -268,13 +282,12 @@ In order to maximize the capability of multi-fidelity Monte Carlo estimator  com
 \begin{algorithm}[!ht]
 \label{algo:MFMC_Algo_model_selection}
 \DontPrintSemicolon    
-   \KwIn{$K$ models $u_{h, k}$, initial sample size 
-    $ N_0$.}\vspace{1ex}
+   \KwIn{$K$ candidate models $u_{h, k}$ with coefficients $\rho_{1,k}$, $\sigma_1$, $\sigma_k$ and cost per sample $C_k$.}\vspace{1ex}
     
-    \KwOut{Number of models $K^*$ in  $\mathcal{S}^*$, model $u_{h, i}$ in $\mathcal{S}^*$, coefficients $\rho_i$, $\alpha_i$ and $C_i$ for each model $u_{h, i}$.}\vspace{1ex}
+    \KwOut{Selected $K^*$ models $u_{h, i}$ in $\mathcal{S}^*$, with coefficients $\rho_{1,i}$, $\alpha_i$ and $C_i$ for each model $u_{h, i}$.}\vspace{1ex}
     \hrule \vspace{1ex}
 
-   Estimate $\rho_{1,k}$ and $C_k$ for each model $u_{h, k}$ using $N_0$ samples.
+   % Estimate $\rho_{1,k}$ and $C_k$ for each model $u_{h, k}$ using $N_0$ samples.
    
    
    Sort $u_{h, k}$ by decreasing $\rho_{1,k}$ to create $\mathcal{S}=\{u_{h, k}\}_{k=1}^K$. 
@@ -303,13 +316,85 @@ In order to maximize the capability of multi-fidelity Monte Carlo estimator  com
 \end{algorithm}
 \ULforem
 
+
+\normalem
+\begin{algorithm}[!ht]
+\label{algo:enhanced_mfmc_selection}
+\DontPrintSemicolon
+\SetAlgoVlined
+\SetKwProg{Fn}{Function}{}{}
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+
+\Input{%
+$K$ candidate models $\{u_{h,k}\}_{k=1}^K$ with correlation coefficients $\rho_{1,k}$, standard deviations $\sigma_1$ and $\sigma_k$, and costs per sample $C_k$. 
+}
+\Output{%
+  Optimal subset of models $\mathcal{S}^*=\{u_{h,i}\}_{i=1}^{K^*} \subseteq \{u_{h,k}\}_{k=1}^K$, correlations of selected models $\boldsymbol{\rho}^*$, costs of selected models $\boldsymbol{C}^*$, minimal cost efficiency ratio $\xi_{\text{min}}$, weights $\alpha_i$ for $i=2,\ldots, K^*$.
+}
+\hrule
+
+
+Sort models by descending $|\rho_{1,k}|$, relabel $\rho_{1,k}, C_k$ for $k=1,\ldots,K$ and $\{u_{h,k}\}_{k=1}^K$.
+
+Add dummy model $u_{h,K+1}$ with $\rho_{1,K+1} = 0$. 
+
+Initialize global variables: 
+$\mathcal{S} = \{u_{h,1}\}$, $\boldsymbol{\rho}=[1]$, $\boldsymbol{C}=[C_1]$, $\xi=0$, $\xi_{\text{min}}=1$.
+
+\vspace{3mm}
+
+\Fn{ $[\mathcal{S}^*,\, \boldsymbol{\rho}^*, \,\boldsymbol{C}^*]$ = \textbf{Backtrack}$\left(\mathcal{S}, \,\boldsymbol{\rho}, \,\boldsymbol{C}, \,k_{\text{last}}\right)$}{
+
+Compute $\xi$ via \eqref{eq:MFMC_sampling_cost_efficiency}. 
+
+
+  \If{$\xi\geq \xi_{\text{min}}\,$ or $\,\xi>1$ }{
+    \Return 
+  }
+  \Else {
+    $\mathcal{S}^* = \mathcal{S}$, \\
+    $\boldsymbol{\rho}^* = \boldsymbol{\rho}$, \\
+    $\boldsymbol{C}^* = \boldsymbol{C}$, \\
+    $\xi_{\text{min}}=\xi$.
+  }
+  
+  \If{$k_{\text{last}} > K$}{ 
+    \Return
+  }
+  
+  \For{$k = k_{\text{last}}$ \textbf{to} $K$}{ 
+     % $\rho_{1,\text{last}} = \boldsymbol{\rho}_{\text{end}}$, $C_{\text{last}} = \boldsymbol{C}_{\text{end}}$.
+    
+    \If{%
+      $|\boldsymbol{\rho}_{\text{end}}|>|\rho_{1,k}|$ \textbf{and} 
+      $\frac{\boldsymbol{C}_{\text{end}}}{C_k} > \frac{\boldsymbol{\rho}_{\text{end}}^2 - \rho_{1,k}^2}{\rho_{1,k}^2 - \rho_{1,k+1}^2}$ 
+    }{
+      
+      \textbf{Backtrack} $(\mathcal{S} \cup \{u_{h,k}\},[\boldsymbol{\rho}, \rho_{1,k}], [\boldsymbol{C},C_k], k+1)$.
+    }
+  }
+}
+\vspace{3mm}
+
+$[\mathcal{S}^*,\, \boldsymbol{\rho}^*, \,\boldsymbol{C}^*]=$ \textbf{Backtrack} $(\mathcal{S},\, \boldsymbol{\rho},\, \boldsymbol{C},\, 2)$. 
+
+For $\mathcal{S}^*=\{u_{h,i}\}_{i=1}^{K^*}$, compute weights $\alpha_i$ for $i=2,...,K^*$ via \eqref{eq:MFMC_coefficients}. 
+
+\caption{Multi-fidelity Model Selection with backtracking pruning}
+\end{algorithm}
+\ULforem
+
+
+
+
 \normalem
 \begin{algorithm}[!ht]
 \label{algo:MFMC_Algo}
 \DontPrintSemicolon
 
     
-   \KwIn{Models $u_{h, k}$ in $\mathcal{S}^*$, parameters $\rho_k$, $\alpha_k$ and $C_k$ for each $u_{h, k}$ in $\mathcal{S}^*$,  tolerance $\epsilon$. }\vspace{1ex}
+   \KwIn{Selected $K^*$ models $u_{h, k}$ in $\mathcal{S}^*$, parameters $\rho_{1,k}$, $\alpha_k$ and $C_k$ for each $u_{h, k}$,  tolerance $\epsilon$. }\vspace{1ex}
     
     \KwOut{Sample sizes $N_k$ for $K^*$ models, expectation 
     estimate $A^{\text{MF}}$.}\vspace{1ex}
@@ -318,7 +403,7 @@ In order to maximize the capability of multi-fidelity Monte Carlo estimator  com
 
     Compute the sample size $N_k$ for $1\leq k\leq K^*$ by \eqref{eq:MFMC_SampleSize} and generate i.i.d. $N_1$ and $N_k-N_{k-1}$ samples for $k=2,\ldots, K^*$.
 
-    Evaluate $u_{h, 1}$ to obtain $u_{h, 1}(\boldsymbol{\omega}^i)$ for $i = 1,\ldots,N_1$ and compute $A_{1,N_1}^{\text{MC}}$ by \eqref{eq:MC_estimator}. Store $N_1$ samples.
+    Evaluate $u_{h, 1}$ to obtain $u_{h, 1}(\boldsymbol{\omega}^i)$ for $i = 1,\ldots,N_1$ and compute $A_{1,N_1}^{\text{MC}}$ by \eqref{eq:MC_estimator}.
     
     \For{$k = 2,\ldots,K^* $\,}{
 
@@ -421,6 +506,12 @@ In order to maximize the capability of multi-fidelity Monte Carlo estimator  com
 % \end{align*}
     
 % \end{proof}
+
+
+
+
+
+
 
 
 \begin{theorem}
