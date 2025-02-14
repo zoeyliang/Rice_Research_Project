@@ -11,7 +11,7 @@ perturb_ratio2 = 0.03;
 d=2;
 range = [[-1,1]*perturb_ratio1;[-1,1]*perturb_ratio2];
 
-tol = 1e-3; % tolerance for stopping
+tol = 1e-2; % tolerance for stopping
 interpolate=false;
 norm_l = 'L2err_toy';
 Eps=1e-3;
@@ -25,7 +25,7 @@ theta=0.5;
 %load hfm mesh and common mesh
 hfm_mesh_level = 8;
 com_mesh_level = 8;
-index_k = 2:8;
+index_k = 2:hfm_mesh_level;
 NoLFM = length(index_k);
 
 [Mesh_com,Mesh_high,h_high,QoI_h] = load_hfm_mesh_n_com_mesh(com_mesh_level,hfm_mesh_level);
