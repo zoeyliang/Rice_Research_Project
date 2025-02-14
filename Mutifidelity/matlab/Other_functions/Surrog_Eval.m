@@ -1,4 +1,18 @@
 function ip = Surrog_Eval(z,range,d,QoI_l,rand_vec)
+%function ip = Surrog_Eval(z,range,d,QoI_l,rand_vec)
+%INPUT:
+%z:         structure. surrogate.
+%range:     dx2 vector. range of parameter space.
+%d:         dimension of parameter space.
+%QoI_l:     integer.length of quantity of interest.
+%rand_vec:  1xd vector. samples to be evaluated.
+%
+%OUTPUT:
+%ip:        structure.surrogate.
+%
+% Feb-14,2025.
+
+
 
 ipmethod = 'spinterpcb';
 nfrom = 0;

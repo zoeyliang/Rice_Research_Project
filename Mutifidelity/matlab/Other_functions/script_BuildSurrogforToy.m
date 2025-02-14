@@ -1,4 +1,12 @@
-% initialization
+%script to build surroagte
+%ColloDepth: integer.  sparse grid level
+%method: character. method to build surrogate. here we use 'spgridcb'.
+%d: integer. dimension of parameter space.
+%perturb_ratio1: decimal. noise in parameter1.
+%perturb_ratio2: decimal. noise in parameter2.
+%
+%
+
 clear all;
 close all
 

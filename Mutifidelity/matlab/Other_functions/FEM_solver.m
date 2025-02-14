@@ -1,22 +1,33 @@
 function u = FEM_solver(grid_level,xi,eta)
-%function u = FEM_solver(n,xi,eta)
-% grid_level: integer, with # of grids: N = 2*10*2^level+1;
-% xi: randno, scalar
-% eta: randno, scalar
+%function u = FEM_solver(grid_level,xi,eta)
+%INPUT:
+%grid_level:   integer, with # of grids: N = 2*10*2^level+1;
+%xi:           randno, scalar
+%eta:          randno, scalar
 %
+%OUTPUT:
+%u:            Nx1 vector. function values at the grid nodes.
+% 
+%Feb-14,2025
 
 n = 10*2^grid_level;
 N = 2*n+1;
 x = linspace(0,2,N);
 h = 2/(N-1);
+
+%diffusion coefficients
 a1 = 1*(1+xi);
 a2 = 10*(1+eta);
+%source terms
 f1 = @(x) -2-3*x^2;%zeros(N,1);
 f2 = @(x) 1-6*x;%zeros(N,1);
 % f(N)=1;
+
+%stiffness matrix
 A = sparse(N,N);
 b = sparse(N,1);
 freenodes = setdiff(1:N,[1,N]);
+
 for i = 1:n
     elem = [i,i+1];
     A(elem,elem) = A(elem,elem) + a1/h*[1,-1;-1,1];

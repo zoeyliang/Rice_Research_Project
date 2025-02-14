@@ -2,15 +2,21 @@ function [ind_for_model,sum_sqrt_C_rho] = MFMC_model_selection_exhausted(rho,C)
 % function ind_for_model = MFMC_model_selection(rho,C)
 % select the model for MFMC that gives the smallest objective value
 % INPUT:
-% rho:    size 1 x N. correlation coefficients.
-% C:    size 1 x N. cost per sample.
+% rho:      vector. correlation coefficients.
+% C:        vector. cost per sample.
 %
 % OUTPUT:
-% ind_for_model: the index of the selected model.
-%
+% ind_for_model:    vector. the indices of the selected models.
+% sum_sqrt_C_rho:   scalar. value of \sum_k sqrt{C_k(rho_{1,k}^2-rho_{1,k+1}^2)}
+%                   W^{MF} = sum_sqrt_C_rho^2.
 %
 % Nov-28, 2024
 %
+
+
+% sort rho into descending sequence, order saves index mapping
+[rho,order] = sort(rho,'descend');
+C = C(order);
 
 ind = 1:length(rho);
 W_star = C(1);
@@ -21,7 +27,7 @@ idxs = idxs(idxs(:,1)==1,:); % subset including the hfm with the index 1.
 
 
 for i = 1:length(idxs)
-    subset = ind(idxs(i,:));
+    subset = ind(idxs(i,:)); % increasing index 
     % disp(subset);
     
     if length(subset)~=1
@@ -52,5 +58,8 @@ for i = 1:length(idxs)
         W_star = w^2;
     end
 end
-
 sum_sqrt_C_rho = sqrt(W_star);
+
+% map the indices back
+ind_for_model = order(ind_for_model);
+
