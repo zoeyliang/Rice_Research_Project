@@ -1,5 +1,9 @@
 clear all
 close all
+
+addpath('./Other_functions')
+addpath('./spinterp_v5.1.1_vec','./spinterp_v5.1.1_vec/private_function')
+addpath('./Toy_Surrogates')
 %% ============= Parameters ===============================================
 % Parameters
 perturb_ratio1 = 0.03;
