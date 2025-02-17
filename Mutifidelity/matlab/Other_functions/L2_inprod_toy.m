@@ -1,5 +1,5 @@
 function result = L2_inprod_toy(u1,u2,h)
-%function result = L2_inprod_toy(u1,u2,h)
+%function result = L2_inprod_toy(u1,u2,h)--inner product of u1 & u2
 %INPUT: 
 % u1, u2: vectors of function value
 % h: mesh size

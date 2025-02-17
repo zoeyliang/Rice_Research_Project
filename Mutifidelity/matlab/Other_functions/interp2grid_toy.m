@@ -1,5 +1,5 @@
 function p_u = interp2grid_toy(u,Coord_1,Coord_2)
-%function p_u = interp2grid_toy(u,Coord_1,Coord_2)
+%function p_u = interp2grid_toy(u,Coord_1,Coord_2)-interpolate u from Coord_1 to Coord_2
 %INPUT:
 %u:         vector. function values on Coordinate 1.
 %Coord_1:   vector or structure. Coodinate 1 that u is on.   

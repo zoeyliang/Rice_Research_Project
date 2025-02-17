@@ -27,9 +27,10 @@ idxs = idxs(idxs(:,1)==1,:); % subset including the hfm with the index 1.
 
 
 for i = 1:length(idxs)
-    subset = ind(idxs(i,:)); % increasing index 
-    % disp(subset);
-    
+    break_flag = false;
+    subset = ind(idxs(i,:)); % increasing index
+    disp(subset);
+
     if length(subset)~=1
         w = sqrt(C(subset(1))*(rho(subset(1))^2- rho(subset(2))^2)); % add first element to the objective function
     else
@@ -48,18 +49,19 @@ for i = 1:length(idxs)
         if   C(k)/C(k_p1) > (rho(k)^2 - rho(k_p1)^2)/(rho(k_p1)^2 - rho_k_p2^2)
             w = w + sqrt(C(k_p1)*(rho(k_p1)^2 - rho_k_p2^2)); % add remaining elements
         else
-            continue
+            break_flag = true;
+            break
         end
 
     end
-
-    if w^2<W_star
-        ind_for_model = subset;
-        W_star = w^2;
+    if ~break_flag
+        if w^2<W_star
+            ind_for_model = subset;
+            W_star = w^2;
+        end
     end
 end
 sum_sqrt_C_rho = sqrt(W_star);
 
 % map the indices back
 ind_for_model = order(ind_for_model);
-
