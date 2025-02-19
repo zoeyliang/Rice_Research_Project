@@ -32,7 +32,7 @@ The number of the available spatial grid nodes are shown in the first row of Tab
 
 The splitting ratio $\theta$ is set to 0.5 to reflect a balance between discretization and statistical errors. The tolerances for the normalized mean square error are selected to slightly exceed the discretization error on the finest available mesh $(\ell=5)$, with specific values being $\epsilon=2\times 10^{-4}, 4\times 10^{-4}, 6\times 10^{-4}, 8\times 10^{-4}, 1\times 10^{-3}, 2\times 10^{-3}, 4\times 10^{-3}, 8\times 10^{-3}$. For each tolerance, the corresponding spatial grid level required to satisfy the discretization error thresholds is determined using the relation described in \eqref{eq:SLSGC_MLS_SpatialGridsNo}, resulting in levels $L = 5, 4, 4, 4, 4, 3, 3, 2, 2$. The high-fidelity model for each tolerance corresponds to the finite element solution of \eqref{eq:FreeBoundary} on the spatial grid level $L$. For each high-fidelity model defined on the spatial grid level $L$, candidate low-fidelity surrogates are constructed using the sparse grid stochastic collocation approach outlined in Section \ref{sec:SC}. These surrogates are generated using sparse grid nodes \eqref{eq:NestedColPts} of level $q=1$, and are defined over a sequence of spatial meshes with grid levels ranging from $0$ to $L-1$, where $L$ denotes the spatial grid level of the corresponding high-fidelity model. 
 
-\JLcolor{To perform MFMC sampling, accurately estimating the statistical parameters, such as the mean and correlation coefficients that characterize the correlation between high- and low-fidelity models is of critical importance.} The calculation of correlation coefficients requires the knowledge of variance and covariance. To achieve robust and numerically stable updates for these sample statistics, Welford's algorithm \cite{Welford:1962} is used for both high- and low-fidelity models. The initialization of the proxies for the mean and variance of the high- and low-fidelity models is set to $m_w^{(1)}=0$, $v_w^{(1)}=0$, $\widehat m_w^{(1)}=0$, and $\widehat v_w^{(1)}=0$, respectively.  For the high-fidelity model  $\widehat u_{h,1}=u_h$, the proxies for the sample mean and variance are updated iteratively as new samples are incorporated through the recurrence relations
+To perform MFMC sampling, we need to estimate the statistical parameters, including the mean and  variance of both high- and low-fidelity models, and correlation coefficients that characterize the correlation between high- and low-fidelity models. Welford's algorithm \cite{Welford:1962} is used to achieve robust and numerically stable updates for these sample statistics. The initialization of the proxies for the mean and variance of the high- and low-fidelity models is set to $m_w^{(1)}=0$, $v_w^{(1)}=0$, $\widehat m_w^{(1)}=0$, and $\widehat v_w^{(1)}=0$, respectively.  For the high-fidelity model  $\widehat u_{h,1}=u_h$, the proxies for the sample mean and variance are updated iteratively as new samples are incorporated through the recurrence relations
 %
 \[
 m_w^{(i)} = m_w^{(i-1)} + \frac{u_h\left(\boldsymbol{\omega}^{(i)}\right)-m_w^{(i-1)}}{i},\qquad v_w^{(i)} = v_w^{(i-1)} + \left\langle u_h\left(\boldsymbol{\omega}^{(i)}\right)-m_w^{(i-1)}, \;\;u_h\left(\boldsymbol{\omega}^{(i)}\right)-m_w^{(i)}\right\rangle,
@@ -58,10 +58,10 @@ Experiments were performed using MATLAB R2024a on the batch-scheduled HPC/HTC cl
 % =============================
 \subsection{Surrogate construction and parameter estimation (offline) costs}
 % =============================
-We first estimate the statistical parameters using high fidelity and candidate low-fidelity surrogate models for each given tolerance $\epsilon$. To avoid introducing statistical dependence between parameter estimates, each pairwise parameter (e.g., correlation coefficient $\rho_{1,k}$ between high-fidelity and the $k$-th low-fidelity model) is estimated using mutually independent sample sets. Specifically, for $K$ low-fidelity models where estimating each  $\rho_{1,k}$ requires $N$ independent high-fidelity samples, the total number of high-fidelity evaluations becomes $KN$. Algorithm \ref{algo:Parameter_Estimation} shows a dynamic strategy to estimate these parameters. Table \ref{Tab:MFMC_parameters} presents these estimates for predetermined thresholds $\epsilon$, including standard deviations, covariance and correlation coefficients between the high-fidelity model and each candidate low-fidelity model. We implement Welford's method to iteratively update sample statistics while adaptively increasing sample sizes until convergence criteria are met, terminating when relative differences between successive updates fall below $10^{-4}$. These parameters are then used in Algorithm \ref{algo:MFMC_Algo_model_selection} to select the optimal low-fidelity models for MFMC. 
+We begin by estimating statistical parameters using the high-fidelity model and available low-fidelity surrogates. To prevent statistical dependence between parameter estimates, each pairwise parameter (e.g., correlation coefficient $\rho_{1,k}$ between high-fidelity and the $k$-th low-fidelity model) is computed using mutually independent sample sets. For $K$ low-fidelity models where the estimation of each $\rho_{1,k}$ requires $N$ independent high-fidelity samples, the total number of high-fidelity evaluations amounts to $KN$. Algorithm \ref{algo:Parameter_Estimation} introduces a dynamic strategy for parameter estimation, using Welford’s method to iteratively update sample statistics while adaptively increasing sample sizes until the relative difference between successive updates of cost efficiency falls below $10^{-4}$. Algorithm \ref{algo:enhanced_mfmc_selection} is used to select low-fidelity models along with their estimated parameters. Table \ref{Tab:MFMC_parameters} summarizes the estimated standard deviations, covariances, and correlation coefficients between the high-fidelity model and the available low-fidelity candidate models for different threshold values $\epsilon$. 
 
 
-% The selection of low-fidelity models, performed using Algorithm \ref{algo:MFMC_Algo_model_selection}, relies on the accurate computation of these statistical quantities, which directly impact the efficiency of the MFMC framework, the required sample size, and the overall computational cost. Errors in these estimates can lead to suboptimal model selection, excessive sampling that increases computational overhead, or insufficient sampling that compromises accuracy.
+
 
 \begin{algorithm}[!ht]
 \DontPrintSemicolon
@@ -82,13 +82,14 @@ We first estimate the statistical parameters using high fidelity and candidate l
     
     Estimate sample means $m_w^{(j)}, \widehat m_w^{(j)}$, standard deviations $\sigma_w^{(j)}, \widehat \sigma_w^{(j)}$, covariances $\text{Cov}_w^{(j)}$ and correlated coefficients $\rho_{1,k}^{(j)}$ by Welford's algorithm.
     }
-    }
-    
-    [$\mathcal{S}^*, \boldsymbol{\rho}^*, \sigma_1, \boldsymbol{C}$] = Multi-fidelity Model Selection ($\rho_{1,k}^{(j)},\sigma_w^{(j)}, \widehat \sigma_w^{(j)},C_k$).
 
-    Compute  $\xi^{(j)}$ by \eqref{eq:MFMC_sampling_cost_efficiency} with the selected $K^*$ models.
+    [$\sim,\xi^{(j-1)}$] = Multi-fidelity Model Selection ($\boldsymbol{\rho}^{(j-1)},\boldsymbol{C}$).
     
-    \If{$\left|\frac{\xi^{(j)}-\xi^{(j-1)}}{\xi^{(j)}}\right|<\delta$ for all $k=2,\ldots, K^*$}
+    [$\sim,\xi^{(j)}$] = Multi-fidelity Model Selection ($\boldsymbol{\rho}^{(j)},\boldsymbol{C}$).
+    
+    % Compute  $\xi^{(j)}$ by \eqref{eq:MFMC_sampling_cost_efficiency} with the selected $K^*$ models.
+    
+    \If{$\left|\frac{\xi^{(j)}-\xi^{(j-1)}}{\xi^{(j)}}\right|<\delta$}
     % $\&$ $\left|\frac{\sigma_{k}^{(j)}-\sigma_{k}^{(j-1)}}{\sigma_{k}^{(j)}}\right|<\delta$ $\&$ $\left|\frac{\widehat \sigma_{k}^{(j)}-\widehat \sigma_{k}^{(j-1)}}{\widehat \sigma_{k}^{(j)}}\right|<\delta$ for all $k=2,\ldots, K$}
     {
     \text{AddSample = False}
@@ -100,11 +101,16 @@ We first estimate the statistical parameters using high fidelity and candidate l
      $p=p+dN$}
     }
     
+    }
     
     
     $N=j$, $\sigma_1 = \sigma_w^{(j)}$, $\sigma_k = \widehat\sigma_w^{(j)}$, $\rho_{1,k} = \rho_{1,k}^{(j)}$.
-\caption{Dynamic strategy to estimate parameters}\label{algo:Parameter_Estimation}
+\caption{Dynamic strategy to estimate parameters--\JLcolor{Our version}}\label{algo:Parameter_Estimation}
 \end{algorithm}
+
+% The selection of low-fidelity models, performed using Algorithm \ref{algo:MFMC_Algo_model_selection}, relies on the accurate computation of these statistical quantities, which directly impact the efficiency of the MFMC framework, the required sample size, and the overall computational cost. Errors in these estimates can lead to suboptimal model selection, excessive sampling that increases computational overhead, or insufficient sampling that compromises accuracy.
+
+
 
 
 %
@@ -200,7 +206,9 @@ To evaluate the computational efficiency of the MFMC method, we next quantify th
 %
 
 
- Table \ref{Tab:Offline_cost} quantifies the total offline computational cost (measured in CPU time) incurred during the preparatory phase of the MFMC framework.  This cost comprises two primary components: the computational expense associated with constructing low-fidelity surrogate models across spatial mesh levels  $\ell = 0, \ldots, L-1$, where $L$ denotes the finest spatial grid resolution satisfying the prescribed discretization error tolerance $\theta\epsilon^2$, and the cost of estimating statistical parameters (e.g., variances $\sigma_k^2$, correlation coefficients $\rho_{1,k}$) required for MFMC, as detailed in Table \ref{Tab:MFMC_parameters}. While the offline preparation incurs non-negligible computational expenses, these costs are justified by the substantial savings achieved during large-scale online sampling, particularly in applications requiring thousands of high-fidelity model evaluations. As a one-time expense, the precomputed surrogates and statistical parameters are reused throughout the online phase, amortizing the initial overhead across all subsequent multi-fidelity Monte Carlo realizations.
+ Table \ref{Tab:Offline_cost} quantifies the total offline computational cost (measured in CPU time) incurred during the offline phase of the MFMC framework.  This cost comprises two primary components: the computational expense associated with constructing low-fidelity surrogate models across spatial mesh levels  $\ell = 0, \ldots, L-1$, where $L$ denotes the finest spatial grid resolution satisfying the prescribed discretization error tolerance $\theta\epsilon^2$, and the cost of estimating statistical parameters (e.g., variances $\sigma_k^2$, correlation coefficients $\rho_{1,k}$) required for MFMC, as detailed in Table \ref{Tab:MFMC_parameters}. 
+ 
+ While the offline preparation incurs non-negligible computational expenses, these costs are justified by the substantial savings achieved during large-scale online sampling, particularly in applications requiring thousands of high-fidelity model evaluations. As a one-time expense, the precomputed surrogates and statistical parameters are reused throughout the online phase, amortizing the initial overhead across all subsequent multi-fidelity Monte Carlo realizations.
 
 %
 \begin{table}[ht]
@@ -305,7 +313,7 @@ To evaluate the computational efficiency of the MFMC method, we next quantify th
 % =============================
 \subsection{Sampling (online) cost}
 % =============================
-After the offline procedure, we obtain the necessary parameters and low-fidelity models for estimating the MFMC estimator in the online process. In \eqref{eq:MFMC_estimator_independent}, if the weights $\alpha_k$ are deterministic (theoretically optimal), the estimator is unbiased since $\mathbb{E}(\alpha_k Y_k) = \alpha_k \mathbb{E}(Y_k)$ and $\mathbb{E}(Y_k) = 0$ for $k=2,\ldots, K$. However, if we reuse samples for parameter estimation with those used in the online sampling for $A^{\text{MF}}$, the weights $\alpha_k$ become random variables dependent on the samples and correlated with the correction term $Y_k$. In this case, $\mathbb{E}(\alpha_k Y_k) = \mathbb{E}(\alpha_k Y_k)-\mathbb{E}(\alpha_k)\mathbb{E}(Y_k) = \text{Cov}(\alpha_k,Y_k)\neq 0$ and $\mathbb{E}(A^{\text{MF}})\neq \mathbb{E}(Y_1)$, potentially introducing bias into the estimator. To preserve unbiasedness, samples for parameter estimation must be statistically independent from those used in online sampling. This ensures that $\alpha_k$ and $Y_k$ remain uncorrelated, maintaining $\mathbb{E}(A^{\text{MF}})= \mathbb{E}(Y_1)$.
+After the offline procedure, we obtain the necessary parameters $\rho_{1,k}, C_k,\alpha_k $ and low-fidelity models for estimating the MFMC estimator in the online process. In \eqref{eq:MFMC_estimator_independent}, if the weights $\alpha_k$ are deterministic (theoretically optimal), the estimator is unbiased since $\mathbb{E}(\alpha_k Y_k) = \alpha_k \mathbb{E}(Y_k)$ and $\mathbb{E}(Y_k) = 0$ for $k=2,\ldots, K$. However, if we reuse samples for parameter estimation with those used in the online sampling for $A^{\text{MF}}$, the weights $\alpha_k$ become random variables dependent on the samples and correlated with the correction term $Y_k$. In this case, $\mathbb{E}(\alpha_k Y_k) = \mathbb{E}(\alpha_k Y_k)-\mathbb{E}(\alpha_k)\mathbb{E}(Y_k) = \text{Cov}(\alpha_k,Y_k)\neq 0$ and $\mathbb{E}(A^{\text{MF}})\neq \mathbb{E}(Y_1)$, potentially introducing bias into the estimator. To preserve unbiasedness, samples for parameter estimation must be statistically independent from those used in online sampling. This ensures that $\alpha_k$ and $Y_k$ remain uncorrelated, maintaining $\mathbb{E}(A^{\text{MF}})= \mathbb{E}(Y_1)$.
 If reusing offline samples is necessary, the offline sample size should be sufficiently large to ensure that $\alpha_k$ approximates its theoretical value, and the online samples must remain independent of the offline samples to eliminate the correlation between $\alpha_k$ and $Y_k$.
 
 
@@ -323,7 +331,7 @@ If reusing offline samples is necessary, the offline sample size should be suffi
 % =============================
 \subsection{Properties of geometric discriptors}
 % =============================
-As demonstrated in \cite{ElLiSa:2023}, multilevel Monte Carlo (MLMC) implementations face significant challenges when dealing with plasma boundary distortions caused by extrapolation errors during cross-level sample correction aggregation on non-nested, geometry-conforming meshes. These errors arise from mismatches in spatial resolution when coarse-grid corrections are accumulated across multiple levels. This distortion can be mitigated by interpolating the multilevel solutions onto a unified fine grid with level $\ell=5$, effectively reconciling resolution disparities while preserving the geometric fidelity of the plasma boundary. Similarly, in the multi-fidelity Monte Carlo (MFMC) approach, sample corrections for various low-fidelity models are generated using stochastic collocation on the same non-nested, uniform, geometry-conforming coarse grids. To ensures that all corrections are aligned on a consistent spatial resolution for generating the multi-fidelity estimator for the expected plasma field in \eqref{eq:QoI}, it is necessary to project these corrections onto a common fine mesh, enabling accurate and reliable estimation of the quantity of interest. Figure \ref{fig:QoI_plot} shows the contour plot of plasma boundary of the \eqref{eq:QoI} for Monte Carlo, multilevel Monte Carlo and multi-fidelity Monte Carlo samplings. We observe that the plasma boundary resulting from the multi-fidelity Monte Carlo behaves in a similar fashion as that in the benchmark sampled with Monte Carlo.
+As demonstrated in \cite{ElLiSa:2023}, multilevel Monte Carlo (MLMC) implementations face significant challenges when dealing with plasma boundary distortions caused by extrapolation errors during cross-level sample correction aggregation on non-nested, geometry-conforming meshes. These errors arise from mismatches in spatial resolution when coarse-grid corrections are accumulated across multiple levels. This distortion can be mitigated by interpolating the multilevel solutions onto a unified fine grid with level $\ell=5$, effectively reconciling resolution disparities while preserving the geometric fidelity of the plasma boundary. Similarly, in the multi-fidelity Monte Carlo (MFMC) approach, sample corrections for various low-fidelity models are generated using stochastic collocation on the same non-nested, uniform, geometry-conforming coarse grids. To ensures that all corrections are aligned on a consistent spatial resolution for generating the multi-fidelity estimator for the expected plasma field in \eqref{eq:QoI}, it is necessary to project these corrections onto a common fine mesh, enabling accurate and reliable estimation of the quantity of interest. Figure \ref{fig:QoI_plot} shows the contour plot of plasma boundary of the \eqref{eq:QoI} for Monte Carlo, multilevel Monte Carlo and multi-fidelity Monte Carlo samplings. We observe that the plasma boundary resulting from the multi-fidelity Monte Carlo behaves in a similar fashion as that in the benchmark boundary sampled with Monte Carlo.
 
 %=====================================================================================
 \noindent \textbf{Plasma boundary.} 
@@ -404,7 +412,7 @@ solver and surrogate. All simulations were interpolated to the geometry-conformi
 
 
 
-The sample size estimation for various $\epsilon$ is shown in Table \ref{Tab:SampleSize}.
+The sample size estimation for various $\epsilon$ is shown in Table \ref{Tab:SampleSize}. We first observe that the correspondence between the required finest spatial grid level as the corresponding tolerance decreases. Moreover, for the sample size estimation, we require a minimum of two samples for each level and each model for all methods. We observe that the MFMC requires much less sample size to achieve the same accuracy for the nMSE compared to both MC and MLMC.
 
 
 %
@@ -480,23 +488,23 @@ The sample size estimation for various $\epsilon$ is shown in Table \ref{Tab:Sam
 			\multicolumn{1}{|c|}{ }&MC-FE &MLMC-FE&MFMC-FE &MFMC-FE(Interp)\\
 			\multicolumn{1}{|c|}{$\epsilon$}&Time & \begin{tabular}{cc} \,\,\,\,\,Time & \,\,\,Speedup \end{tabular} &\begin{tabular}{cc} \,\,\,\,Time & \,\,\,Speedup \end{tabular} &\begin{tabular}{cc} \,\,\,\,Time & \,\,\,Speedup \end{tabular}\\
 			\hline
-			\multicolumn{1}{|c|}{$8\times 10^{-3} $}&1.42e+01&\begin{tabular}{cc}6.61e+00\,\,\, & 2.1 \end{tabular}&\begin{tabular}{cc}7.3426e+00\,\,  &1.9339e+00 \end{tabular} &\begin{tabular}{cc}1.5563e+01\,\,  &9.1242e-01 \end{tabular} \\
-			\multicolumn{1}{|c|}{$6\times 10^{-3} $}&2.75e+01&\begin{tabular}{cc}7.44e+00\,\,\, & 3.7 \end{tabular}&\begin{tabular}{cc}7.2427e+00\,\, &3.7969e+00 \end{tabular}&\begin{tabular}{cc}1.5389e+01&1.7870e+00
+			\multicolumn{1}{|c|}{$8\times 10^{-3} $}&1.42e+01&\begin{tabular}{cc}6.61e+00\,\,\, & 2.1 \end{tabular}&\begin{tabular}{cc}7.34e+00\,\,  &1.9 \end{tabular} &\begin{tabular}{cc}1.56e+01\,\,  &0.9 \end{tabular} \\
+			\multicolumn{1}{|c|}{$6\times 10^{-3} $}&2.75e+01&\begin{tabular}{cc}7.44e+00\,\,\, & 3.7 \end{tabular}&\begin{tabular}{cc}7.24e+00\,\, &3.8 \end{tabular}&\begin{tabular}{cc}1.54e+01&1.8
             \end{tabular}\\
-			\multicolumn{1}{|c|}{$4\times 10^{-3} $}&6.60e+01&\begin{tabular}{cc}4.36e+01\,\,\, & 1.5 \end{tabular}&\begin{tabular}{cc}1.4342e+01&4.6019e+00\end{tabular}&\begin{tabular}{cc}2.5341e+01&2.6045e+00
+			\multicolumn{1}{|c|}{$4\times 10^{-3} $}&6.60e+01&\begin{tabular}{cc}4.36e+01\,\,\, & 1.5 \end{tabular}&\begin{tabular}{cc}1.43e+01&4.6\end{tabular}&\begin{tabular}{cc}2.5341e+01&2.6045e+00
             \end{tabular}\\
-			\multicolumn{1}{|c|}{$2\times 10^{-3} $}&2.19e+02&\begin{tabular}{cc}4.73e+01\,\, & 4.6\end{tabular}&\begin{tabular}{cc}1.4278e+01&1.5338e+01 \end{tabular}&\begin{tabular}{cc}2.5618e+01&8.5487e+00
+			\multicolumn{1}{|c|}{$2\times 10^{-3} $}&2.19e+02&\begin{tabular}{cc}4.73e+01\,\, & 4.6\end{tabular}&\begin{tabular}{cc}1.43e+01&15.3 \end{tabular}&\begin{tabular}{cc}2.5618e+01&8.5487e+00
             \end{tabular}\\
-			\multicolumn{1}{|c|}{$10^{-3} $}&4.66e+03&\begin{tabular}{cr}1.66e+02\,\, & 28.1 \end{tabular}&\begin{tabular}{cc}3.6678e+01&1.2705e+02\end{tabular}&\begin{tabular}{cc}4.9038e+01&9.5028e+01
+			\multicolumn{1}{|c|}{$10^{-3} $}&4.66e+03&\begin{tabular}{cr}1.66e+02\,\, & 28.1 \end{tabular}&\begin{tabular}{cc}3.67e+01&127.1\end{tabular}&\begin{tabular}{cc}4.9038e+01&9.5028e+01
             \end{tabular}\\
-			\multicolumn{1}{|c|}{$8\times 10^{-4} $}&8.02e+03&\begin{tabular}{cc}4.33e+02\,\, & 18.5 \end{tabular}&\begin{tabular}{cc}4.2890e+01&1.8699e+02
+			\multicolumn{1}{|c|}{$8\times 10^{-4} $}&8.02e+03&\begin{tabular}{cc}4.33e+02\,\, & 18.5 \end{tabular}&\begin{tabular}{cc}4.29e+01&187.0
             \end{tabular}&\begin{tabular}{cc}5.6344e+01&1.4234e+02
             \end{tabular}\\
-			\multicolumn{1}{|c|}{$6\times 10^{-4} $}&1.49e+04&\begin{tabular}{cc}5.36e+02\,\, & 27.8 \end{tabular}&\begin{tabular}{cc}4.8741e+01 &3.0570e+02\end{tabular}&\begin{tabular}{cc}6.4086e+01&2.3250e+02
+			\multicolumn{1}{|c|}{$6\times 10^{-4} $}&1.49e+04&\begin{tabular}{cc}5.36e+02\,\, & 27.8 \end{tabular}&\begin{tabular}{cc}4.87e+01 &305.7\end{tabular}&\begin{tabular}{cc}6.4086e+01&2.3250e+02
             \end{tabular}\\
-                \multicolumn{1}{|c|}{$4\times 10^{-4} $}&3.66e+04&\begin{tabular}{cc}1.03e+03\,\, & 35.4 \end{tabular} &\begin{tabular}{cc}4.3724e+01&8.3707e+02 \end{tabular}&\begin{tabular}{cc}5.7562e+01&6.3584e+02
+                \multicolumn{1}{|c|}{$4\times 10^{-4} $}&3.66e+04&\begin{tabular}{cc}1.03e+03\,\, & 35.4 \end{tabular} &\begin{tabular}{cc}4.37e+01&837.1 \end{tabular}&\begin{tabular}{cc}5.7562e+01&6.3584e+02
             \end{tabular}\\
-                \multicolumn{1}{|c|}{$2\times 10^{-4} $}&5.84e+05$^{\ast}$\!\!\!&\begin{tabular}{cc}4.90e+03 &119.2 \end{tabular} &\begin{tabular}{cc}2.2876e+02&2.5529e+03 \end{tabular}&\begin{tabular}{cc}2.4207e+02 &2.4125e+03
+                \multicolumn{1}{|c|}{$2\times 10^{-4} $}&5.84e+05$^{\ast}$\!\!\!&\begin{tabular}{cc}4.90e+03 &119.2 \end{tabular} &\begin{tabular}{cc}2.29e+02&2552.9 \end{tabular}&\begin{tabular}{cc}2.4207e+02 &2.4125e+03
             \end{tabular}\\
 			\hline
 	\end{tabular}
