@@ -95,43 +95,27 @@
 \vspace{-2.3cm}
 
 \section{Toy problem}
-In this model we consider the diffusion problem \eqref{eq: Model2_1} with non-overlapping domain $D_1$ and  $D_2$ with lipschitz boundary $\Gamma_1$ and $\Gamma_2$, both $D_1$ and $D_2$ share boundary $\Gamma_2$, denote $D = D_1\cup D_2$.
-
+In this model we consider the diffusion problem
 \begin{equation}
 \label{eq: Model2_1}
 \begin{array}{lll}
--\nabla \cdot (a_1(x,y,\xi_1) \nabla u) = f_1(x,y), & \text{in }D_1,\\
-u = g(x,y), & \text{on }\Gamma_1,\\
-\\
--\nabla \cdot (a_2(x,y,\xi_2)\nabla v) = f_2(x,y), & \text{in }D_2,\\
-a_1\partial_\nu u + a_2\partial_\nu v = 0, & \text{on }\Gamma_2,\\
-u=v, & \text{on }\Gamma_2.
+-\nabla \cdot (a_1(x,\xi_1) \nabla u(x)) = f_1(x), & x \in  (0,1),\\
+-\nabla \cdot (a_2(x,\xi_2)\nabla v(x)) = f_2(x), & x \in  (1,2),\\
+  u(x) = g(x), & x = 0,\\
+  v(x) = g(x), & x = 2,\\
+  u(x) = v(x) & x = 1,\\
+a_1(x)\partial_\nu u(x) + a_2(x) \partial_\nu v(x) = 0, & x = 1.
 \end{array}
 \end{equation}
-The Model problem \eqref{eq: Model2_1} is equivalent to the following problem
-\begin{equation}
-\label{eq: Model2_2}
-\begin{array}{lll}
--\nabla \cdot (d(x,y,\xi) \nabla u) = f(x,y), & \text{in }D,\\
-u = g(x,y), & \text{on }\Gamma_1,
-\end{array}
-\end{equation}
-where $d(x,y,\xi)=\left\{\begin{array}{lll}
-a_1(x,y,\xi_1)&& x\in D_1\\
-a_2(x,y,\xi_2)&& x\in D_2\\
-\end{array}\right.$ and 
-$f(x,y)=\left\{\begin{array}{lll}
-f_1(x,y)&& x\in D_1\\
-f_2(x,y)&& x\in D_2\\
-\end{array}\right.$.
-\vspace{3mm}
 
-% \subsection{Code implementation}
-\noindent The diffusion coefficients and source terms for the toy problem are
+The diffusion coefficients and source terms for the toy problem are
 \[
 a_1=1+\xi_1,\quad a_2 = 10(1+\xi_2),\quad f_1 = -2-3x^2,\quad f_2 = 1-6x.
 \]
-Domain $D=[0,2]$, $D_1=[0,1]$.
+
+
+
+
 \section{Code implementation}
 This code employs a high-fidelity model with 5,121 grid points and eight low-fidelity models generated from a sparse grid, aligning with the same setup as the plasma problem.
 \begin{enumerate}
