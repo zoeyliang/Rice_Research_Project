@@ -1,0 +1,167 @@
+\documentclass[final,3p,times,11pt]{article}
+\usepackage{titling}
+\setlength{\droptitle}{-10em}
+\usepackage[utf8]{inputenc}
+% ==============   Packages  ====================
+\usepackage{amsmath,amssymb,amsthm, mathrsfs}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage[shortlabels]{enumitem}
+% \usepackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\usepackage{stmaryrd}
+\usepackage{soul}
+\usepackage{multirow}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{cancel}
+\usepackage{ulem}
+%\usepackage{subcaption}
+%\usepackage[show]{ed}
+%\usepackage{showkeys}
+\usepackage{showlabels}
+%\usepackage[notcite,notref]{showkeys}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage {hyperref}
+%\usepackage{natbib}
+\hypersetup{
+    %bookmarks=true,         % show bookmarks bar?
+    colorlinks=true,       % false: boxed links; true: colored links
+    %linkcolor=red,          % color of internal links (change box color with linkbordercolor)
+    %citecolor=green,        % color of links to bibliography
+    %filecolor=magenta,      % color of file links
+    %urlcolor=cyan           % color of external links
+}
+%\usepackage{wrapfig}
+%% The lineno packages adds line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers after \end{frontmatter}.
+%\usepackage{lineno}
+
+
+% ==============   Macros  ====================
+\newcommand{\mynabla}{\widetilde{\nabla}} 
+\newcommand{\jump}[1]{[\![#1]\!]}
+\newcommand{\HEcolor}[1]{{\textcolor{blue}{#1}}}
+\newcommand{\TSVcolor}[1]{{\textcolor{orange}{#1}}}
+\newcommand{\JLcolor}[1]{{\textcolor{black}{#1}}} %violet
+\newcommand{\Grids}{\boldsymbol{\chi}}
+
+\newtheorem{theorem}{Theorem}%[section]
+\newtheorem{VariationalForm}[theorem]{Variational Formulation}
+% =============================================
+
+
+%% natbib.sty is loaded by default. However, natbib options can be
+%% provided with \biboptions{...} command. Following options are
+%% valid:
+
+%%   round  -  round parentheses are used (default)
+%%   square -  square brackets are used   [option]
+%%   curly  -  curly braces are used      {option}
+%%   angle  -  angle brackets are used    <option>
+%%   semicolon  -  multiple citations separated by semi-colon
+%%   colon  - same as semicolon, an earlier confusion
+%%   comma  -  separated by comma
+%%   numbers-  selects numerical citations
+%%   super  -  numerical citations as superscripts
+%%   sort   -  sorts multiple citations according to order in ref. list
+%%   sort&compress   -  like sort, but also compresses numerical citations
+%%   compress - compresses without sorting
+%%
+%% \biboptions{comma,round}
+
+% \biboptions{}
+
+% \journal{}
+% \makeatletter
+% \def\ps@pprintTitle{%
+%  \let\@oddhead\@empty
+%  \let\@evenhead\@empty
+%  \def\@oddfoot{}%
+%  \let\@evenfoot\@oddfoot}
+% \makeatother
+
+\pagestyle{plain} %\pagestyle{myheadings}
+
+\textheight 8.4in
+\textwidth  6.5in
+\oddsidemargin 0pt \evensidemargin 0pt
+
+\title{ \textbf{MFMC toy problem write up}}
+\date{}
+
+\begin{document}
+
+\maketitle
+\vspace{-2.3cm}
+
+\section{Toy problem}
+In this model we consider the diffusion problem \eqref{eq: Model2_1} with non-overlapping domain $D_1$ and  $D_2$ with lipschitz boundary $\Gamma_1$ and $\Gamma_2$, both $D_1$ and $D_2$ share boundary $\Gamma_2$, denote $D = D_1\cup D_2$.
+
+\begin{equation}
+\label{eq: Model2_1}
+\begin{array}{lll}
+-\nabla \cdot (a_1(x,y,\xi_1) \nabla u) = f_1(x,y), & \text{in }D_1,\\
+u = g(x,y), & \text{on }\Gamma_1,\\
+\\
+-\nabla \cdot (a_2(x,y,\xi_2)\nabla v) = f_2(x,y), & \text{in }D_2,\\
+a_1\partial_\nu u + a_2\partial_\nu v = 0, & \text{on }\Gamma_2,\\
+u=v, & \text{on }\Gamma_2.
+\end{array}
+\end{equation}
+The Model problem \eqref{eq: Model2_1} is equivalent to the following problem
+\begin{equation}
+\label{eq: Model2_2}
+\begin{array}{lll}
+-\nabla \cdot (d(x,y,\xi) \nabla u) = f(x,y), & \text{in }D,\\
+u = g(x,y), & \text{on }\Gamma_1,
+\end{array}
+\end{equation}
+where $d(x,y,\xi)=\left\{\begin{array}{lll}
+a_1(x,y,\xi_1)&& x\in D_1\\
+a_2(x,y,\xi_2)&& x\in D_2\\
+\end{array}\right.$ and 
+$f(x,y)=\left\{\begin{array}{lll}
+f_1(x,y)&& x\in D_1\\
+f_2(x,y)&& x\in D_2\\
+\end{array}\right.$.
+\vspace{3mm}
+
+% \subsection{Code implementation}
+\noindent The diffusion coefficients and source terms for the toy problem are
+\[
+a_1=1+\xi_1,\quad a_2 = 10(1+\xi_2),\quad f_1 = -2-3x^2,\quad f_2 = 1-6x.
+\]
+Domain $D=[0,2]$, $D_1=[0,1]$.
+\section{Code implementation}
+This code employs a high-fidelity model with 5,121 grid points and eight low-fidelity models generated from a sparse grid, aligning with the same setup as the plasma problem.
+\begin{enumerate}
+    \item\texttt{script\textunderscore BuildSurrogforToy.m}: Builds surrogate models, which are later used for dynamic sampling.
+    
+    \item \texttt{script\textunderscore test\textunderscore covar.m}: Handles dynamic sampling.
+
+    \begin{itemize}
+        \item modify line 22 \texttt{tol}  to adjust the stopping criterion threshold.
+        \item The model selection process (lines 195–238) computes parameters for the most recent and second most recent updates.
+        \item The stopping criterion is located around line 240—this is where adjustments may be needed.
+        \item All results are stored in \texttt{Result\textunderscore test\textunderscore covar}.
+    \end{itemize}
+    \item \texttt{FEM\textunderscore solver.m}:  Implements the finite element method to solve a 1D Poisson equation, with two parameters in the diffusion coefficient. (parameter dimension $d=2$).
+    \item \texttt{Surrog\textunderscore Eval.m}: Evaluates the surrogate models, serving as low-fidelity models.
+    \item \texttt{load\textunderscore hfm\textunderscore mesh\textunderscore n\textunderscore com\textunderscore mesh\textunderscore toy.m}: Loads the high-fidelity model mesh and a common mesh for interpolating solutions from low-fidelity models.
+    \item \texttt{load\textunderscore lfm\textunderscore toy.m}: Loads surrogates for low-fidelity models.
+    \item \texttt{MFMC\textunderscore model\textunderscore selection\textunderscore exhausted.m}: Handles model selection using the exhausted method.
+    \item \texttt{MFMC\textunderscore model\textunderscore selection\textunderscore backtrack.m}: Handles model selection using the backtrack method.
+    \item \texttt{L2\textunderscore inprod\textunderscore toy.m}: Computes the L2 inner product of two functions.
+    \item \texttt{interp2grid\textunderscore toy.m}:  Interpolates a function from a coarse mesh to a fine mesh.
+    \item \texttt{plot\textunderscore n\textunderscore print.m}: Generates and plots tables from the dynamic sampling results.
+\end{enumerate}
+
+
+
+
+
+
+
+\end{document}
+
+
