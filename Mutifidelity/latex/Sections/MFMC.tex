@@ -350,7 +350,7 @@ ind\textunderscore for\textunderscore model = order(index).
 \Fn{ $[\mathcal{S}^*,\, \boldsymbol{\rho}^*, \,\boldsymbol{C}^*, \xi_{\text{min}}]$ = \textbf{Backtrack} $\left(\text{cur}\_\text{index}, \, \xi, \,k_{\text{last}}\right)$}{
 
 
-  \If{$\xi \leq \xi_{\text{min}}\,$ or $\,\xi>1$ }{
+  \If{$\xi \leq \xi_{\text{min}}\,$ }{
     $\xi_{\text{min}}=\xi$
 
     index = cur\textunderscore index
@@ -376,7 +376,7 @@ ind\textunderscore for\textunderscore model = order(index).
         Compute $\xi$ via \eqref{eq:MFMC_sampling_cost_efficiency} for  
       [cur\textunderscore index, $k$].
 
-      \If{$\xi\ge \xi_{\text{min}}$}{ 
+      \If{$\xi\ge \xi_{\text{min}}$ or $\,\xi>1$}{ 
     \Return
     }
       

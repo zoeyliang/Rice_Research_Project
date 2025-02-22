@@ -83,13 +83,13 @@ We begin by estimating statistical parameters using the high-fidelity model and 
     Estimate sample means $m_w^{(j)}, \widehat m_w^{(j)}$, standard deviations $\sigma_w^{(j)}, \widehat \sigma_w^{(j)}$, covariances $\text{Cov}_w^{(j)}$ and correlated coefficients $\rho_{1,k}^{(j)}$ by Welford's algorithm.
     }
 
-    [$\sim,\xi^{(j-1)}$] = Multi-fidelity Model Selection ($\boldsymbol{\rho}^{(j-1)},\boldsymbol{C}$).
+    [$\text{index},\xi^{(p)}$] = Multi-fidelity Model Selection ($\boldsymbol{\rho}^{(p)},\boldsymbol{C}$).
     
-    [$\sim,\xi^{(j)}$] = Multi-fidelity Model Selection ($\boldsymbol{\rho}^{(j)},\boldsymbol{C}$).
+    [$\text{index},\xi^{(p+dN)}$] = Multi-fidelity Model Selection ($\boldsymbol{\rho}^{(p+dN)},\boldsymbol{C}$).
     
     % Compute  $\xi^{(j)}$ by \eqref{eq:MFMC_sampling_cost_efficiency} with the selected $K^*$ models.
     
-    \If{$\left|\frac{\xi^{(j)}-\xi^{(j-1)}}{\xi^{(j)}}\right|<\delta$}
+    \If{$\left|\frac{\xi^{(p+dN)}-\xi^{(p)}}{\xi^{(p+dN)}}\right|<\delta$}
     % $\&$ $\left|\frac{\sigma_{k}^{(j)}-\sigma_{k}^{(j-1)}}{\sigma_{k}^{(j)}}\right|<\delta$ $\&$ $\left|\frac{\widehat \sigma_{k}^{(j)}-\widehat \sigma_{k}^{(j-1)}}{\widehat \sigma_{k}^{(j)}}\right|<\delta$ for all $k=2,\ldots, K$}
     {
     \text{AddSample = False}
@@ -104,7 +104,7 @@ We begin by estimating statistical parameters using the high-fidelity model and 
     }
     
     
-    $N=j$, $\sigma_1 = \sigma_w^{(j)}$, $\sigma_k = \widehat\sigma_w^{(j)}$, $\rho_{1,k} = \rho_{1,k}^{(j)}$.
+    $N=j$, $\sigma_1 = \sigma_w^{(j)}$, $\sigma_k = \widehat\sigma_w^{(j)}$, $\boldsymbol{\rho} = \boldsymbol{\rho}^{(j)}(\text{index})$.
 \caption{Dynamic strategy to estimate parameters--\JLcolor{Our version}}\label{algo:Parameter_Estimation}
 \end{algorithm}
 
@@ -123,46 +123,102 @@ We begin by estimating statistical parameters using the high-fidelity model and 
 \cline{2-8}	
 &\multicolumn{1}{|c|}{$M_\ell$} &$2685$ &$8019$ &$30449$ &$120697$ &$484080$ &$1934365$\\
 \hline
-\multirow{4}{*}{$6\times 10^{-3}\;\;\sim \;\;8\times 10^{-3}$} &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$&\multirow{4}{*}{}&\multirow{4}{*}{}&\multirow{4}{*}{}\\
+\multirow{3}{*}{$6\times 10^{-3}\;\;\sim \;\;8\times 10^{-3}$} &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$&\multirow{3}{*}{}&\multirow{3}{*}{}&\multirow{3}{*}{}\\
 \cline{2-5}		
 &\multicolumn{1}{|c|}{$\sigma_{k}$}&9.5720e-03   &1.1549e-02   &1.0939e-02&&&\\
-\cline{2-5}	
-&\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0286e-04&1.2604e-04&-&&&\\
+% \cline{2-5}	
+% &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0286e-04&1.2604e-04&-&&&\\
 \cline{2-5}
 &\multicolumn{1}{|c|}{$\rho_{1,k}$}&9.8238e-01&9.9762e-01&-&&&\\
 \hline
 \hline
-\multirow{4}{*}{$2\times 10^{-3}\;\;\sim \;\;4\times 10^{-3}$} &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,4}$&$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$&\multirow{4}{*}{}&\multirow{4}{*}{}\\
+\multirow{3}{*}{$2\times 10^{-3}\;\;\sim \;\;4\times 10^{-3}$} &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,4}$&$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$&\multirow{3}{*}{}&\multirow{3}{*}{}\\
 \cline{2-6}	
- % &\multicolumn{1}{|c|}{$\sigma_{1}$}&\multicolumn{3}{c|}{}&1.1742e-04&&\\
- % \cline{2-6}	
 &\multicolumn{1}{|c|}{$\sigma_{k}$}&9.5720e-03   &1.1549e-02   &1.1001e-02   &1.0836e-02 &&\\
-\cline{2-6}	
-&\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$} &1.0206e-04 &1.2480e-04 &1.1911e-04 &- &&\\
+% \cline{2-6}	
+% &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$} &1.0206e-04 &1.2480e-04 &1.1911e-04 &- &&\\
 \cline{2-6}	
 &\multicolumn{1}{|c|}{$\rho_{1,k}$}&9.8394e-01&9.9720e-01 &9.9919e-01&-&&\\
 \hline
 \hline
-\multirow{4}{*}{$4\times 10^{-4}\;\;\sim \;\;1\times 10^{-3}$} &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,5}$&$\widehat u_{h,4}$&$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$&\multirow{4}{*}{}\\
+\multirow{3}{*}{$4\times 10^{-4}\;\;\sim \;\;1\times 10^{-3}$} &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,5}$&$\widehat u_{h,4}$&$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$&\multirow{3}{*}{}\\
  \cline{2-7}	
 &\multicolumn{1}{|c|}{$\sigma_{k}$}&9.5720e-03   &1.1549e-02   &1.1001e-02   &1.0838e-02   &1.0840e-02  &\\
-\cline{2-7}	
-&\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0209e-04 &1.2485e-04 &1.1916e-04 &1.1745e-04 &- &\\
+% \cline{2-7}	
+% &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0209e-04 &1.2485e-04 &1.1916e-04 &1.1745e-04 &- &\\
 \cline{2-7}	
 &\multicolumn{1}{|c|}{$\rho_{1,k}$}&9.8392e-01 &9.9727e-01 &9.9925e-01 &9.9977e-01 &- &\\
 \hline
 \hline
-\multirow{4}{*}{$2\times 10^{-4}$} &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,6}$&$\widehat u_{h,5}$&$\widehat u_{h,4}$&$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$\\
+\multirow{3}{*}{$2\times 10^{-4}$} &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,6}$&$\widehat u_{h,5}$&$\widehat u_{h,4}$&$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$\\
 \cline{2-8}
 &\multicolumn{1}{|c|}{$\sigma_{k}$}&9.5720e-03   &1.1549e-02   &1.1001e-02   &1.0838e-02   &1.0812e-02  &1.0840e-02\\
-\cline{2-8}	
-&\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0209e-04&1.2485e-04&1.1916e-04&1.1745e-04&1.1717e-04&-\\
+% \cline{2-8}	
+% &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0209e-04&1.2485e-04&1.1916e-04&1.1745e-04&1.1717e-04&-\\
 \cline{2-8}	
 &\multicolumn{1}{|c|}{$\rho_{1,k}$}&9.8390e-01   &9.9728e-01   &9.9925e-01   &9.9977e-01   &9.9976e-01   &-\\
 \hline
 \end{tabular}}
 \caption{Estimated statistical parameters for various predetermined tolerances $\epsilon$ in terms of nMSE. The high-fidelity model $\widehat u_{h,1}$ represents the finite element solution to the free boundary problem on a spatial grid of level $L$, ensuring the discretization error meets accuracy requirements. Candidate low-fidelity models $\widehat u_{h,k}$ for $k \geq 2$ are generated using 25 sparse grid nodes (with level $q=1$) on spatial grids from levels 0 to $L-1$. All parameters are estimated using Welford's dynamic sampling algorithm with a stopping criterion requiring a relative error of $10^{-4}$ for all parameters.}
 \label{Tab:MFMC_parameters}
+\end{table}
+%
+
+
+
+%
+\begin{table}[ht]
+\centering
+\scalebox{0.8}{
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\cline{1-8}	
+\multirow{2}{*}{$\epsilon$}&\multicolumn{1}{|c|}{$\ell$} &0&1&2&3&4&5\\
+\cline{2-8}	
+&\multicolumn{1}{|c|}{$M_\ell$} &$2685$ &$8019$ &$30449$ &$120697$ &$484080$ &$1934365$\\
+\hline
+\multirow{3}{*}{$6\times 10^{-3}\;\;\sim \;\;8\times 10^{-3}$} &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$&\multirow{3}{*}{}&\multirow{3}{*}{}&\multirow{3}{*}{}\\
+\cline{2-5}		
+&\multicolumn{1}{|c|}{$\sigma_{k}$}&9.7398e-03  &1.2180e-02 &1.1058e-02&&&\\
+% \cline{2-5}	
+% &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0368e-04&1.3773e-04 &-&&&\\
+\cline{2-5}
+&\multicolumn{1}{|c|}{$\rho_{1,k}$}&9.7892e-01&9.9751e-01&-&&&\\
+\hline
+&\multicolumn{1}{|c|}{Sample no. and time}&50&1.6612e+02\\
+\hline
+\multirow{3}{*}{$2\times 10^{-3}\;\;\sim \;\;4\times 10^{-3}$} &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,4}$&$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$&\multirow{3}{*}{}&\multirow{3}{*}{}\\
+\cline{2-6}		
+&\multicolumn{1}{|c|}{$\sigma_{k}$}&9.5275e-03&1.2174e-02&9.1390e-03&1.0404e-02&&\\
+% \cline{2-6}	
+% &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$} &1.0227e-04&1.3680e-04 &8.2654e-05&- &&\\
+\cline{2-6}	
+&\multicolumn{1}{|c|}{$\rho_{1,k}$}&9.8352e-01&9.9660e-01 &9.9938e-01&-&&\\
+\hline
+&\multicolumn{1}{|c|}{Sample no. and time}&30&4.5414e+02\\
+\hline
+\multirow{3}{*}{$4\times 10^{-4}\;\;\sim \;\;1\times 10^{-3}$} &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,5}$&$\widehat u_{h,4}$&$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$&\multirow{3}{*}{}\\
+ \cline{2-7}	
+&\multicolumn{1}{|c|}{$\sigma_{k}$}&9.7260e-03&1.2496e-02&1.2300e-02&1.1717e-02&1.1606e-02  &\\
+% \cline{2-7}	
+% &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0487e-04&1.4379e-04&1.4983e-04&1.3733e-04  &- &\\
+\cline{2-7}	
+&\multicolumn{1}{|c|}{$\rho_{1,k}$}&9.8288e-01&9.9682e-01&9.9941e-01  &9.9976e-01&- &\\
+\hline
+&\multicolumn{1}{|c|}{Sample no. and time}&50&3.8655e+03\\
+\hline
+\multirow{3}{*}{$2\times 10^{-4}$} &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,6}$&$\widehat u_{h,5}$&$\widehat u_{h,4}$&$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$\\
+\cline{2-8}
+&\multicolumn{1}{|c|}{$\sigma_{k}$}&9.3878e-03&1.0134e-02&1.3305e-02&9.4344e-03&9.7624e-03&1.0524e-02\\
+% \cline{2-8}	
+% &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0164e-04&1.0662e-04&1.1679e-04&1.1589e-04&1.0646e-04&-\\
+\cline{2-8}	
+&\multicolumn{1}{|c|}{$\rho_{1,k}$}&9.8044e-01&9.9787e-01&9.9960e-01&9.9975e-01&9.9970e-01   &-\\
+\hline
+&\multicolumn{1}{|c|}{Sample no. and time}&30&1.2147e+04\\
+\hline
+\end{tabular}}
+\caption{Estimated statistical parameters for various predetermined tolerances $\epsilon$ in terms of nMSE. The high-fidelity model $\widehat u_{h,1}$ represents the finite element solution to the free boundary problem on a spatial grid of level $L$, ensuring the discretization error meets accuracy requirements. Candidate low-fidelity models $\widehat u_{h,k}$ for $k \geq 2$ are generated using 25 sparse grid nodes (with level $q=1$) on spatial grids from levels 0 to $L-1$. All parameters are estimated using Welford's dynamic sampling algorithm with a stopping criterion requiring a relative error of $10^{-4}$ for all parameters.}
+\label{Tab:MFMC_parameters_dynamic}
 \end{table}
 %
 
@@ -197,10 +253,10 @@ To evaluate the computational efficiency of the MFMC method, we next quantify th
 %
 \begin{figure}[ht!]\centering
 \begin{tabular}{cc}
-\includegraphics[width=0.46\linewidth]{./figures/CostPerSample_Ml.pdf}
-% \includegraphics[width=0.46\linewidth]{./Figures/Surrog_Construct_Cost.pdf}
+\includegraphics[width=0.46\linewidth]{./figures/CostPerSample_Ml.pdf}&
+\includegraphics[width=0.46\linewidth]{./figures/Cost_epsilon.pdf}
 \end{tabular}
-\caption{Left:  Mean CPU times to compute 500 realizations of solutions for direct computations vs.\ an increasing number of spatial grid points $M_\ell$. Right:  Offline costs of construction of ...}
+\caption{Left:  Mean CPU times to compute 500 realizations of solutions for direct computations vs.\ an increasing number of spatial grid points $M_\ell$. Right:  Total CPU time v.s. $\epsilon$ for simulation of various methods.}
 \label{fig:CostEstimatePlot}
 \end{figure}
 %
@@ -216,12 +272,14 @@ To evaluate the computational efficiency of the MFMC method, we next quantify th
 \scalebox{0.8}{
 \begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\multicolumn{1}{|c|}{$\epsilon$} &$8\times 10^{-3}$&$6\times 10^{-3}$&$4\times 10^{-3}$&$2\times 10^{-3}$&$10^{-3}$&$8\times 10^{-4}$&$6\times 10^{-4}$&$4\times 10^{-4}$&$2\times 10^{-4}$\\
+\multicolumn{1}{|c|}{$\epsilon$} &$2\times 10^{-4}$&$4\times 10^{-4}\sim 1\times 10^{-3}$&$2\times 10^{-3} \sim 4\times 10^{-3}$&$6\times 10^{-3} \sim 8\times 10^{-3}$\\
 \hline
-\multicolumn{1}{|c|}{Build surrogate }&2.11e+01&2.11e+01&1.08e+02&1.08e+02&5.53e+02&5.53e+02&5.53e+02&5.53e+02&2.39e+03\\
+\multicolumn{1}{|c|}{ Time to build surrogate }&2.39e+03&5.53e+02&1.08e+02&2.11e+01\\
 \hline
-\multicolumn{1}{|c|}{Estimate parameters}&2.80e+03&2.80e+03&6.08e+03&6.08e+03&1.68e+04&1.68e+04&1.68e+04&1.68e+04&6.9423e+04\\
+\multicolumn{1}{|c|}{Time to estimate parameters}&1.21e+04&3.87e+03&4.54e+02&1.66e+02\\
 % &2.02e+00&7.90e+00&3.10e+01&1.52e+02&8.12e+02&3.56e+03\\
+\hline
+\multicolumn{1}{|c|}{Samples required for dynamic sampling}& 30&50&30&50\\
 \hline
 \end{tabular}
 }
@@ -229,6 +287,8 @@ To evaluate the computational efficiency of the MFMC method, we next quantify th
 \label{Tab:Offline_cost}
 \end{table}
 %
+
+
 
 
 
@@ -393,7 +453,7 @@ As demonstrated in \cite{ElLiSa:2023}, multilevel Monte Carlo (MLMC) implementat
 &\includegraphics[width=0.19\linewidth]{./figures/QoI_MLMC_DirectSolver_xptRegion_Interp2CommonGrid.pdf} 
 &\includegraphics[width=0.19\linewidth]{./figures/QoI_MFMC_xptRegion.pdf} 
 \\[1ex]
-\quad MC-FE + Direct Solve &MLMC-FE + Direct Solve &MFMC-FE  \\[-0.5ex]
+\quad MC-FE &MLMC-FE (Interp) &MFMC-FE (Interp) \\[-0.5ex]
 \end{tabular}
 \caption{The overlayed plasma boundaries of 50 random realizations are 
 displayed in the top row as violet curves (interpolated to the finest mesh with spatial grid level $\ell=4$). The solid violet line is the plasma boundary of the expected 
@@ -461,15 +521,15 @@ The sample size estimation for various $\epsilon$ is shown in Table \ref{Tab:Sam
 			\hline
 			\multicolumn{1}{|c|}{$\epsilon$}&0&1&2&3&4&5\\
 			\hline
-			\multicolumn{1}{|c|}{$8\times 10^{-3} $}&2&2&2&&&\\
-			\multicolumn{1}{|c|}{$6\times 10^{-3} $}&2&2&2&&&\\
-			\multicolumn{1}{|c|}{$4\times 10^{-3} $}&2&2&2&2&&\\
-			\multicolumn{1}{|c|}{$2\times 10^{-3} $}&2&2&2&2&&\\
-			\multicolumn{1}{|c|}{$10^{-3} $}&2&2&2&2&2&\\
-			\multicolumn{1}{|c|}{$8\times 10^{-4} $}&2&2&2&2&2&\\
-                \multicolumn{1}{|c|}{$6\times 10^{-4} $}&2&2&2&2&2&\\
-			\multicolumn{1}{|c|}{$4\times 10^{-4} $}&2&2&2&2&2&\\
-                \multicolumn{1}{|c|}{$2\times 10^{-4} $}&12&2&2&2&-&2\\
+			\multicolumn{1}{|c|}{$8\times 10^{-3} $}&24&4&2&&&\\
+			\multicolumn{1}{|c|}{$6\times 10^{-3} $}&43&7&2&&&\\
+			\multicolumn{1}{|c|}{$4\times 10^{-3} $}&95&12&4&2&&\\
+			\multicolumn{1}{|c|}{$2\times 10^{-3} $}&380&46&13&2&&\\
+			\multicolumn{1}{|c|}{$10^{-3} $}&2444&301&79&13&2&\\
+			\multicolumn{1}{|c|}{$8\times 10^{-4} $}&3819&470&123&21&2&\\
+                \multicolumn{1}{|c|}{$6\times 10^{-4} $}&6788&835&218&36&2&\\
+			\multicolumn{1}{|c|}{$4\times 10^{-4} $}&15273&1879&489&81&2&\\
+                \multicolumn{1}{|c|}{$2\times 10^{-4} $}&97028&13374&2544&335&-&5\\
 			\hline
 	\end{tabular}
  
@@ -485,27 +545,44 @@ The sample size estimation for various $\epsilon$ is shown in Table \ref{Tab:Sam
 			\scalebox{0.62}{
    \begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|}
 			\hline
-			\multicolumn{1}{|c|}{ }&MC-FE &MLMC-FE&MFMC-FE &MFMC-FE(Interp)\\
-			\multicolumn{1}{|c|}{$\epsilon$}&Time & \begin{tabular}{cc} \,\,\,\,\,Time & \,\,\,Speedup \end{tabular} &\begin{tabular}{cc} \,\,\,\,Time & \,\,\,Speedup \end{tabular} &\begin{tabular}{cc} \,\,\,\,Time & \,\,\,Speedup \end{tabular}\\
+			\multicolumn{1}{|c|}{ }&MC-FE &MLMC-FE&MLMC-FE(Interp)
+            % &MFMC-FE 
+            &MFMC-FE(Interp)&MFMC-FE(Interp)+upfront\\
+			\multicolumn{1}{|c|}{$\epsilon$}&Time &\begin{tabular}{cc} \,\,\,\,\,Time & \,\,\,Speedup \end{tabular}&\begin{tabular}{cc} \,\,\,\,Time & \,\,\,Speedup \end{tabular} &\begin{tabular}{cc} \,\,\,\,Time & \,\,\,Speedup \end{tabular} &\begin{tabular}{cc} \,\,\,\,Time & \,\,\,Speedup \end{tabular}\\
+            % &\begin{tabular}{cc} \,\,\,\,Time & \,\,\,Speedup \end{tabular}\\
 			\hline
-			\multicolumn{1}{|c|}{$8\times 10^{-3} $}&1.42e+01&\begin{tabular}{cc}6.61e+00\,\,\, & 2.1 \end{tabular}&\begin{tabular}{cc}7.34e+00\,\,  &1.9 \end{tabular} &\begin{tabular}{cc}1.56e+01\,\,  &0.9 \end{tabular} \\
-			\multicolumn{1}{|c|}{$6\times 10^{-3} $}&2.75e+01&\begin{tabular}{cc}7.44e+00\,\,\, & 3.7 \end{tabular}&\begin{tabular}{cc}7.24e+00\,\, &3.8 \end{tabular}&\begin{tabular}{cc}1.54e+01&1.8
-            \end{tabular}\\
-			\multicolumn{1}{|c|}{$4\times 10^{-3} $}&6.60e+01&\begin{tabular}{cc}4.36e+01\,\,\, & 1.5 \end{tabular}&\begin{tabular}{cc}1.43e+01&4.6\end{tabular}&\begin{tabular}{cc}2.5341e+01&2.6045e+00
-            \end{tabular}\\
-			\multicolumn{1}{|c|}{$2\times 10^{-3} $}&2.19e+02&\begin{tabular}{cc}4.73e+01\,\, & 4.6\end{tabular}&\begin{tabular}{cc}1.43e+01&15.3 \end{tabular}&\begin{tabular}{cc}2.5618e+01&8.5487e+00
-            \end{tabular}\\
-			\multicolumn{1}{|c|}{$10^{-3} $}&4.66e+03&\begin{tabular}{cr}1.66e+02\,\, & 28.1 \end{tabular}&\begin{tabular}{cc}3.67e+01&127.1\end{tabular}&\begin{tabular}{cc}4.9038e+01&9.5028e+01
-            \end{tabular}\\
-			\multicolumn{1}{|c|}{$8\times 10^{-4} $}&8.02e+03&\begin{tabular}{cc}4.33e+02\,\, & 18.5 \end{tabular}&\begin{tabular}{cc}4.29e+01&187.0
-            \end{tabular}&\begin{tabular}{cc}5.6344e+01&1.4234e+02
-            \end{tabular}\\
-			\multicolumn{1}{|c|}{$6\times 10^{-4} $}&1.49e+04&\begin{tabular}{cc}5.36e+02\,\, & 27.8 \end{tabular}&\begin{tabular}{cc}4.87e+01 &305.7\end{tabular}&\begin{tabular}{cc}6.4086e+01&2.3250e+02
-            \end{tabular}\\
-                \multicolumn{1}{|c|}{$4\times 10^{-4} $}&3.66e+04&\begin{tabular}{cc}1.03e+03\,\, & 35.4 \end{tabular} &\begin{tabular}{cc}4.37e+01&837.1 \end{tabular}&\begin{tabular}{cc}5.7562e+01&6.3584e+02
-            \end{tabular}\\
-                \multicolumn{1}{|c|}{$2\times 10^{-4} $}&5.84e+05$^{\ast}$\!\!\!&\begin{tabular}{cc}4.90e+03 &119.2 \end{tabular} &\begin{tabular}{cc}2.29e+02&2552.9 \end{tabular}&\begin{tabular}{cc}2.4207e+02 &2.4125e+03
-            \end{tabular}\\
+			\multicolumn{1}{|c|}{$8\times 10^{-3} $}&1.42e+01&\begin{tabular}{cc}6.61e+00\,\,\, & 2.1 \end{tabular}&\begin{tabular}{cc}7.17e+01\,\,  &0.2\end{tabular}
+            % &\begin{tabular}{cc}7.2998e+00\,\,  &1.9453e+00 \end{tabular} 
+            &\begin{tabular}{cc}1.33e+01\,\,   &1.1 \end{tabular} &\begin{tabular}{cc}2.01e+02\,\,  &0.07\end{tabular}\\
+			\multicolumn{1}{|c|}{$6\times 10^{-3} $}&2.75e+01&\begin{tabular}{cc}7.44e+00\,\,\, & 3.7 \end{tabular}&\begin{tabular}{cc}8.84e+01\,\,  &0.3\end{tabular}
+            % &\begin{tabular}{cc}9.3266e+00\,\, &2.9486e+00 \end{tabular}
+            &\begin{tabular}{cc}1.53e+01&1.8
+            \end{tabular}&\begin{tabular}{cc}2.03e+02\,\,  &0.1\end{tabular}\\
+			\multicolumn{1}{|c|}{$4\times 10^{-3} $}&6.60e+01&\begin{tabular}{cc}4.36e+01\,\,\, & 1.5 \end{tabular}&\begin{tabular}{cc}1.14e+02\,\,  &0.6\end{tabular}
+            % &\begin{tabular}{cc}1.9119e+01&3.4521e+00\end{tabular}
+            &\begin{tabular}{cc}2.21e+01&3.0
+            \end{tabular}&\begin{tabular}{cc}5.84e+02\,\,  &0.1\end{tabular}\\
+			\multicolumn{1}{|c|}{$2\times 10^{-3} $}&2.19e+02&\begin{tabular}{cc}4.73e+01\,\, & 4.6\end{tabular}&\begin{tabular}{cc}6.16e+02\,\,  &0.4\end{tabular}
+            % &\begin{tabular}{cc}3.0242e+01& 7.2416e+00\end{tabular}
+            &\begin{tabular}{cc}3.32e+01&6.6 \end{tabular}&\begin{tabular}{cc}5.95e+02\,\,  &0.4\end{tabular}\\
+			\multicolumn{1}{|c|}{$10^{-3} $}&4.66e+03&\begin{tabular}{cr}1.66e+02\,\, & 28.1 \end{tabular}&\begin{tabular}{cc}2.46e+03\,\,  &1.9\end{tabular}
+            % &\begin{tabular}{cc}6.5732e+01&7.0894e+01\end{tabular}
+            &\begin{tabular}{cc}6.87e+01&67.9
+            \end{tabular}&\begin{tabular}{cc}4.49e+03\,\,  &1.0\end{tabular}\\
+			\multicolumn{1}{|c|}{$8\times 10^{-4} $}&8.02e+03&\begin{tabular}{cc}4.33e+02\,\, & 18.5 \end{tabular}&\begin{tabular}{cc}3.53e+03\,\,  &2.3\end{tabular}
+            % &\begin{tabular}{cc}6.9345e+01&1.1565e+02\end{tabular}
+            &\begin{tabular}{cc}7.23e+01&111.0
+            \end{tabular}&\begin{tabular}{cc}4.49e+03\,\,  &1.8\end{tabular}\\
+			\multicolumn{1}{|c|}{$6\times 10^{-4} $}&1.49e+04&\begin{tabular}{cc}5.36e+02\,\, & 27.8 \end{tabular}&\begin{tabular}{cc}6.63e+03\,\,  &2.2\end{tabular}
+            % &\begin{tabular}{cc}1.4482e+02&1.0289e+02\end{tabular}
+            &\begin{tabular}{cc}1.48e+02&100.6
+            \end{tabular}&\begin{tabular}{cc}4.57e+03\,\,  &3.3\end{tabular}\\
+                \multicolumn{1}{|c|}{$4\times 10^{-4} $}&3.66e+04&\begin{tabular}{cc}1.03e+03\,\, & 35.4 \end{tabular}&\begin{tabular}{cc}1.62e+04\,\,  &2.3\end{tabular} &\begin{tabular}{cc}2.62e+02&139.7 \end{tabular}
+                % &\begin{tabular}{cc}2.6595e+02&1.3762e+02\end{tabular}
+            &\begin{tabular}{cc}4.68e+03\,\,  &7.8\end{tabular}\\
+                \multicolumn{1}{|c|}{$2\times 10^{-4} $}&5.84e+05$^{\ast}$\!\!\!&\begin{tabular}{cc}4.90e+03 &119.2 \end{tabular} &\begin{tabular}{cc}6.38e+04\,\,  &9.2\end{tabular}
+                % &\begin{tabular}{cc} 6.6985e+02&8.7184e+02 \end{tabular}
+                &\begin{tabular}{cc}6.78e+02 &861.2 \end{tabular}&\begin{tabular}{cc}1.52e+04\,\,  &38.4\end{tabular}\\
 			\hline
 	\end{tabular}
  }
@@ -524,7 +601,7 @@ The sample size estimation for various $\epsilon$ is shown in Table \ref{Tab:Sam
 			\scalebox{0.6}{
 		\begin{tabular}{c|c|c|c|c|c|c|}
 			\cline{2-5}
-				&\multicolumn{1}{c|}{MC-FE DS}&MLMC-FE DS&MLMC-FE DS (Interp)&MLMC-FE Surrogate (Interp)\\
+				&\multicolumn{1}{c|}{MC-FE}&MLMC-FE&MLMC-FE (Interp)&MFMC-FE (Interp)\\
 			\hline
 			\multicolumn{1}{|c|}{x point}&(5.14,-3.29)&(5.14,-3.29)&(5.14,-3.29)&(5.14,-3.29)\\
 			\hline
@@ -543,7 +620,7 @@ The sample size estimation for various $\epsilon$ is shown in Table \ref{Tab:Sam
 			\hline
 	\end{tabular}
   }
-	\caption{Geometric parameters of the expected poloidal flux $u$ from MC-FE with direct solver, MLMC-FE with direct solver,  MLMC-FE with direct solver with interpolating solution to a common fine grid of level $L=5$, MLMC-FE with surrogate with interpolating solution to a common fine grid of level $L=5$. The results are generated with an nMSE $4\times 10^{-4}$ on the geometry-conforming uniform mesh set.}
+	\caption{Geometric parameters of the expected poloidal flux $u$ from MC-FE with direct solver, MLMC-FE with direct solver,  MLMC-FE with direct solver with interpolating solution to a common fine grid of level $L=5$, MFMC-FE with surrogate with interpolating solution to a common fine grid of level $L=5$. The results are generated with an nMSE $4\times 10^{-4}$ on the geometry-conforming uniform mesh set.}
 	\label{Tab: QoI_GeoInfo}
 \end{table}
 
