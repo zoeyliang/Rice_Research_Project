@@ -525,15 +525,25 @@ For $\mathcal{S}^*=\{\widehat u_{h,i}\}_{i=1}^{K^*}$, compute weights $\alpha_i$
 
 \begin{theorem}
 \label{thm:Sample_cost_est}
-Let $u_{h,k}$ be $K$ models that satisfy the following conditions.
-Suppose there exist positive constants $\alpha, \beta, \gamma$ such that
+Let $\ell$ be the spatial grid nodes starting from 0 to $L$.
+Let $u_{h,k}$ be $K$ models such that $u_{h,1}$ is the high fidelity model, $k\ge 2$ are the low fidelity models constructed using the sparse grid stochastic collocation method. Suppose there exist positive constants $\alpha, \beta, \gamma$ such that the following conditions are satisfied
 %
 \begin{alignat*}{8}
     &(i)\;\; |\rho_{1,1}|>\ldots>|\rho_{1,K}|,& \qquad \qquad
     &(ii)\;\; \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2},\;\;k=2,\ldots,K, \quad \rho_{1,K+1}=0,\\
-    &(iii)\;\; \left\Vert\mathbb{E}\left(u-u_{h,k}\right)\right\Vert_Z=\mathcal{O}\left( M_k^{-\alpha}\right),& \qquad \qquad
-    &(iv)\;\; C_k=\mathcal{O}\left( M_k^{-\gamma}\right),\\
-    &(v)\;\; \rho_{1,k-1}^2-\rho_{1,k}^2=\mathcal{O}\left( M_k^{\beta}\right).
+    &(iii)\;\; \left\Vert\mathbb{E}\left(u-u_{h,k}\right)\right\Vert_Z=\mathcal{O}\left( M_{L-k+1}^{-\alpha}\right),& \qquad \qquad
+    &(iv)\;\; C_k=
+    \left\{\begin{array}{ll}
+    \mathcal{O}\left( M_{L}^{\gamma}\right), & k=1,\\
+    \mathcal{O}\left( M_{L-k+1}^{\gamma_1}\right), & k\ge 2,\\
+    \end{array}
+\right.\\
+    &(v)\;\; \rho_{1,k}^2-\rho_{1,k+1}^2=
+    \left\{\begin{array}{ll}
+    \mathcal{O}\left( M_{L}^{-\beta}\right), & k=1,\\
+    \mathcal{O}\left( M_{L-k+1}^{-\beta_1}\right), & k\ge 2,\\
+    \end{array}
+\right.
 \end{alignat*}
 %
 %
@@ -554,10 +564,38 @@ with total sampling work bounded as
 \end{theorem}
 \begin{proof}\label{eq:Sample_cost_est}
 
+$C_1=W_L, C_k = W_{L-k+1}\sim M_{L-k+1}^\gamma\sim s^{(L-k+1)\gamma}$, K=L.
 
+Condition (ii) indicates $\beta>\gamma$.
 
+%
+\begin{equation}
+\label{eq:Geo_sum_for_s}
+\sum_{k=0}^L s^{\eta k}=\left\{\begin{array}{ll}
+\frac{1}{1-s^{\eta}}=\mathcal{O}\left(1\right), & \eta<0,\\
+L+1 = \mathcal{O}\left(|\log \epsilon|\right), & \eta = 0,\\
+\mathcal{O}\left(\epsilon^{-\frac{\eta}{\alpha}}\right), & \eta>0,
+\end{array}
+\right.
+\end{equation}
+%
 
-
+Note that if all candidate models are selected as low fidelity models, then $K=L+1$. In general, $K\sim L$.
+%
+\begin{align*}
+    \mathcal{W}^\text{MF} &\sim \epsilon^{-2} \left(\sum_{k=1}^K\sqrt{C_k\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)}\right)^2 \sim \epsilon^{-2}\left(\sqrt{C_1\left(\rho_{1,1}^2 - \rho_{1,2}^2\right)}+\sum_{k=2}^K \sqrt{C_k\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)} \right)^2\\
+    &\sim \epsilon^{-2} \left(M_L^{\frac{\gamma-\beta}{2}}+\sum_{k=2}^{L+1}M_{L-k+1}^\frac{\gamma_1-\beta_1}{2}\right)^2=\epsilon^{-2} \left(M_L^{\frac{\gamma-\beta}{2}}+\sum_{p=0}^{L-1}M_{p}^\frac{\gamma_1-\beta_1}{2}\right)^2\sim \epsilon^{-2}\left(s^{\frac{(\gamma-\beta)}{2}L}+\sum_{p=0}^{L-1}s^{\frac{(\gamma_1-\beta_1)}{2}p}\right),
+\end{align*}
+%
+From \eqref{eq:SLSGC_MLS_SpatialGridsNo}, $s^{\frac{(\gamma-\beta)}{2}L}\sim \epsilon^{\frac{\beta-\gamma}{2\alpha}}$. The term $\sum_{p=0}^{L-1}s^{\frac{(\gamma_1-\beta_1)}{2}p}$ can be determined from \eqref{eq:Geo_sum_for_s}. Therefore, 
+\[
+\mathcal{W}^\text{MF} = \left\{\begin{array}{ll}
+\epsilon^{-2+\frac{\beta-\gamma}{\alpha}}, & \beta_1>\gamma_1\\
+\epsilon^{-2}\left(\epsilon^{\frac{\beta-\gamma}{2\alpha}}+|\log\epsilon|\right)^2, & \beta_1=\gamma_1\\
+\epsilon^{-2}\left(\epsilon^{\frac{\beta-\gamma}{2\alpha}}+\epsilon^{-\frac{\gamma_1-\beta_1}{2\alpha}}\right)^2, & \beta_1<\gamma_1
+\end{array}
+\right.
+\]
 
 
 

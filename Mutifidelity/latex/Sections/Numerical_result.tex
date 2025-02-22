@@ -159,7 +159,7 @@ We begin by estimating statistical parameters using the high-fidelity model and 
 &\multicolumn{1}{|c|}{$\rho_{1,k}$}&9.8390e-01   &9.9728e-01   &9.9925e-01   &9.9977e-01   &9.9976e-01   &-\\
 \hline
 \end{tabular}}
-\caption{Estimated statistical parameters for various predetermined tolerances $\epsilon$ in terms of nMSE. The high-fidelity model $\widehat u_{h,1}$ represents the finite element solution to the free boundary problem on a spatial grid of level $L$, ensuring the discretization error meets accuracy requirements. Candidate low-fidelity models $\widehat u_{h,k}$ for $k \geq 2$ are generated using 25 sparse grid nodes (with level $q=1$) on spatial grids from levels 0 to $L-1$. All parameters are estimated using Welford's dynamic sampling algorithm with a stopping criterion requiring a relative error of $10^{-4}$ for all parameters.}
+\caption{Estimated statistical parameters for various predetermined tolerances $\epsilon$ in terms of nMSE with 500 samples for approximating parameters between each low fidelity models and the corresponding high fidelity model. The high-fidelity model $\widehat u_{h,1}$ represents the finite element solution to the free boundary problem on a spatial grid of level $L$, ensuring the discretization error meets accuracy requirements. Candidate low-fidelity models $\widehat u_{h,k}$ for $k \geq 2$ are generated using 25 sparse grid nodes (with level $q=1$) on spatial grids from levels 0 to $L-1$. All parameters are estimated using Welford's dynamic sampling algorithm with a stopping criterion requiring a relative error of $10^{-4}$ for all parameters.}
 \label{Tab:MFMC_parameters}
 \end{table}
 %
@@ -217,7 +217,7 @@ We begin by estimating statistical parameters using the high-fidelity model and 
 &\multicolumn{1}{|c|}{Sample no. and time}&30&1.2147e+04\\
 \hline
 \end{tabular}}
-\caption{Estimated statistical parameters for various predetermined tolerances $\epsilon$ in terms of nMSE. The high-fidelity model $\widehat u_{h,1}$ represents the finite element solution to the free boundary problem on a spatial grid of level $L$, ensuring the discretization error meets accuracy requirements. Candidate low-fidelity models $\widehat u_{h,k}$ for $k \geq 2$ are generated using 25 sparse grid nodes (with level $q=1$) on spatial grids from levels 0 to $L-1$. All parameters are estimated using Welford's dynamic sampling algorithm with a stopping criterion requiring a relative error of $10^{-4}$ for all parameters.}
+\caption{Estimated statistical parameters for various predetermined tolerances $\epsilon$ in terms of nMSE using dynamic strategy with $\delta=0.01$ in the Algorithm \ref{algo:Parameter_Estimation}. The high-fidelity model $\widehat u_{h,1}$ represents the finite element solution to the free boundary problem on a spatial grid of level $L$, ensuring the discretization error meets accuracy requirements. Candidate low-fidelity models $\widehat u_{h,k}$ for $k \geq 2$ are generated using 25 sparse grid nodes (with level $q=1$) on spatial grids from levels 0 to $L-1$. All parameters are estimated using Welford's dynamic sampling algorithm with a stopping criterion requiring a relative error of $10^{-4}$ for all parameters.}
 \label{Tab:MFMC_parameters_dynamic}
 \end{table}
 %
@@ -283,7 +283,7 @@ To evaluate the computational efficiency of the MFMC method, we next quantify th
 \hline
 \end{tabular}
 }
-\caption{The offline cost. The second row--CPU time to construct surrogate $\widehat u_{h,k}$ with sparse grid level $q=1$ with respect to decreasing tolerance. The third row corresponds to the total time to estimate the parameters with 500 samples, this cost includes evaluation of surrogate and direct computation, interpolation to solution to the common fine mesh, and use Welford's algorithm to compute the sample statistics.}
+\caption{Computational costs and sample requirements for low-fidelity model construction and parameter estimation. The second row: CPU time required to construct low-fidelity models $\widehat u_{h,k}$, generated using a sparse grid of level $q=1$ on coarser meshes than the high-fidelity model. The third row: CPU time for parameter estimation using a dynamic strategy with $\delta-0.01$. The last row: number of samples needed to compute the coefficients for each low-fidelity model.}
 \label{Tab:Offline_cost}
 \end{table}
 %
@@ -462,8 +462,7 @@ The inner and outer walls of the reactor are displayed in solid black and
 dark red respectively. The bottom row shows the regions close to the 
 x-points in more detail. The dark green dots are the x-points of the expected 
 solution. The columns from left to right correspond to simulations using the 
-MC-FE approach with the direct solver and surrogate, MLMC-FE with direct 
-solver and surrogate. All simulations were interpolated to the geometry-conforming uniform meshes of discretization level $\ell=4$.} 
+MC-FE approach, MLMC-FE and MFMC-FE. All simulations were interpolated to the geometry-conforming uniform meshes of discretization level $\ell=4$.} 
 \label{fig:QoI_plot}
 \end{figure}
 %
@@ -586,7 +585,7 @@ The sample size estimation for various $\epsilon$ is shown in Table \ref{Tab:Sam
 			\hline
 	\end{tabular}
  }
-	\caption{The CPU time in seconds for MC-FE (left), uniform MLMC-FE (middle), and MFMC-FE (right), together with speedups for the multilevel methods, for a variety of choices of $\epsilon$. The computational cost associated with a tolerance of $\epsilon = 2\times 10^{-4}$ for Monte Carlo was prohibitive; the entry in the table for this tolerance (with an asterisk) is an estimate.}
+	\caption{The CPU time in seconds for MC-FE (left), MLMC-FE (middle left), MLMC-FE (middle) with interpolation to a common grid of level $\ell=4$, MFMC-FE (middle right) with interpolation to a common grid of level $\ell=4$,  and MFMC-FE (right) with interpolation to a common grid of level $\ell=4$ and the offline costs, together with speedups for the multi-fidelity methods, for a variety of choices of $\epsilon$. The computational cost associated with a tolerance of $\epsilon = 2\times 10^{-4}$ for Monte Carlo was prohibitive; the entry in the table for this tolerance (with an asterisk) is an estimate.}
 	\label{Tab:CPU_time}
 \end{table}
 %
