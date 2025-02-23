@@ -566,8 +566,6 @@ with total sampling work bounded as
 
 $C_1=W_L, C_k = W_{L-k+1}\sim M_{L-k+1}^\gamma\sim s^{(L-k+1)\gamma}$, K=L.
 
-Condition (ii) indicates $\beta>\gamma$.
-
 %
 \begin{equation}
 \label{eq:Geo_sum_for_s}
@@ -584,13 +582,13 @@ Note that if all candidate models are selected as low fidelity models, then $K=L
 %
 \begin{align*}
     \mathcal{W}^\text{MF} &\sim \epsilon^{-2} \left(\sum_{k=1}^K\sqrt{C_k\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)}\right)^2 \sim \epsilon^{-2}\left(\sqrt{C_1\left(\rho_{1,1}^2 - \rho_{1,2}^2\right)}+\sum_{k=2}^K \sqrt{C_k\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)} \right)^2\\
-    &\sim \epsilon^{-2} \left(M_L^{\frac{\gamma-\beta}{2}}+\sum_{k=2}^{L+1}M_{L-k+1}^\frac{\gamma_1-\beta_1}{2}\right)^2=\epsilon^{-2} \left(M_L^{\frac{\gamma-\beta}{2}}+\sum_{p=0}^{L-1}M_{p}^\frac{\gamma_1-\beta_1}{2}\right)^2\sim \epsilon^{-2}\left(s^{\frac{(\gamma-\beta)}{2}L}+\sum_{p=0}^{L-1}s^{\frac{(\gamma_1-\beta_1)}{2}p}\right),
+    &\sim \epsilon^{-2} \left(M_L^{\frac{\gamma-\beta}{2}}+\sum_{k=2}^{L+1}M_{L-k+1}^\frac{\gamma_1-\beta_1}{2}\right)^2=\epsilon^{-2} \left(M_L^{\frac{\gamma-\beta}{2}}+\sum_{p=0}^{L-1}M_{p}^\frac{\gamma_1-\beta_1}{2}\right)^2\sim \epsilon^{-2}\left(s^{\frac{(\gamma-\beta)}{2}L}+\sum_{p=0}^{L-1}s^{\frac{(\gamma_1-\beta_1)}{2}p}\right)^2,
 \end{align*}
 %
 From \eqref{eq:SLSGC_MLS_SpatialGridsNo}, $s^{\frac{(\gamma-\beta)}{2}L}\sim \epsilon^{\frac{\beta-\gamma}{2\alpha}}$. The term $\sum_{p=0}^{L-1}s^{\frac{(\gamma_1-\beta_1)}{2}p}$ can be determined from \eqref{eq:Geo_sum_for_s}. Therefore, 
 \[
 \mathcal{W}^\text{MF} = \left\{\begin{array}{ll}
-\epsilon^{-2+\frac{\beta-\gamma}{\alpha}}, & \beta_1>\gamma_1\\
+\epsilon^{-2}\left(\epsilon^{\frac{\beta-\gamma}{2\alpha}}+\mathcal{O}(1)\right)^2, & \beta_1>\gamma_1\\
 \epsilon^{-2}\left(\epsilon^{\frac{\beta-\gamma}{2\alpha}}+|\log\epsilon|\right)^2, & \beta_1=\gamma_1\\
 \epsilon^{-2}\left(\epsilon^{\frac{\beta-\gamma}{2\alpha}}+\epsilon^{-\frac{\gamma_1-\beta_1}{2\alpha}}\right)^2, & \beta_1<\gamma_1
 \end{array}
