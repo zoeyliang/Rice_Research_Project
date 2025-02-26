@@ -260,7 +260,7 @@ This ratio also quantifies reduction of computational budget achieved by the MFM
 Let $b = \frac{\sigma_1^2}{\epsilon^2(1-\theta)\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}$.
 %
 \begin{equation*}
-    \frac{d \mathcal{W}^\text{MF}}{d \rho_k} =2b\rho_{1,k}\sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2 - \rho_{1,j+1}^2\right)}\sqrt{\frac{C_k}{\rho_{1,k}^2-\rho_{1,k+1}^2}}\left(1-\sqrt{\frac{C_{k-1}(\rho_{1,k}^2-\rho_{1,k+1}^2)}{C_k(\rho_{1,k-1}^2-\rho_{1,k}^2)}}\right), \quad \forall\; k=2,\ldots, K.
+    \frac{d \mathcal{W}^\text{MF}}{d \rho_{1,k}} =2b\rho_{1,k}\sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2 - \rho_{1,j+1}^2\right)}\sqrt{\frac{C_k}{\rho_{1,k}^2-\rho_{1,k+1}^2}}\left(1-\sqrt{\frac{C_{k-1}(\rho_{1,k}^2-\rho_{1,k+1}^2)}{C_k(\rho_{1,k-1}^2-\rho_{1,k}^2)}}\right), \quad \forall\; k=2,\ldots, K.
 \end{equation*}
 %
 The term $\left(1-\sqrt{\frac{C_{k-1}(\rho_{1,k}^2-\rho_{1,k+1}^2)}{C_k(\rho_{1,k-1}^2-\rho_{1,k}^2)}}\right)$ encodes MFMC’s selection criteria, ensuring the derivative’s negativity when models are optimally ordered. This indicates that higher $\rho_{1,k}$ improves low-fidelity models’ variance reduction efficiency, reducing reliance on costly high-fidelity evaluations. This reinforces the idea that high-quality low-fidelity models—those that are more aligned with the high-fidelity results—can significantly lower the reliance on expensive high-fidelity evaluations, making the entire multi-fidelity approach more cost-effective.
@@ -425,7 +425,7 @@ For $\mathcal{S}^*=\{\widehat u_{h,i}\}_{i=1}^{K^*}$, compute weights $\alpha_i$
 
     Compute $A^{\text{MF}}$ by \eqref{eq:MFMC_estimator_independent}.
     
-\caption{Multifidelity Monte Carlo--\JLcolor{slightly different from \cite[Algorithm~2]{PeWiGu:2016}}}
+\caption{Multifidelity Monte Carlo}
 \end{algorithm}
 \ULforem
 
@@ -553,14 +553,15 @@ Then for $0<\epsilon$ there exist spatial grid level $K$ and sample size $N_\ell
 \]
 with total sampling work bounded as
 \begin{equation*}
-    \mathcal{W}^{\text{MF}} \simeq 
-%     \left\{\begin{array}{ll}
-% \epsilon^{-2-\frac{\delta}{\nu}}, & \beta_1>1,\\
-% \epsilon^{-2-\frac{\delta}{\nu}}\left\vert \log \epsilon \right\vert^2, & \beta_1 = 1,\\
-% \epsilon^{-2-\frac{\delta}{\nu}-\frac{1 - \beta_1}{\alpha}}, & \beta_1<1.
-% \end{array}
-% \right.
+    \mathcal{W}^{\text{MF}} \simeq \left\{\begin{array}{ll}
+\epsilon^{-2}\left(c_1\epsilon^{\frac{\beta-\gamma}{2\alpha}}+c_2\mathcal{O}(1)\right)^2, & \beta_1>\gamma_1,\\
+\epsilon^{-2}\left(c_1\epsilon^{\frac{\beta-\gamma}{2\alpha}}+c_2|\log\epsilon|\right)^2, & \beta_1=\gamma_1,\\
+\epsilon^{-2}\left(c_1\epsilon^{\frac{\beta-\gamma}{2\alpha}}+c_2\epsilon^{-\frac{\gamma_1-\beta_1}{2\alpha}}\right)^2, & \beta_1<\gamma_1,
+\end{array}
+\right.
 \end{equation*}
+
+If $c_1\gg c_2$, then $\mathcal{W}^\text{MF} \simeq \epsilon^{-2+\frac{\beta-\gamma}{\alpha}}$.
 \end{theorem}
 \begin{proof}\label{eq:Sample_cost_est}
 
@@ -587,14 +588,14 @@ Note that if all candidate models are selected as low fidelity models, then $K=L
 %
 From \eqref{eq:SLSGC_MLS_SpatialGridsNo}, $s^{\frac{(\gamma-\beta)}{2}L}\sim \epsilon^{\frac{\beta-\gamma}{2\alpha}}$. The term $\sum_{p=0}^{L-1}s^{\frac{(\gamma_1-\beta_1)}{2}p}$ can be determined from \eqref{eq:Geo_sum_for_s}. Therefore, 
 \[
-\mathcal{W}^\text{MF} = \left\{\begin{array}{ll}
-\epsilon^{-2}\left(\epsilon^{\frac{\beta-\gamma}{2\alpha}}+\mathcal{O}(1)\right)^2, & \beta_1>\gamma_1\\
-\epsilon^{-2}\left(\epsilon^{\frac{\beta-\gamma}{2\alpha}}+|\log\epsilon|\right)^2, & \beta_1=\gamma_1\\
-\epsilon^{-2}\left(\epsilon^{\frac{\beta-\gamma}{2\alpha}}+\epsilon^{-\frac{\gamma_1-\beta_1}{2\alpha}}\right)^2, & \beta_1<\gamma_1
+\mathcal{W}^\text{MF} \simeq \left\{\begin{array}{ll}
+\epsilon^{-2}\left(c_1\epsilon^{\frac{\beta-\gamma}{2\alpha}}+c_2\mathcal{O}(1)\right)^2, & \beta_1>\gamma_1,\\
+\epsilon^{-2}\left(c_1\epsilon^{\frac{\beta-\gamma}{2\alpha}}+c_2|\log\epsilon|\right)^2, & \beta_1=\gamma_1,\\
+\epsilon^{-2}\left(c_1\epsilon^{\frac{\beta-\gamma}{2\alpha}}+c_2\epsilon^{-\frac{\gamma_1-\beta_1}{2\alpha}}\right)^2, & \beta_1<\gamma_1,
 \end{array}
 \right.
 \]
-
+If $c_1\gg c_2$, then $\mathcal{W}^\text{MF} \sim \epsilon^{-2+\frac{\beta-\gamma}{\alpha}}$.
 
 
 % The cancellation of the two successive terms in the ratio representation on both sides of \eqref{eq:Theorem_cond_ii} indicates that 
