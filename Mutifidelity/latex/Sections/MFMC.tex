@@ -299,7 +299,7 @@ We can decompose the relative error of calculating the correlated coefficients a
 \begin{equation*}
     \left|\rho_{1,k} - \rho_{1,k}^{(N)}\right|\le \underbrace{\left|\rho_{1,k} - \mathbb{E}\left(\rho_{1,k}^{(N)}\right)\right|}_{\text{Bias}}+\underbrace{\left|\mathbb{E}\left(\rho_{1,k}^{(N)}\right)-\rho_{1,k}^{(N)}\right|}_{\text{Variance}}
 \end{equation*}
-If we bound the relative error by $\delta_1$, and split the error equally between the bias and variance. For the bias term, using \eqref{eq:Expectation_rho}, we have $N\ge \frac{C_\rho}{\theta_1\delta_1}$. The variance term uses Chebyshev inequality
+If we bound the relative error by $\delta_1$, and split the error equally between the bias and variance with splitting ratio $\theta_1$. For the bias term, using \eqref{eq:Expectation_rho}, we have $N\ge \frac{C_\rho}{\theta_1\delta_1}$. The variance term uses Chebyshev inequality
 \[
 P\left(\left|\mathbb{E}\left(\rho_{1,k}^{(N)}\right)-\rho_{1,k}^{(N)}\right|\ge \nu\right)\le \frac{\text{Var}\left(\rho_{1,k}^{(N)}\right)}{\nu^2}
 \]
@@ -311,7 +311,7 @@ Take $\nu = (1-\theta_1)\delta_1$, by \eqref{eq:Var_rho}, we have
 So if $N\ge \frac{(1-\rho_{1,k}^2)^2}{(1-\theta_1)^2\delta_1^2}$, the variance has high probability to be less than $(1-\theta_1)\delta_1$. Therefore, the sample size $N$ should satisfy
 \begin{equation}
 \label{eq:Offline_Sample_Size}
-    N\ge \max \left(\frac{C_\rho}{\theta_1\delta_1 }, \frac{(1-\rho_{1,k}^2)^2}{(1-\theta_1)^2\delta_1^2}\right), \quad \forall \;k
+    N\ge \max \left(\frac{C_\rho}{\theta_1\delta_1 }, \frac{(1-\rho_{1,k}^2)^2}{(1-\theta_1)^2\delta_1^2}\right), \quad \text{ for each }k,
 \end{equation}
 Note to estimate $C_\rho$, we can use samples of size $Q_{i+1},Q_i$, then 
 \[
@@ -327,27 +327,28 @@ C_\rho\approx \frac{\rho_{1,k}^{(Q_{i+1})} - \rho_{1,k}^{(Q_i)}}{\frac{1}{Q_i\le
 
 Let $\boldsymbol{\rho}$ be the true value, the approximated value is $\boldsymbol{\rho}+\Delta \boldsymbol{\rho}$
 \[
-\Delta\xi=\xi(\boldsymbol{\rho}+\Delta \boldsymbol{\rho}) - \xi(\boldsymbol{\rho}) \approx \sum_{k=1}^K \frac{\partial \xi}{\partial \rho_{1,k}} \Delta\rho_{1,k},
+\Delta\xi=\xi(\boldsymbol{\rho}+\Delta \boldsymbol{\rho}) - \xi(\boldsymbol{\rho}) \approx \sum_{k=2}^K \frac{\partial \xi}{\partial \rho_{1,k}} \Delta\rho_{1,k},
 \]
 where
 %
 \begin{align*}
-\frac{\partial  \xi}{\partial  \rho_{1,1}} &=\frac{2\sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2 - \rho_{1,j+1}^2\right)}}{C_1}\frac{C_1\rho_{1,1}}{\sqrt{C_1(\rho_{1,1}^2-\rho_{1,2}^2)  }}\\
-    \frac{\partial  \xi}{\partial  \rho_{1,k}} &=\frac{2\sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2 - \rho_{1,j+1}^2\right)}}{C_1}\left(\frac{C_k\rho_{1,k}}{\sqrt{C_k(\rho_{1,k}^2-\rho_{1,k+1}^2)}}-\frac{C_{k-1}\rho_{1,k}}{\sqrt{C_{k-1}(\rho_{1,k-1}^2-\rho_{1,k}^2)}}\right), \quad \forall\; k=2,\ldots, K.
+% \frac{\partial  \xi}{\partial  \rho_{1,1}} &=\frac{2\sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2 - \rho_{1,j+1}^2\right)}}{C_1}\frac{C_1\rho_{1,1}}{\sqrt{C_1(\rho_{1,1}^2-\rho_{1,2}^2)  }}\\
+    \frac{\partial  \xi}{\partial  \rho_{1,k}} 
+&=\frac{2\sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2 - \rho_{1,j+1}^2\right)}}{C_1}\left(\frac{C_k\rho_{1,k}}{\sqrt{C_k(\rho_{1,k}^2-\rho_{1,k+1}^2)}}-\frac{C_{k-1}\rho_{1,k}}{\sqrt{C_{k-1}(\rho_{1,k-1}^2-\rho_{1,k}^2)}}\right), \quad \forall\; k=2,\ldots, K.
 \end{align*}
 %
 Note The term $\left(\frac{C_k\rho_{1,k}}{\sqrt{C_k(\rho_{1,k}^2-\rho_{1,k+1}^2)}}-\frac{C_{k-1}\rho_{1,k}}{\sqrt{C_{k-1}(\rho_{1,k-1}^2-\rho_{1,k}^2)}}\right)$ in $\partial \xi/\partial \rho_{1,k}$ is always negative due to the conditions required for MFMC. In this case, by Cauchy Schwartz's inequality, we can estimate
 \[
-\left|\frac{\Delta \xi}{\xi}\right|\le \frac{1}{\xi}\sqrt{\sum_{k=1}^K \left(\frac{\partial \xi}{\partial \rho_{1,k}}\right)^2}\cdot \sqrt{\sum_{k=1}^K\left(\Delta\rho_{1,k}\right)^2}\le C^\prime \delta_2<\delta
+\left|\frac{\Delta \xi}{\xi}\right|\le \frac{1}{\xi}\sqrt{\sum_{k=2}^K \left(\frac{\partial \xi}{\partial \rho_{1,k}}\right)^2}\cdot \sqrt{\sum_{k=2}^K\left(\Delta\rho_{1,k}\right)^2}\le C^\prime \delta_2<\delta
 \]
 where 
 
 \begin{equation}
-    C^\prime  = \frac{1}{\xi}\sqrt{\sum_{k=1}^K \left(\frac{\partial \xi}{\partial \rho_{1,k}}\right)^2}
+    C^\prime  = \frac{1}{\xi}\sqrt{\sum_{k=2}^K \left(\frac{\partial \xi}{\partial \rho_{1,k}}\right)^2}
 \end{equation}
 
 
-Given $\delta$, we first estimate $C^\prime$, then choose $\delta_2$ as $\delta/C^\prime$, $\delta_1=\delta_2/\sqrt{K}$, and select $N$ by \eqref{eq:Offline_Sample_Size} for all $k$.
+Given $\delta$, we first estimate $C^\prime$, then choose $\delta_2$ as $\delta/C^\prime$, $\delta_1=\delta_2/\sqrt{K-1}$, and select $N$ by \eqref{eq:Offline_Sample_Size} for all $k$.
 
 
 % The term $\left(1-\sqrt{\frac{C_{k-1}(\rho_{1,k}^2-\rho_{1,k+1}^2)}{C_k(\rho_{1,k-1}^2-\rho_{1,k}^2)}}\right)$ in $\partial \xi/\partial \rho_{1,k}$ encodes MFMC’s selection criteria, ensuring the derivative’s negativity when models are optimally ordered. This indicates that higher $\rho_{1,k}$ improves low-fidelity models’ variance reduction efficiency, reducing reliance on costly high-fidelity evaluations. This reinforces the idea that high-quality low-fidelity models—those that are more aligned with the high-fidelity results—can significantly lower the reliance on expensive high-fidelity evaluations, making the entire multi-fidelity approach more cost-effective.
