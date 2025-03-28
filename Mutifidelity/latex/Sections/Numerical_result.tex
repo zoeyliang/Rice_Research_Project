@@ -20,10 +20,9 @@ To analyze the impact of uncertainty in coil currents on the solution to \eqref{
 r_0=6.2m,\,\,\beta=0.5978, \,\, \alpha_1 = 2, \,\,  \alpha_2=1.395, \,\, j_0=1.3655 \times 10^6 A/m^2,\,\,  \mu_0=1.2566\times 10^{-6} N/A^2.
 \end{equation}
 %
-The implementation of MLMC requires multiple spatial discretizations. We construct a family of uniformly refined spatial meshes $\{\mathcal{T}_k\}$ by refining and coarsening an initial reference mesh that conforms to the ITER geometry. Since the reactor domain includes curved boundaries, accurate numerical approximation requires careful spatial discretization. To this end, we generate six non-nested spatial meshes of increasing resolution, with the number of grid nodes $\{M_\ell,\}_{0\le \ell \le 5}$ is reported in Table \ref{Tab:MFMC_parameters}. Moreover, to ensure the accuracy of the MC, MLMC, and MFMC estimators, we impose a constraint on the total normalized mean square error, which is decomposed into discretization and statistical components. The error splitting ratio is set to $\theta=0.5$, meaning discretization and statistical errors contribute equally to the total error budget. The tolerances for nMSE are chosen to exceed the discretization error on the finest available mesh $(\ell=5)$, with values $\epsilon=2\times 10^{-4}, 4\times 10^{-4}, 6\times 10^{-4}, 8\times 10^{-4}, 1\times 10^{-3}, 2\times 10^{-3}, 4\times 10^{-3}, 8\times 10^{-3}$. For each tolerance, we determine the spatial grid level $L$ required to ensure that the discretization error remains below the threshold, using the estimate in \eqref{eq:SLSGC_MLS_SpatialGridsNo}.  The resulting grid levels are $L = 5, 4, 4, 4, 4, 3, 3, 2, 2$, respectively. At each tolerance level, the high-fidelity model corresponds to the finite element solution of \eqref{eq:FreeBoundary} computed on the grid of resolution $L$. 
+The implementation of MLMC requires multiple spatial discretizations. We construct a family of uniformly refined spatial meshes $\{\mathcal{T}_k\}$ by refining and coarsening an initial reference mesh that conforms to the ITER geometry. Since the reactor domain includes curved boundaries, accurate numerical approximation requires careful spatial discretization. To this end, we generate six non-nested spatial meshes of increasing resolution, with the number of grid nodes $\{M_\ell,\}_{0\le \ell \le 5}$ is reported in Table \ref{Tab:MFMC_parameters}. Moreover, to ensure the accuracy of the MC, MLMC, and MFMC estimators, we impose a constraint on the total normalized mean square error, which is decomposed into discretization and statistical components. The error splitting ratio is set to $\theta=0.5$, meaning discretization and statistical errors contribute equally to the total error budget. The tolerances for nMSE are chosen to exceed the discretization error on the finest available mesh $(\ell=5)$, with values $\epsilon=2\times 10^{-4}, 4\times 10^{-4}, 6\times 10^{-4}, 8\times 10^{-4}, 1\times 10^{-3}, 2\times 10^{-3}, 4\times 10^{-3}, 8\times 10^{-3}$. For each tolerance, we determine the spatial grid level $L$ required to ensure that the discretization error remains below the threshold, using the estimate in \eqref{eq:SLSGC_MLS_SpatialGridsNo}.  The resulting grid levels are $L = 5, 4, 4, 4, 4, 3, 3, 2, 2$, respectively. At each tolerance level, the high-fidelity model corresponds to the finite element solution of \eqref{eq:FreeBoundary} computed on the grid of resolution $L$. All experiments were conducted using MATLAB R2024a on the batch-scheduled HPC/HTC cluster NOTSx, part of the Rice Big Research Data cloud infrastructure. 
 
-
-All experiments were conducted using MATLAB R2024a on the batch-scheduled HPC/HTC cluster NOTSx, part of the Rice Big Research Data cloud infrastructure. The system consists of 298 dual-socket compute blades housed across HPE s6500, HPE Apollo 2000, and Dell PowerEdge C6400 chassis. All nodes are interconnected via a high-speed network with 10 or 25 Gigabit Ethernet.
+% The system consists of 298 dual-socket compute blades housed across HPE s6500, HPE Apollo 2000, and Dell PowerEdge C6400 chassis. All nodes are interconnected via a high-speed network with 10 or 25 Gigabit Ethernet.
 
 
 % =============================
@@ -36,21 +35,20 @@ The offline computational cost of MFMC comprises two key components: constructin
 \scalebox{0.8}{
 \begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\multicolumn{1}{|c|}{$\epsilon$} &$2\times 10^{-4}$&$4\times 10^{-4}\sim 1\times 10^{-3}$&$2\times 10^{-3} \sim 4\times 10^{-3}$&$6\times 10^{-3} \sim 8\times 10^{-3}$\\
+\multicolumn{1}{|c|}{Tolerance $\epsilon$} &$2\times 10^{-4}$&$4\times 10^{-4}\sim 1\times 10^{-3}$&$2\times 10^{-3} \sim 4\times 10^{-3}$&$6\times 10^{-3} \sim 8\times 10^{-3}$\\
 \hline
 \multicolumn{1}{|c|}{ Spatial grid level $L$ }&5&4&3&2\\
 \hline
-\multicolumn{1}{|c|}{ CPU time to build surrogate }&2.39e+03&5.53e+02&1.08e+02&2.11e+01\\
+\multicolumn{1}{|c|}{ Surrogate construction time [s]}&2.39e+03&5.53e+02&1.08e+02&2.11e+01\\
 \hline
-\multicolumn{1}{|c|}{CPU time to estimate parameters}&1.21e+04&3.87e+03&4.54e+02&1.66e+02\\
+\multicolumn{1}{|c|}{Parameter estimation time [s]}&1.21e+04&3.87e+03&4.54e+02&1.66e+02\\
 % &2.02e+00&7.90e+00&3.10e+01&1.52e+02&8.12e+02&3.56e+03\\
 \hline
-\multicolumn{1}{|c|}{Pilot sample size for dynamic sampling}& 30&50&30&50\\
+\multicolumn{1}{|c|}{Pilot sample size}& 30&50&30&50\\
 \hline
 \end{tabular}
 }
-\caption{Offline construction costs and sample requirements for low-fidelity model development and parameter estimation at various tolerances. The second row lists the spatial grid level to meet discretization error criteria. The third row shows CPU time [seconds] for constructing models using a sparse grid with $q=1$ on spatial grid levels 0 to $L-1$. The fourth row reports CPU time for parameter estimation via a dynamic strategy. The final row presents the pilot sample size for parameter estimation.}
-
+\caption{Offline costs and sample requirements for low-fidelity model construction and parameter estimation at various tolerances. The second row specifies the spatial grid level required to control discretization error.  The third and fourth rows report CPU time (seconds) for surrogate model construction (sparse grid with $q=1$ on spatial grid levels 0 to $L-1$) and parameter estimation (dynamic strategy), respectively. The final row lists the pilot sample size used for parameter estimation.}
 \label{Tab:Offline_cost}
 \end{table}
 %
@@ -170,11 +168,13 @@ The second component pertains to the estimation of MFMC statistical parameters. 
 % &\multicolumn{1}{|c|}{$\xi$}&5.9298e-04\\
 \hline
 \end{tabular}}
-\caption{Estimated statistical parameters for various predetermined tolerances $\epsilon$ in terms of nMSE, using the dynamic strategy with $\delta=10\%, \theta_1=0.5$ (top) and a fixed number of pilot samples of 500 (bottom). The high-fidelity model $\widehat u_{h,1}$ is the finite element solution to the free boundary problem on a spatial grid of level $L$. Candidate low-fidelity models $\widehat u_{h,k}$ for $k \geq 2$ are generated using 25 sparse grid nodes (level $q=1$) on spatial grids from levels 0 to $L-1$. All parameters are estimated using Welford's algorithm.}
-
+\caption{Estimated statistical parameters for different tolerances $\epsilon$ in terms of nMSE. The top section presents results from the dynamic strategy with $\delta=10\%, \theta_1=0.5$, while the bottom section corresponds to 500 pilot samples. The high-fidelity model $\widehat u_{h,1}$ is the finite element solution on spatial grid level $L$, with $\rho_{1,1}=1$ for all entries in the table. Candidate low-fidelity models $\widehat u_{h,k}$ ($k \geq 2$) are generated using 25 sparse grid nodes (level $q=1$) on spatial grids of levels 0 to $L-1$. All parameters are estimated using Welford's algorithm.}
 \label{Tab:MFMC_parameters}
 \end{table}
 %
+
+
+
 
 
 
@@ -274,6 +274,7 @@ Using the same experimental setup for estimating statistical parameters with a f
 
 
 
+
  
  % While the offline preparation incurs non-negligible computational expenses, these costs are justified by the substantial savings achieved during large-scale online sampling, particularly in applications requiring thousands of high-fidelity model evaluations. As a one-time expense, the precomputed surrogates and statistical parameters are reused throughout the online phase, amortizing the initial overhead across all subsequent multi-fidelity Monte Carlo realizations.
 
@@ -341,7 +342,7 @@ Using the same experimental setup for estimating statistical parameters with a f
 After the offline procedure, the selected low-fidelity models and estimated statistical parameters, including correlation coefficients
 $\rho_{1,k}$ and weights $\alpha_k$, are used to compute the MFMC estimator in the online phase. The unbiasedness of the MFMC estimator relies on the independence of the samples used to estimate $\alpha_k$ from those used in online sampling. This follows from the expectation property $\mathbb{E}(\alpha_k Y_k) = \alpha_k \mathbb{E}(Y_k)$ and the condition $\mathbb{E}(Y_k) = 0$ for $k=2,\ldots, K$. Therefore, maintaining statistical independence between parameter estimation and online sampling is essential to prevent correlations between $\alpha_k$ and $Y_k$, which would otherwise lead to bias in the estimator. However, in practical applications, particularly when high-fidelity model evaluations are computationally expensive, reusing samples for both parameter estimation and online sampling may be necessary. In such cases, the weights $\alpha_k$ become sample-dependent random variables, leading to a correlation between $\alpha_k$  and the correction term $Y_k$. This dependence introduces bias, as the expectation satisfies $\mathbb{E}(\alpha_k Y_k) = \mathbb{E}(\alpha_k Y_k)-\mathbb{E}(\alpha_k)\mathbb{E}(Y_k) = \text{Cov}(\alpha_k,Y_k)\neq 0$, resulting in $\mathbb{E}(A^{\text{MF}})\neq \mathbb{E}(Y_1)$. Prior study \cite{KoFaPeDiJeNeBu:2022} has demonstrated that in certain applications, sample reuse has a negligible effect on the estimator accuracy.  In contrast, MLMC does not suffer from this issue, as it uses fixed weights $\alpha_k =1$, allowing sample reuse for parameter estimation without introducing bias.
 
-The online sampling cost for computing the MFMC estimator is shown in the right plot of Figure \ref{fig:CostEstimatePlot}, where the total cost scales approximately as $\epsilon^{-1.09}$. Table \ref{Tab:MFMC_parameters} provides further insight into this behavior. When $\epsilon=2\times 10^{-4}$, the term $\sqrt{C_1(1-\rho_{1,2}^2)}$ evaluates to 0.191, whereas the summation term $\sum_{k=2}^K\sqrt{C_k(\rho_{1,k}^2-\rho_{1,k+1}^2)}$ is 0.0239. This result indicates that the computational cost of the high-fidelity model significantly outweighs that of all selected low-fidelity models combined. Consequently, in Theorem \ref{thm:Sample_cost_est}, the parameter $c_1$ is much larger than $c_2$,  implying that the dominant cost contribution arises from the high-fidelity model, which scales as $\epsilon^{\frac{\beta-\gamma}{2\alpha}}$. As a result, the MFMC sampling cost $\mathcal{W}^{\text{MF}}$ follows the asymptotic behavior $\epsilon^{-2+\frac{\beta-\gamma}{\alpha}}$. Furthermore, Table \ref{Tab:MFMC_parameters} shows that $\rho_{1,2}\approx 1$ for nearly all values of $\epsilon$, suggesting that the low-fidelity model $\widehat u_{h,2}$ closely resembles the direct nonlinear solve. According to \cite[Lemma 2]{PeGuWi:2018}, the correlation decay between consecutive MFMC models follows $\rho_{1,\ell}^2 - \rho_{1,\ell-1}^2\simeq M_\ell^{-\beta}$, where $\beta$ characterizes the variance decay rate of the MLMC correction term and is estimated as $\beta\approx 2$ in \cite{ElLiSa:2023}. Using parameter estimates from \cite{ElLiSa:2023, ElLiSa:2025}, where $\alpha\approx 1$, along with the empirical estimate $\gamma\approx 1.1$ from the left plot of Figure \ref{fig:CostEstimatePlot}, we find that the total MFMC sampling cost $\mathcal{W}^{\text{MF}}$ scales as $\epsilon^{-1.09}$, which closely matches the experimental results. For comparison, the Monte Carlo method exhibits a theoretical cost scaling of $\epsilon^{-2-\gamma/\alpha}\simeq \epsilon^{-3.1}$, while the multilevel Monte Carlo method follows $\epsilon^{-2}$. These theoretical predictions align well with the experimentally observed scalings of $\epsilon^{-2.93}$ for Monte Carlo and $\epsilon^{-1.99}$ for MLMC.
+The online sampling cost for computing the MFMC estimator is shown in the right plot of Figure \ref{fig:CostEstimatePlot}, where the total cost scales approximately as $\epsilon^{-1.09}$. Table \ref{Tab:MFMC_parameters} provides further insight into this behavior. When $\epsilon=2\times 10^{-4}$, the term $\sqrt{C_1(1-\rho_{1,2}^2)}$ evaluates to 0.191, whereas the summation term $\sum_{k=2}^K\sqrt{C_k(\rho_{1,k}^2-\rho_{1,k+1}^2)}$ is 0.0239. This result indicates that the computational cost of the high-fidelity model significantly outweighs that of all selected low-fidelity models combined. Consequently, in Theorem \ref{thm:Sample_cost_est}, the parameter $c_1$ is much larger than $c_2$,  implying that the dominant cost contribution arises from the high-fidelity model, which scales as $\epsilon^{\frac{\beta-\gamma}{2\alpha}}$. As a result, the MFMC sampling cost $\mathcal{W}^{\text{MF}}$ follows the asymptotic behavior $\epsilon^{-2+\frac{\beta-\gamma}{\alpha}}$. Furthermore, Table \ref{Tab:MFMC_parameters} shows that $\rho_{1,2}\approx 1$ for nearly all values of $\epsilon$, suggesting that the low-fidelity model $\widehat u_{h,2}$ closely resembles the direct nonlinear solve. According to \cite[Lemma 2]{PeGuWi:2018}, the correlation decay between consecutive MFMC models follows $\rho_{1,\ell}^2 - \rho_{1,\ell-1}^2\simeq M_\ell^{-\beta}$, where $\beta$ characterizes the variance decay rate of the MLMC correction term and is estimated as $\beta\approx 2$ in \cite{ElLiSa:2023}. Using parameter estimates from \cite{ElLiSa:2023, ElLiSa:2025}, where $\alpha\approx 1, \beta_1\approx 1.52, \gamma_1=1$, along with the estimate $\gamma\approx 1.1$ from the left plot of Figure \ref{fig:CostEstimatePlot}, we find that the total MFMC sampling cost $\mathcal{W}^{\text{MF}}$ scales as $\epsilon^{-1.09}$, which closely matches the experimental results. For comparison, the Monte Carlo method exhibits a theoretical cost scaling of $\epsilon^{-2-\gamma/\alpha}\simeq \epsilon^{-3.1}$, while the multilevel Monte Carlo method follows $\epsilon^{-2}$. These theoretical predictions align well with the experimentally observed scalings of $\epsilon^{-2.93}$ for Monte Carlo and $\epsilon^{-1.99}$ for MLMC.
 
 The right plot of Figure \ref{fig:CostEstimatePlot} also shows the total online and offline costs of the MFMC approach (yellow dotted curve), where correction terms $Y_k$ in the estimator \eqref{eq:MFMC_estimator_Correction} are accumulated after interpolation to a fine common grid. This interpolation reduces extrapolation errors that arise when accumulating sample corrections on a non-nested, geometry-conforming mesh. The blue dotted line represents the MLMC method, which similarly applies interpolation to a fine common grid. For larger values of $\epsilon$ (above $10^{-3}$), MFMC with combined costs incurs higher costs than both MC and MLMC with interpolation due to the additional expense of estimating statistical parameters. However, as $\epsilon$ decreases, MFMC becomes more efficient and eventually outperforms both MC and MLMC with interpolation. Table \ref{Tab:CPU_time} presents the relative speedup of different methods using MC as a baseline. While speedup is inversely related to cost efficiency, it deviates from the theoretical cost efficiency computed using \eqref{eq:MFMC_sampling_cost_efficiency} due to interpolation cost and other computational overhead.
 
@@ -392,10 +393,16 @@ The right plot of Figure \ref{fig:CostEstimatePlot} also shows the total online 
 			\hline
 	\end{tabular}
  }
-	\caption{The CPU time in seconds for MC-FE (left), MLMC-FE (middle left), MLMC-FE (middle) with interpolation to a common grid of level $\ell=4$, MFMC-FE (middle right) with interpolation to a common grid of level $\ell=4$,  and MFMC-FE (right) with interpolation to a common grid of level $\ell=4$ and the offline costs, together with speedups for the multi-fidelity methods, for a variety of choices of $\epsilon$. The computational cost associated with a tolerance of $\epsilon = 2\times 10^{-4}$ for Monte Carlo was prohibitive; the entry in the table for this tolerance (with an asterisk) is an estimate.}
+	\caption{CPU time (in seconds) for various simulation methods: Monte Carlo with finite elements (MC-FE), multilevel Monte Carlo with finite elements (MLMC-FE), MLMC-FE with interpolation to a common grid at level $\ell=5$, multifidelity Monte Carlo with finite elements (MFMC-FE) with interpolation to a common grid at level $\ell=5$, and MFMC-FE with interpolation and offline cost inclusion. The table also presents speedup factors for these methods relative to MC-FE at different tolerances $\epsilon$. The CPU time for MC-FE at $\epsilon = 2\times 10^{-4}$ (marked with an asterisk) is an estimate due to prohibitive computational cost.}
 	\label{Tab:CPU_time}
 \end{table}
 %
+
+
+
+
+
+
 
 The efficiency of MFMC relative to MC and MLMC, as observed in Figure \ref{fig:CostEstimatePlot} and Table \ref{Tab:CPU_time}, is closely tied to the distribution of sample sizes across fidelity levels. Table \ref{Tab:SampleSize} provides a detailed breakdown of sample allocation. All methods require a minimum of two samples per level and model. As $\epsilon$ decreases, both discretization and statistical errors are reduced, requiring finer meshes and larger sample sizes across all methods. Compared to MC, MLMC and MFMC shift more samples to low-fidelity models, with MFMC requiring substantially more low-fidelity samples than MLMC. While this increases the total sample count, it ultimately enhances efficiency.
 
@@ -461,10 +468,12 @@ The efficiency of MFMC relative to MC and MLMC, as observed in Figure \ref{fig:C
 	\end{tabular}
  
  }
-	\caption{The optimal sample size estimation for MC-FE (left), uniform MLMC-FE (middle), and MFMC-FE (right). The simulations were conducted for a variety of choices of $\epsilon$. The computational cost associated with a tolerance of $\epsilon = 2\times 10^{-4}$ for Monte Carlo was prohibitive; the entry in the table for this tolerance (with an asterisk) is an estimate.}
+	\caption{Optimal sample size estimation for MC-FE (left), MLMC-FE (middle), and MFMC-FE (right) for various tolerance values $\epsilon$. The computational cost for Monte Carlo with a tolerance of $\epsilon = 2\times 10^{-4}$ was prohibitive; therefore, the entry for this tolerance (marked with an asterisk) is an estimate.}
 	\label{Tab:SampleSize}
 \end{table}
 %
+
+
 
 
 % \JLcolor{According to \cite{PeGuWi:2018}, pages A3174 and A3181–A3182, perturbations in the sample variance and sample correlation coefficients have a small impact on the overall sample size and computational work. However, from my perspective, inaccurate estimation of these statistical parameters can also affect the model selection process. If these statistics are not reliably computed, low-fidelity models with misleading characteristics may be selected or rejected incorrectly, potentially undermining the efficiency and accuracy of the MFMC framework. In particular, models that exhibit inconsistent statistical properties violating the two conditions in Theorem \ref{thm:Sample_size_est} could be included, leading to suboptimal model choices for the low-fidelity approximations and, consequently, affecting the overall performance of the multi-fidelity estimator.}
@@ -545,17 +554,12 @@ Figure \ref{fig:QoI_plot} illustrates the plasma boundary obtained using Monte C
 \\[1ex]
 \quad MC-FE &MLMC-FE (Interp) &MFMC-FE (Interp) \\[-0.5ex]
 \end{tabular}
-\caption{The overlayed plasma boundaries of 50 random realizations are 
-displayed in the top row as violet curves (interpolated to the finest mesh with spatial grid level $\ell=4$). The solid violet line is the plasma boundary of the expected 
-poloidal flux generated with tolerance $\epsilon=4\times 10^{-4}$. 
-The inner and outer walls of the reactor are displayed in solid black and 
-dark red respectively. The bottom row shows the regions close to the 
-x-points in more detail. The dark green dots are the x-points of the expected 
-solution. The columns from left to right correspond to simulations using the 
-MC-FE approach, MLMC-FE and MFMC-FE. All simulations were interpolated to the geometry-conforming uniform meshes of discretization level $\ell=4$.} 
+\caption{The plasma boundaries of 50 random realizations are overlaid in the top row as violet curves. The solid violet line represents the plasma boundary of the expected poloidal flux generated with tolerance $\epsilon=4\times 10^{-4}$. The reactor's inner and outer walls are shown in solid black and dark red, respectively. The bottom row provides a detailed view of the regions close to the x-points, with dark green dots indicating the x-points of the expected solution. The columns, from left to right, show the simulations using the MC-FE, MLMC-FE, and MFMC-FE approaches, all interpolated to geometry-conforming uniform meshes at discretization level $\ell=5$.}
 \label{fig:QoI_plot}
 \end{figure}
 %
+
+
 
 
 
@@ -594,9 +598,10 @@ MC-FE approach, MLMC-FE and MFMC-FE. All simulations were interpolated to the ge
 			\hline
 	\end{tabular}
   }
-	\caption{Geometric parameters of the expected poloidal flux $u$ from MC-FE with direct solver, MLMC-FE with direct solver,  MLMC-FE with direct solver with interpolating solution to a common fine grid of level $L=5$, MFMC-FE with surrogate with interpolating solution to a common fine grid of level $L=5$. The results are generated with an nMSE $4\times 10^{-4}$ on the geometry-conforming uniform mesh set.}
-	\label{Tab: QoI_GeoInfo}
+	\caption{Geometric parameters of the expected poloidal flux $u$ for different simulation methods: MC-FE with direct solver, MLMC-FE with direct solver, MLMC-FE with direct solver and interpolation of the solution to a common fine grid at level $\ell=5$, and MFMC-FE with interpolation of the solution to a common fine grid at level $\ell=5$. The results are generated with an nMSE of $4 \times 10^{-4}$.}
+	\label{Tab:QoI_GeoInfo}
 \end{table}
+
 
 
 
