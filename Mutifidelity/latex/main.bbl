@@ -1,194 +1,237 @@
-\newcommand{\etalchar}[1]{$^{#1}$}
-\begin{thebibliography}{TJWG15}
+\begin{thebibliography}{10}
 
-\bibitem[ABB{\etalchar{+}}09]{Amoskov:2009}
-V.~Amoskov, A.~Belov, V.~Belyakov, Yu. Gribov, A.~Kavin, V.~Kukhtin, E.~Lamzin,
+\bibitem{Amoskov:2009}
+V.~Amoskov, A.~Belov, V.~Belyakov, Y.~Gribov, A.~Kavin, V.~Kukhtin, E.~Lamzin,
   K.~Lobanov, N.~Maximenkova, A.~Mineev, and S.~Sytchevsky.
 \newblock Stray magnetic field at plasma initiation produced by ferromagnetic
   elements of the {ITER} tokamak complex.
-\newblock {\em Plasma Devices and Operations}, 17(4):238–249, December 2009.
-\newblock URL: \url{http://dx.doi.org/10.1080/10519990903043623}, \href
-  {https://doi.org/10.1080/10519990903043623}
-  {\path{doi:10.1080/10519990903043623}}.
+\newblock {\em Plasma Devices and Operations}, 17(4):238–249, Dec. 2009.
 
-\bibitem[BNR00]{BaNoRi:2000}
+\bibitem{ArGuMoWi:2025}
+N.~Aretz, M.~Gunzburger, M.~Morlighem, and K.~Willcox.
+\newblock Multifidelity uncertainty quantification for ice sheet simulations.
+\newblock {\em Computational Geosciences}, 29(5), 01 2025.
+
+\bibitem{BaScZo:2011}
+A.~Barth, C.~Schwab, and N.~Zollinger.
+\newblock Multi-level {M}onte {C}arlo finite element method for elliptic {PDE}s
+  with stochastic coefficients.
+\newblock {\em Numerische Mathematik}, 119(1):123--161, 2011.
+
+\bibitem{BaNoRi:2000}
 V.~Barthelmann, E.~Novak, and K.~Ritter.
 \newblock High dimensional polynomial interpolation on sparse grids.
 \newblock {\em Advances in Computational Mathematics}, 12:273--288, 2000.
 
-\bibitem[BSZ11]{BaScZo:2011}
-Andrea Barth, Christoph Schwab, and Nathaniel Zollinger.
-\newblock Multi-level {M}onte {C}arlo finite element method for elliptic {PDE}s
-  with stochastic coefficients.
-\newblock {\em Numerische Mathematik}, 119(1):123--161, 2011.
-\newblock \href {https://doi.org/10.1007/s00211-011-0377-0}
-  {\path{doi:10.1007/s00211-011-0377-0}}.
+\bibitem{BiHi:2017}
+A.~J. Bishara and J.~B. Hittner.
+\newblock Confidence intervals for correlations when data are not normal.
+\newblock {\em Behavior Research Methods}, 49:294--309, 2017.
 
-\bibitem[CC60]{ClCu:1960}
+\bibitem{ClCu:1960}
 C.~W. Clenshaw and A.~R. Curtis.
 \newblock A method for numerical integration on an automatic computer.
 \newblock {\em Numerische Mathematik}, 2:197--205, 1960.
-\newblock \href {https://doi.org/10.1007/BF01386223}
-  {\path{doi:10.1007/BF01386223}}.
 
-\bibitem[ELSV22]{ElLiSa:2022}
-Howard~C. Elman, Jiaxing Liang, and Tonatiuh S\'{a}nchez-Vizuet.
+\bibitem{Ef:1979}
+B.~Efron.
+\newblock Bootstrap methods: another look at the jackknife.
+\newblock {\em The Annals of Statistics}, 7(1):1--26, 1979.
+
+\bibitem{EfTi:1993}
+B.~Efron and R.~J. Tibshirani.
+\newblock {\em An introduction to the bootstrap}, volume~57 of {\em Monographs
+  on Statistics and Applied Probability}.
+\newblock Chapman and Hall, New York, 1993.
+
+\bibitem{ElLiSa:2022}
+H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
 \newblock Surrogate approximation of the {G}rad-{S}hafranov free boundary
   problem via stochastic collocation on sparse grids.
 \newblock {\em Journal of Computational Physics}, 448:110699, 20, 2022.
-\newblock \href {https://doi.org/10.1016/j.jcp.2021.110699}
-  {\path{doi:10.1016/j.jcp.2021.110699}}.
 
-\bibitem[ELSV24]{ElLiSa:2023}
-Howard~C. Elman, Jiaxing Liang, and Tonatiuh S\'{a}nchez-Vizuet.
+\bibitem{ElLiSa:2023}
+H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
 \newblock Multilevel {M}onte {C}arlo methods for the {G}rad-{S}hafranov free
   boundary problem.
 \newblock {\em Computer Physics Communications}, 298:109099, 2024.
-\newblock \href {https://doi.org/10.1016/j.cpc.2024.109099}
-  {\path{doi:10.1016/j.cpc.2024.109099}}.
 
-\bibitem[ELSV25]{ElLiSa:2025}
-Howard~C. Elman, Jiaxing Liang, and Tonatiuh S\'{a}nchez-Vizuet.
+\bibitem{ElLiSa:2025}
+H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
 \newblock Surrogate-based multilevel {M}onte {C}arlo methods for uncertainty
   quantification in the {G}rad-{S}hafranov free boundary problem.
 \newblock {\em Arxiv}, 2025.
-\newblock URL: \url{https://arxiv.org/pdf/2501.08482}.
 
-\bibitem[FH17]{FaHe:2017}
-Blaise Faugeras and Holger Heumann.
+\bibitem{FaHe:2017}
+B.~Faugeras and H.~Heumann.
 \newblock {FEM-BEM} coupling methods for {T}okamak plasma axisymmetric
   free-boundary equilibrium computations in unbounded domains.
 \newblock {\em Journal of Computational Physics}, 343:201 -- 216, 2017.
-\newblock URL:
-  \url{http://www.sciencedirect.com/science/article/pii/S0021999117303261},
-  \href {https://doi.org/https://doi.org/10.1016/j.jcp.2017.04.047}
-  {\path{doi:https://doi.org/10.1016/j.jcp.2017.04.047}}.
 
-\bibitem[Gil08]{Gi:2008}
-Michael~B. Giles.
+\bibitem{FiHaPe:1957}
+E.~C. Fieller, H.~O. Hartley, and E.~S. Pearson.
+\newblock Tests for rank correlation coefficients. {I}.
+\newblock {\em Biometrika}, 44:470--481, 1957.
+
+\bibitem{Fi:1915}
+R.~A. Fisher.
+\newblock Frequency distribution of the values of the correlation coefficient
+  in samples from an indefinitely large population.
+\newblock {\em Biometrika}, 10(4):507--521, 1915.
+
+\bibitem{Gi:2008}
+M.~B. Giles.
 \newblock Multilevel {M}onte {C}arlo path simulation.
 \newblock {\em Operations Research}, 56(3):607--617, 2008.
-\newblock \href {https://doi.org/10.1287/opre.1070.0496}
-  {\path{doi:10.1287/opre.1070.0496}}.
 
-\bibitem[GR58]{GrRu:1958}
+\bibitem{Gi:2015}
+M.~B. Giles.
+\newblock Multilevel {M}onte {C}arlo methods.
+\newblock {\em Acta Numerica}, 24:259--328, 2015.
+
+\bibitem{GrRu:1958}
 H.~Grad and H.~Rubin.
 \newblock Hydromagnetic equilibria and force{-}free fields.
 \newblock In {\em Proc. Second international conference on the peaceful uses of
   atomic energy, Geneva}, volume 31,190, New York, Oct 1958. United Nations.
 
-\bibitem[Gra99]{Gr:1999}
+\bibitem{Gr:1999}
 V.~Grandgirard.
 \newblock Modelisation de l'equilibre d'un plasma de tokamak.
 \newblock Technical report, Universit\'e de {F}ranche-{C}omt\'e, 1999.
-\newblock URL:
-  \url{https://inis.iaea.org/search/search.aspx?orig_q=RN:31051229}.
 
-\bibitem[HBB{\etalchar{+}}15]{CEDRES}
+\bibitem{GrGuJuWa:2023}
+A.~Gruber, M.~Gunzburger, L.~Ju, and Z.~Wang.
+\newblock A multifidelity {M}onte {C}arlo method for realistic computational
+  budgets.
+\newblock {\em Journal of Scientific Computing}, 94(1):Paper No. 2, 18, 2023.
+
+\bibitem{Ha:2007}
+A.~Hald.
+\newblock {\em A history of parametric statistical inference from {B}ernoulli
+  to {F}isher, 1713--1935}.
+\newblock Sources and Studies in the History of Mathematics and Physical
+  Sciences. Springer, New York, 2007.
+
+\bibitem{Heumann:feeqsm}
+H.~Heumann.
+\newblock {FEEQS.M}.
+\newblock http://www-sop.inria.fr/members/Holger.Heumann/Software.html.
+
+\bibitem{CEDRES}
 H.~Heumann, J.~Blum, C.~Boulbe, B.~Faugeras, G.~Selig, J.-M. Ané, S.~Brémond,
   V.~Grandgirard, P.~Hertout, E.~Nardon, and et~al.
 \newblock Quasi-static free-boundary equilibrium of toroidal plasma with
   {CEDRES}: Computational methods and applications.
 \newblock {\em Journal of Plasma Physics}, 81(3):905810301, 2015.
-\newblock \href {https://doi.org/10.1017/S0022377814001251}
-  {\path{doi:10.1017/S0022377814001251}}.
 
-\bibitem[Heu]{Heumann:feeqsm}
-Holger Heumann.
-\newblock {FEEQS.M}.
-\newblock http://www-sop.inria.fr/members/Holger.Heumann/Software.html.
-
-\bibitem[KW05]{KlBa:2005}
-Andreas Klimke and Barbara Wohlmuth.
+\bibitem{KlBa:2005}
+A.~Klimke and B.~Wohlmuth.
 \newblock Algorithm 847: spinterp: piecewise multilinear hierarchical sparse
   grid interpolation in {MATLAB}.
 \newblock {\em Association for Computing Machinery. Transactions on
   Mathematical Software}, 31(4):561--579, 2005.
-\newblock \href {https://doi.org/10.1145/1114268.1114275}
-  {\path{doi:10.1145/1114268.1114275}}.
 
-\bibitem[LB82]{LuBr:1982}
-J.L. Luxon and B.B. Brown.
-\newblock Magnetic analysis of non-circular cross-section tokamaks.
-\newblock {\em Nuclear Fusion}, 22(6):813--821, jun 1982.
-\newblock URL: \url{https://doi.org/10.1088%2F0029-5515%2F22%2F6%2F009}, \href
-  {https://doi.org/10.1088/0029-5515/22/6/009}
-  {\path{doi:10.1088/0029-5515/22/6/009}}.
+\bibitem{KoFaPeDiJeNeBu:2022}
+J.~Konrad, I.~t.-G. Farca\c~s, B.~Peherstorfer, A.~Di~Siena, F.~Jenko,
+  T.~Neckel, and H.-J. Bungartz.
+\newblock Data-driven low-fidelity models for multi-fidelity {M}onte {C}arlo
+  sampling in plasma micro-turbulence analysis.
+\newblock {\em Journal of Computational Physics}, 451:Paper No. 110898, 20,
+  2022.
 
-\bibitem[Lia24]{Li:2024}
-Jiaxing Liang.
+\bibitem{La:2001}
+T.~L. Lai.
+\newblock Sequential analysis: some classical problems and new challenges.
+\newblock {\em Statist. Sinica}, 11(2):303--408, 2001.
+\newblock With comments and a rejoinder by the author.
+
+\bibitem{Li:2024}
+J.~Liang.
 \newblock Efficient computational algorithms for magnetic equilibrium in a
   fusion reactor.
 \newblock 2024.
 
-\bibitem[LS57]{LuSc:1957}
+\bibitem{LuSc:1957}
 R.~L\"{u}st and A.~Schl\"{u}ter.
 \newblock Axialsymmetrische magnetohydrodynamische
   {G}leichgewichtskonfigurationen.
 \newblock {\em Zeitschrift f{\" u}r Naturforschung}, 12a:850--854, 1957.
 
-\bibitem[MZ09]{MaNi:2009}
-Xiang Ma and Nicholas Zabaras.
+\bibitem{LuBr:1982}
+J.~Luxon and B.~Brown.
+\newblock Magnetic analysis of non-circular cross-section tokamaks.
+\newblock {\em Nuclear Fusion}, 22(6):813--821, jun 1982.
+
+\bibitem{MaNi:2009}
+X.~Ma and N.~Zabaras.
 \newblock An adaptive hierarchical sparse grid collocation algorithm for the
   solution of stochastic differential equations.
 \newblock {\em Journal of Computational Physics}, 228(8):3084--3113, 2009.
-\newblock \href {https://doi.org/10.1016/j.jcp.2009.01.006}
-  {\path{doi:10.1016/j.jcp.2009.01.006}}.
 
-\bibitem[NTW08]{NoTeWe:2008}
-F.~Nobile, R.~Tempone, and C.~G. Webster.
-\newblock A sparse grid stochastic collocation method for partial differential
-  equations with random input data.
-\newblock {\em SIAM Journal on Numerical Analysis}, 46(5):2309--2345, 2008.
-\newblock \href {https://doi.org/10.1137/060663660}
-  {\path{doi:10.1137/060663660}}.
+\bibitem{Og:2006}
+H.~Ogasawara.
+\newblock Asymptotic expansion of the sample correlation coefficient under
+  nonnormality.
+\newblock {\em Computational Statistics \& Data Analysis}, 50(4):891--910,
+  2006.
 
-\bibitem[PGW18]{PeGuWi:2018}
-Benjamin Peherstorfer, Max Gunzburger, and Karen Willcox.
+\bibitem{PeGuWi:2018}
+B.~Peherstorfer, M.~Gunzburger, and K.~Willcox.
 \newblock Convergence analysis of multifidelity {M}onte {C}arlo estimation.
 \newblock {\em Numerische Mathematik}, 139(3):683--707, 2018.
-\newblock \href {https://doi.org/10.1007/s00211-018-0945-7}
-  {\path{doi:10.1007/s00211-018-0945-7}}.
 
-\bibitem[PWG16]{PeWiGu:2016}
-Benjamin Peherstorfer, Karen Willcox, and Max Gunzburger.
+\bibitem{PeWiGu:2016}
+B.~Peherstorfer, K.~Willcox, and M.~Gunzburger.
 \newblock Optimal model management for multifidelity {M}onte {C}arlo
   estimation.
 \newblock {\em SIAM Journal on Scientific Computing}, 38(5):A3163--A3194, 2016.
-\newblock \href {https://doi.org/10.1137/15M1046472}
-  {\path{doi:10.1137/15M1046472}}.
 
-\bibitem[Sha58]{Shafranov:1958}
+\bibitem{PeWiGu:2018}
+B.~Peherstorfer, K.~Willcox, and M.~Gunzburger.
+\newblock Survey of multifidelity methods in uncertainty propagation,
+  inference, and optimization.
+\newblock {\em SIAM Review}, 60(3):550--591, 2018.
+
+\bibitem{Pi:1937}
+E.~J.~G. Pitman.
+\newblock Significance tests which may be applied to samples from any
+  populations. ii. the correlation coefficient test.
+\newblock {\em Supplement to the Journal of the Royal Statistical Society},
+  4(2):225--232, 1937.
+
+\bibitem{Ri:1932}
+P.~R. Rider.
+\newblock On the distribution of the correlation coefficient in small samples.
+\newblock {\em Biometrika}, 24(3/4):382--403, 1932.
+
+\bibitem{Shafranov:1958}
 V.~D. Shafranov.
 \newblock On magnetohydrodynamical equilibrium configurations.
 \newblock {\em Soviet Physics JETP}, 6:545--554, 1958.
 
-\bibitem[Smo63]{Sm:1963}
+\bibitem{Sm:1963}
 S.~A. Smolyak.
 \newblock Quadrature and interpolation formulae on tensor products of certain
   function classes.
 \newblock {\em Doklady Akademii Nauk SSSR}, 148:1042--1045, 1963.
 
-\bibitem[TJWG15]{TeJaWe:2015}
-A.~L. Teckentrup, P.~Jantsch, C.~G. Webster, and M.~Gunzburger.
-\newblock A multilevel stochastic collocation method for partial differential
-  equations with random input data.
-\newblock {\em SIAM/ASA Journal on Uncertainty Quantification},
-  3(1):1046--1074, 2015.
-\newblock \href {https://doi.org/10.1137/140969002}
-  {\path{doi:10.1137/140969002}}.
+\bibitem{So:1913}
+H.~E. Soper.
+\newblock On the probable error of the correlation coefficient to a second
+  approximation.
+\newblock {\em Biometrika}, 9(1/2):91--115, 1913.
 
-\bibitem[Wel62]{Welford:1962}
+\bibitem{Wa:1947}
+A.~Wald.
+\newblock {\em Sequential {A}nalysis}.
+\newblock John Wiley \& Sons, Inc., New York; Chapman \& Hall, Ltd., London,
+  1947.
+
+\bibitem{Welford:1962}
 B.~P. Welford.
 \newblock Note on a method for calculating corrected sums of squares and
   products.
 \newblock {\em Technometrics}, 4(3):419--420, 1962.
-\newblock URL:
-  \url{https://www.tandfonline.com/doi/abs/10.1080/00401706.1962.10490022},
-  \href
-  {http://arxiv.org/abs/https://www.tandfonline.com/doi/pdf/10.1080/00401706.1962.10490022}
-  {\path{arXiv:https://www.tandfonline.com/doi/pdf/10.1080/00401706.1962.10490022}},
-  \href {https://doi.org/10.1080/00401706.1962.10490022}
-  {\path{doi:10.1080/00401706.1962.10490022}}.
 
 \end{thebibliography}
