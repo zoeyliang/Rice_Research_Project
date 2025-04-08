@@ -1,46 +1,47 @@
 % ====================================================
 \section{Monte Carlo estimator}\label{sec:MC}
 % ====================================================
-To estimate the expectation in \eqref{eq:QoI}, Monte Carlo sampling is typically used.  Let $u_h (\cdot, \boldsymbol{\omega})$ denote a discrete approximation of $u(\cdot, \boldsymbol{\omega})$ for the stochastic version of \eqref{eq:FreeBoundary}, obtained using a spatial discretization characterized by the mesh parameter $h$ and consisting of $M$ nodes. For simplicity, we write $u$ and $u_h$ as $u(\cdot,\boldsymbol \omega)$ and $u_h(\cdot,\boldsymbol \omega)$ respectively. The Monte Carlo Finite-Element estimator $A^{\text{MC}}_{N}$ is defined as the sample mean of $N$ independent and identically distributed (i.i.d.) realizations $\boldsymbol{\omega}^{(1)},\ldots,\boldsymbol{\omega}^{(N)}$
+To estimate the expectation in \eqref{eq:QoI}, Monte Carlo sampling is typically used.  Let $u_h (\cdot, \boldsymbol{\omega})$ represent the discrete approximation of $u(\cdot, \boldsymbol{\omega})$ from \eqref{eq:FreeBoundary}, obtained via spatial discretization with mesh parameter $h$. For simplicity, we refer to $u$ and $u_h$ as $u(\cdot,\boldsymbol \omega)$ and $u_h(\cdot,\boldsymbol \omega)$, respectively. The Monte Carlo Finite-Element estimator $A^{\text{MC}}_{N}$ is defined as the sample mean of $N$ independent and identically distributed (i.i.d.) realizations $\boldsymbol{\omega}^{(1)},\ldots,\boldsymbol{\omega}^{(N)}$
 %
 \begin{equation}\label{eq:MC_estimator}
-    A^{\text{MC}}_{N} := \frac{1}{N}\sum_{i=1}^{N} u_{h}\left(\cdot, \boldsymbol{\omega}^{(i)}\right),
+    A^{\text{MC}}_{N} := \frac{1}{N}\sum_{i=1}^{N} u_{h}\left(\cdot, \boldsymbol{\omega}^{(i)}\right).
 \end{equation}
 %
-where $\mathbb{E}(A^{\text{MC}}_{N}) = \mathbb{E}(u_{h})$, $\mathbb{V}(A^{\text{MC}}_{N}) = \mathbb{V}( u_{h})/{N}$ and $\mathbb{V}(u) := \mathbb{E}\left(\left\Vert u - \mathbb{E}(u)\right\Vert_Z^2\right)$. The central limit theorem ensures that as $N$ approaches infinity, the estimator \eqref{eq:MC_estimator} converges in distribution to $\mathbb{E}(u)$. While this guarantees asymptotic behavior, the normalized \textit{mean squared error} (nMSE) offers a quantitative measure of how much the estimator deviates from the true value in the mean-square sense. Normalized by $\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2$, the nMSE is defined as
+This estimator is unbiased, satisfying $\mathbb{E}(A^{\text{MC}}_{N}) = \mathbb{E}(u_{h})$, with variance $\mathbb{V}(A^{\text{MC}}_{N}) = \mathbb{V}( u_{h})/{N}$, where $\mathbb{V}(u) := \mathbb{E}\left(\left\Vert u - \mathbb{E}(u)\right\Vert_Z^2\right)$. According to the central limit theorem, as $N$ approaches infinity, the estimator \eqref{eq:MC_estimator} converges in distribution to $\mathbb{E}(u)$. To quantify the estimator's deviation from the true value, we use the normalized mean squared error (nMSE), defined as
 %
  \[
 \mathcal{E}_{A^{\text{MC}}_{N}}^2:=\frac{\mathbb E\left[\left\Vert\mathbb{E}(u)-A^{\text{MC}}_{N} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}.
 \] 
 %
-The nMSE for the Monte Carlo estimator can be decomposed into two components: a bias term, reflecting the discretization of $u$ using $u_h$, and the statistical error, arising from finite sampling. The decomposition is expressed as
+The nMSE comprises two components: the bias error, resulting from discretizing $u$ as $u_h$,  and the statistical error, due to finite sampling
 %
 \[
 \mathcal{E}_{A^{\text{MC}}_{N}}^2 = \frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(u_{h}) \right\Vert_{Z}^2+\mathbb E\left[\left\Vert \mathbb{E}(u_{h}) -A^{\text{MC}}_{N} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2} = \frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(u_{h}) \right\Vert_{Z}^2}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}+\frac{\mathbb{V}\left( u_{h}\right)}{N\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}=\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2.
 \]
 %
-For the bias error, we assume that the sample-wise discretization error satisfies
+Assuming the sample-wise discretization error satisfies
 %
 \begin{equation*} \label{eq:Assumption_uhA}
 \left\|u\left(\cdot, \boldsymbol\omega^{(i)}\right)-u_h\left(\cdot,\boldsymbol\omega^{(i)}\right)\right\|_Z\leq C_m\left(\boldsymbol\omega^{(i)}\right)M^{-\alpha}\,,
 \end{equation*}
 %
-where $C_m(\boldsymbol\omega^{(i)})$ is a constant depending only on the geometry of the spatial domain and the particular realization $\boldsymbol\omega^{(i)}$, $\alpha>0$ is the convergence rate of spatial discretization, and \JLcolor{$M$ is the number of spatial grid nodes.} Given a user-specified threshold $\epsilon^2$  for the nMSE, we introduce a {\it splitting ratio} $\theta \in (0,1)$, which allocates the total error budget $\epsilon^2$ between bias and statistical components requiring that
+where $C_m(\boldsymbol\omega^{(i)})$ is a constant depending only on the geometry of the spatial domain and the particular realization $\boldsymbol\omega^{(i)}$, $\alpha>0$ is the convergence rate of spatial discretization, and $M$ is the number of spatial grid nodes. Given a user-specified threshold $\epsilon^2$  for the nMSE, we introduce a {\it splitting ratio} $\theta \in (0,1)$ to allocate the total error budget between bias and statistical components
 %
 \begin{equation} \label{eq:error-budget}
 %\textcolor{red}{\|u-u_h\|_{L^2(\boldsymbol W,Z)}\le C_mM^{-\alpha}\le \theta_1\epsilon},\qquad\text{ and }\qquad \|u_h-\widehat u_{h}\|_{L^2(\boldsymbol W,Z)} \le C_{p} P^{-\nu}\le \theta_2\epsilon\,.  
 \mathcal{E}_{\text{Bias}}^2=\|u-u_h\|_{L^2(\boldsymbol W,Z)}\le C_mM^{-\alpha}= \theta\epsilon^2, \quad\quad \mathcal{E}_{\text{Stat}}^2 = \frac{\sigma_1^2}{N\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}=(1-\theta)\epsilon^2,
 \end{equation}
-where $C_m$ is independent of the sample and $\sigma_1^2 = \mathbb{V}\left( u_{h}\right)$. To satisfy the error constraints,  the required number of spatial nodes $M$ and sample size $N$ must satisfy
+where $C_m$ is independent of the sample, and $\sigma_1^2 = \mathbb{V}\left( u_{h}\right)$. To meet these error constraints, the required number of spatial nodes $M$ and sample size $N$ must satisfy
 %
 \begin{equation}
 \label{eq:SLSGC_SL_SpatialGridsNo_n_SparseGridsNo}
 M\ge \left(\frac{\theta\epsilon^2}{C_m}\right)^{-\frac 1 {\alpha}},\quad\quad  N \ge  \frac{\sigma_1^2}{\epsilon^2(1-\theta)\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2},
 \end{equation}
 %
-Since $M$ and $N$ are integers, we round them up to the smallest integers that satisfy \eqref{eq:SLSGC_SL_SpatialGridsNo_n_SparseGridsNo}. Assume the average cost of evaluating $u_{h}$ for a single sample is $C$. The total computational cost of estimating $\mathbb{E}\left(u_h\right)$ with $N$ samples is
+Assuming the average cost of evaluating $u_{h}$ for a single sample is $C$, the total computational cost of estimating $\mathbb{E}\left(u_h\right)$ with $N$ samples is
 %
 \[
 \mathcal{W}^\text{MC}  = CN=\frac{C\sigma_1^2}{\epsilon^2(1-\theta)\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}.
 \]
 %
+In practice, both $M$ and $N$ are rounded up to the smallest integers satisfying \eqref{eq:SLSGC_SL_SpatialGridsNo_n_SparseGridsNo}.

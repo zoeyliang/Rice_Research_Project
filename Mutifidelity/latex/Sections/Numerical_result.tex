@@ -24,6 +24,36 @@ The implementation of MLMC requires multiple spatial discretizations. We constru
 
 % The system consists of 298 dual-socket compute blades housed across HPE s6500, HPE Apollo 2000, and Dell PowerEdge C6400 chassis. All nodes are interconnected via a high-speed network with 10 or 25 Gigabit Ethernet.
 
+\JLcolor{We use sampling techniques -- including Monte Carlo and multi-fidelity Monte Carlo methods -- to estimate the parametric expectation \eqref{eq:QoI}. The high-fidelity model used in the multi-fidelity framework is implemented via the finite element-based solver {\tt FEEQS.m} \cite{Heumann:feeqsm}, a lightweight MATLAB version of the {\tt CEDRES++} code \cite{FaHe:2017, CEDRES} developed by Holger Heumann and collaborators. This solver applies a piecewise linear finite element discretization to a weak formulation of \eqref{eq:FreeBoundary} and incorporates a globalized Newton's method to resolve nonlinearity. Throughout this work, we refer to it as the {\it direct solver}. To mitigate the computational cost of repeated high-fidelity evaluations, we construct a hierarchy of low-fidelity models using the sparse grid stochastic collocation method \cite{BaNoRi:2000, KlBa:2005, MaNi:2009, Sm:1963}. }
+
+% =============================
+\subsection{Welford's algorithm}
+% =============================
+To ensure numerically stable and computationally efficient updates of sample statistics, we consider Welford's algorithm \cite{Welford:1962}, which iteratively refines statistical estimates without requiring the storage of all previous samples. This approach offers a significant advantage over traditional methods that requires storing the entire sample history, thereby reducing memory overhead. Such a property is particularly beneficial in large-scale simulations where memory constraints are a critical consideration. The algorithm initializes the proxies for the mean and variance of both the high- and low-fidelity models as $m_w^{(1)}=0$, $v_w^{(1)}=0$, $\widehat m_w^{(1)}=0$, and $\widehat v_w^{(1)}=0$. As new samples are incorporated, these quantities are iteratively updated to refine the statistical estimates. For the high-fidelity model $\widehat u_{h,1}$, given a newly observed sample $\widehat u_{h,1}(\cdot,\boldsymbol{\omega}^{(i)})$ at iteration $i$, the mean and variance updates follow
+%
+\[
+m_w^{(i)} = m_w^{(i-1)} + \frac{\widehat u_{h,1}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-m_w^{(i-1)}}{i},\qquad v_w^{(i)} = v_w^{(i-1)} + \left\langle \widehat u_{h,1}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-m_w^{(i-1)}, \;\;\widehat u_{h,1}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-m_w^{(i)}\right\rangle,
+\]
+%
+Similarly, for the low-fidelity model $\widehat u_{h,k}$, the mean and variance are updated as
+%
+\[
+\widehat m_w^{(i)} = \widehat m_w^{(i-1)} + \frac{\widehat u_{h,k}\left(\cdot,\boldsymbol{\omega}^{(i)}\right) - \widehat m_w^{(i-1)}}{i},\qquad \widehat v_w^{(i)} = \widehat v_w^{(i-1)} + \left\langle \widehat u_{h,k}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-\widehat m_w^{(i-1)},\;\; \widehat u_{h,k}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-\widehat m_w^{(i)}\right\rangle,
+\]
+%
+Beyond moments and variance estimation, MFMC requires an estimate of the correlation between high- and low-fidelity models. The correlation is quantified via the covariance. Initialized as $r_w^{(1)}=0$,  the covariance is updated as
+%
+\[
+r_w^{(i)} = r_w^{(i-1)} + \left \langle \widehat u_{h,1}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-m_{w}^{(i-1)},\;\;\widehat u_{h,k}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-\widehat m_{w}^{(i)}\right\rangle.
+\]
+%
+From these updates, the sample standard deviations of the high- and low-fidelity models are computed as $\sigma_w^{(i)} = \sqrt{v_w^{(i)}/(i-1)}$ and $\widehat \sigma_w^{(i)} = \sqrt{\widehat v_w^{(i)}/(i-1)}$, while the sample covariance follows as $\text{Cov}_w^{(i)} = r_w^{(i)}/(i-1)$. Since Welford's algorithm provides unbiased estimators, their expected values satisfy
+%
+\begin{align*}
+    \mathbb{E}(m_w^{(N)})&=\mu_1,\quad \mathbb{E}(\widehat m_w^{(N)})=\mu_k, \quad \mathbb{E}(v_w^{(N)})=(N-1)\sigma_1^2, \quad\mathbb{E}(\widehat v_w^{(N)})=(N-1)\sigma_k^2, \\
+    \mathbb{E}(\sigma_w^{(N)})&=\sqrt{\mathbb{E}(v_w^{(N)})/(N-1)}=\sigma_1, \quad \mathbb{E}(\widehat \sigma_w^{(N)})=\sigma_k, \quad\mathbb{E}(\text{Cov}_w^{(N)}) = \frac{\mathbb{E}( r_w^{(N)})}{N-1} = \rho_{1,k}\sigma_1\sigma_k.
+\end{align*}
+%
 
 % =============================
 \subsection{Offline cost of surrogate construction and parameter estimation in MFMC}

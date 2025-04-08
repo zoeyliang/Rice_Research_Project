@@ -4,7 +4,10 @@
 % examine two main sampling methods: Monte Carlo Finite-Element (MC-FE) and multifidelity Monte Carlo Finite-Element sampling methods (MFMC-FE).
 
 % Let $u_h$ be a finite element discretized solution to \eqref{eq:FreeBoundary} as our high fidelity model. 
-The Monte Carlo finite element estimator is often computationally expensive due to the extensive sampling on a fixed finite element discretization. This can become prohibitively costly, particularly under stringent accuracy requirements. 
+offers an alternative by using the control variate technique to exploit correlations between a high-fidelity model and a set of lower-fidelity models. Unlike MLMC sampling with surrogates, MFMC accommodates diverse surrogate models without requiring explicit treatment of interpolation errors. Instead, it constructs an estimator that combines information from multiple fidelities in a computationally efficient manner, extending the utility and flexibility of MLMC to a broader range in application.
+
+
+The Monte Carlo finite element estimator is often computationally expensive due to the extensive sampling on a fixed finite element discretization. This can become prohibitively costly, particularly under stringent accuracy requirements. To mitigate this challenge,
 
 \JLcolor{Work like \cite{PeGuWi:2018, ArGuMoWi:2025} studied approaches of both multilevel and multifidelity samplings. In MLMC, sample corrections are accumulated starting from the coarsest grid representation, using independent samples across successive spatial grid resolutions, and the sample size decreases with increasing grid fidelity to optimize computational effort. The MFMC method distinguishes itself from the MLMC approach by adopting a different strategy to construct its estimator. In contrast, the MFMC estimator follows an inverted paradigm: it initiates the accumulation of corrections with the most refined model representation and progressively incorporates corrections from lower-fidelity models. As the fidelity of the model decreases, the sample size increases, allowing less accurate but computationally inexpensive models to contribute to the overall estimate. Crucially, a distinguishing feature of the MFMC method is its reuse of samples within the same model hierarchy in the correction. This reuse avoids the computational redundancy of generating new samples at each fidelity level, effectively enhancing the overall efficiency of the sampling process. }
 
@@ -58,7 +61,7 @@ While $Y_k$ and $Y_j$ for $k\neq j, k,j=2,\cdots, K$ are dependent due to overla
 \text{Cov}(Y_1,Y_k) = - \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\rho_{1,k}\sigma_1\sigma_k.
 \]
 %
-\JLcolor{In the later context, Denote $\rho_{k}$ as $\rho_{1,k}$ for short.} Using the variances of $k$-th correction terms and covariances between the first and $k$-th correction terms, the variance of the multi-fidelity Monte Carlo estimator can be expressed as
+Using the variances of $k$-th correction terms and covariances between the first and $k$-th correction terms, the variance of the multi-fidelity Monte Carlo estimator can be expressed as
 %
 \begin{align}
     \nonumber
@@ -266,31 +269,7 @@ This ratio also quantifies reduction of computational budget achieved by the MFM
 
 Previous analyses often assume prior knowledge of key parameters, such as correlation coefficients between high- and low-fidelity models and sample correction weights. However, in practice,  these parameters are typically unknown and must be estimated from sample statistics. The accuracy of these estimates directly affects the robustness of multifidelity Monte Carlo sampling, as errors in parameter estimation can propagate through the sampling process, reducing both computational efficiency and solution accuracy. Consequently, a systematic approach is required to determine an appropriate pilot sample size that ensures reliable parameter estimation. To this end, we examine the asymptotic behavior of correlation coefficient distributions and analyze the propagation of correlation estimation errors in the MFMC variance and cost-efficiency measures. By deriving sensitivity bounds on these quantities, we establish a stopping criterion for an adaptive, sequential sampling strategy. This strategy iteratively refines the sample size until the relative error in efficiency and variance satisfies a prescribed threshold, ensuring that correlation estimates remain sufficiently accurate while minimizing unnecessary computational costs. Through real-time statistical feedback, this dynamic approach enhances MFMC robustness and efficiency.
 
-To ensure numerically stable and computationally efficient updates of sample statistics, we consider Welford's algorithm \cite{Welford:1962}, which iteratively refines statistical estimates without requiring the storage of all previous samples. This approach offers a significant advantage over traditional methods that requires storing the entire sample history, thereby reducing memory overhead. Such a property is particularly beneficial in large-scale simulations where memory constraints are a critical consideration. The algorithm initializes the proxies for the mean and variance of both the high- and low-fidelity models as $m_w^{(1)}=0$, $v_w^{(1)}=0$, $\widehat m_w^{(1)}=0$, and $\widehat v_w^{(1)}=0$. As new samples are incorporated, these quantities are iteratively updated to refine the statistical estimates. For the high-fidelity model $\widehat u_{h,1}$, given a newly observed sample $\widehat u_{h,1}(\cdot,\boldsymbol{\omega}^{(i)})$ at iteration $i$, the mean and variance updates follow
-%
-\[
-m_w^{(i)} = m_w^{(i-1)} + \frac{\widehat u_{h,1}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-m_w^{(i-1)}}{i},\qquad v_w^{(i)} = v_w^{(i-1)} + \left\langle \widehat u_{h,1}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-m_w^{(i-1)}, \;\;\widehat u_{h,1}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-m_w^{(i)}\right\rangle,
-\]
-%
-Similarly, for the low-fidelity model $\widehat u_{h,k}$, the mean and variance are updated as
-%
-\[
-\widehat m_w^{(i)} = \widehat m_w^{(i-1)} + \frac{\widehat u_{h,k}\left(\cdot,\boldsymbol{\omega}^{(i)}\right) - \widehat m_w^{(i-1)}}{i},\qquad \widehat v_w^{(i)} = \widehat v_w^{(i-1)} + \left\langle \widehat u_{h,k}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-\widehat m_w^{(i-1)},\;\; \widehat u_{h,k}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-\widehat m_w^{(i)}\right\rangle,
-\]
-%
-Beyond moments and variance estimation, MFMC requires an estimate of the correlation between high- and low-fidelity models. The correlation is quantified via the covariance. Initialized as $r_w^{(1)}=0$,  the covariance is updated as
-%
-\[
-r_w^{(i)} = r_w^{(i-1)} + \left \langle \widehat u_{h,1}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-m_{w}^{(i-1)},\;\;\widehat u_{h,k}\left(\cdot,\boldsymbol{\omega}^{(i)}\right)-\widehat m_{w}^{(i)}\right\rangle.
-\]
-%
-From these updates, the sample standard deviations of the high- and low-fidelity models are computed as $\sigma_w^{(i)} = \sqrt{v_w^{(i)}/(i-1)}$ and $\widehat \sigma_w^{(i)} = \sqrt{\widehat v_w^{(i)}/(i-1)}$, while the sample covariance follows as $\text{Cov}_w^{(i)} = r_w^{(i)}/(i-1)$. Since Welford's algorithm provides unbiased estimators, their expected values satisfy
-%
-\begin{align*}
-    \mathbb{E}(m_w^{(N)})&=\mu_1,\quad \mathbb{E}(\widehat m_w^{(N)})=\mu_k, \quad \mathbb{E}(v_w^{(N)})=(N-1)\sigma_1^2, \quad\mathbb{E}(\widehat v_w^{(N)})=(N-1)\sigma_k^2, \\
-    \mathbb{E}(\sigma_w^{(N)})&=\sqrt{\mathbb{E}(v_w^{(N)})/(N-1)}=\sigma_1, \quad \mathbb{E}(\widehat \sigma_w^{(N)})=\sigma_k, \quad\mathbb{E}(\text{Cov}_w^{(N)}) = \frac{\mathbb{E}( r_w^{(N)})}{N-1} = \rho_{1,k}\sigma_1\sigma_k.
-\end{align*}
-%
+
 To estimate these parameters, we use a pilot sample of size $Q$ generated though Monte Carlo sampling. While the estimators $\text{Cov}_w^{(Q)}, \sigma_w^{(Q)},$ and $\widehat\sigma_w^{(Q)} $ are unbiased, the correlation estimator 
 %
 \[
@@ -318,9 +297,12 @@ To establish appropriate stopping criteria, we will first construct confidence i
 z^\prime  = 0.5\ln \left(\frac{1+\rho_{1,k}}{1-\rho_{1,k}}\right),
 \]
 then the 95\% confidence interval for $z^\prime$ is $z^\prime \pm 1.96\sigma_{z^\prime}$, where the estimate of the standard error is $\sigma_{z^\prime} = 1.03/\sqrt{Q-3}$. Taking the upper and lower bounds of the confidence interval for ${z^\prime}$, we can revert back to the confidence interval for $\rho_{1,k}$ as 
-\[
-\rho_{1,k} = \frac{e^{2z^\prime}-1}{e^{2z^\prime}+1}.
-\]
+%
+\begin{equation}
+\label{eq:Confidence_Interval_rho}
+    \rho_{1,k} = \frac{e^{2z^\prime}-1}{e^{2z^\prime}+1}.
+\end{equation}
+%
 
 Next, we examine the sensitivity of cost efficiency and variance concerning the correlation coefficient. Let  $\boldsymbol{\rho}$ represent the true correlation coefficient vector, approximated by $\boldsymbol{\rho}+\Delta \boldsymbol{\rho}$. Applying a first-order Taylor expansion, the propagated error in cost efficiency and variance, resulting from the estimation of the correlation coefficient, can be approximated as
 
