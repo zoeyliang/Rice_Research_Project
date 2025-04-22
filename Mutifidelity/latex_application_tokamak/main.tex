@@ -1,0 +1,103 @@
+\documentclass[final,3p,times,11pt]{elsarticle}
+\usepackage[USenglish]{babel}
+\usepackage{amsmath,amssymb,amsthm, mathrsfs,multirow}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{stmaryrd}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{cancel}
+\usepackage{ulem}
+\usepackage{tabularx}
+\usepackage{comment}
+%\usepackage{subcaption}
+%\usepackage[show]{ed}
+%\usepackage{showkeys}
+%\usepackage{showlabels}
+%\usepackage[notcite,notref]{showkeys}
+%\usepackage{refcheck}
+% \usepackage[ruled,vlined]{algorithm2e}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\definecolor{Myblue}{rgb}{.2 0.4 1}
+
+\usepackage{hyperref}
+\hypersetup{
+    %bookmarks=true,         % show bookmarks bar?
+    colorlinks = true,       % false: boxed links; true: colored links
+    % linkcolor=green
+     %linkcolor=red,          % color of internal links (change box color with linkbordercolor)
+     %citecolor=green,        % color of links to bibliography
+    %filecolor=magenta,      % color of file links
+    %urlcolor=cyan           % color of external links
+}
+%\usepackage{wrapfig}
+%% The lineno packages adds line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers after \end{frontmatter}.
+%\usepackage{lineno}
+
+
+% ==============   Macros  ====================
+\newcommand{\mynabla}{\widetilde{\nabla}} 
+\newcommand{\jump}[1]{[\![#1]\!]}
+\newcommand{\HEcolor}[1]{{\textcolor{blue}{#1}}}
+\newcommand{\TSVcolor}[1]{{\textcolor{orange}{#1}}}
+\newcommand{\JLcolor}[1]{{\textcolor{violet}{#1}}} %violet
+\newcommand{\Grids}{\boldsymbol{\chi}}
+
+\newtheorem{theorem}{Theorem}%[section]
+\newtheorem{VariationalForm}[theorem]{Variational Formulation}
+% =============================================
+
+\journal{}
+\makeatletter
+\def\ps@pprintTitle{%
+ \let\@oddhead\@empty
+ \let\@evenhead\@empty
+ \def\@oddfoot{}%
+ \let\@evenfoot\@oddfoot}
+\makeatother
+
+
+
+
+\begin{document}
+\begin{frontmatter}
+\title{Multi-fidelity Monte Carlo for uncertainty quantification in the free boundary Grad-Shafranov equation}
+
+
+\author[umdcs]{Matthias Heinkenschloss}
+\ead{heinken@rice.edu}
+\address[umdcs]{Department of Computational Applied Mathematics \& Operations Research, Rice University.}
+\author[umdm]{Jiaxing Liang}
+\ead{jl508@rice.edu}
+\address[umdm]{Department of Computational Applied Mathematics \& Operations Research, Rice University.}
+% \author[UA]{Tonatiuh S\'anchez-Vizuet}
+% \ead{tonatiuh@arizona.edu}
+% \address[UA]{Department of Mathematics, The University of Arizona.}
+\begin{abstract}
+We investigate the Grad-Shafranov free boundary problem in Tokamak fusion reactors under the influence of parameter uncertainties. Using both traditional Monte Carlo and multi-fidelity Monte Carlo sampling approaches, we quantify the impact of these uncertainties on model predictions, emphasizing the statistical characterization of solution variability across diverse parameter regimes. Our numerical results reveals that the multi-fidelity Monte Carlo estimator achieves statistical accuracy comparable to the Monte Carlo approach. However, the multi-fidelity method demonstrates superior computational efficiency, achieving a cost reduction by a factor of ..., while preserving fidelity in representing plasma boundary dynamics and geometric parameters. This work underscores the efficiency of multi-fidelity frameworks in addressing the computational demands of uncertainty quantification in complex fusion reactor models, offering a robust pathway for enhancing predictive capabilities in plasma physics. 
+\end{abstract}
+
+\begin{keyword}
+Multi-fidelity Monte Carlo Finite-Element \sep Parametric expectation \sep Sparse Grid Stochastic Collocation \sep Uncertainty Quantification \sep Free Boundary Grad-Shafranov Problem.
+%
+\MSC[2020] 
+\end{keyword}
+\end{frontmatter}
+
+\input{./Sections/Introduction} 
+\input{./Sections/Physical_Problem} 
+\input{./Sections/Sparse_Grid_Stochastic_Collocation}
+\input{./Sections/MC}
+\input{./Sections/MFMC}
+\input{./Sections/Numerical_result}
+\input{./Sections/Acknowledgment}
+
+
+
+\bibliographystyle{abbrv}
+% \bibliographystyle{alphaurl}
+\bibliography{references_liang}
+\end{document}
+
+
