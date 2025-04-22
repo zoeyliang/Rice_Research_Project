@@ -1,7 +1,15 @@
 % ============================================================
 \section{Sparse grid stochastic collocation}\label{sec:SC}
 % ============================================================
-This section briefly outlines the sparse grid stochastic collocation method \cite{BaNoRi:2000, KlBa:2005, MaNi:2009, Sm:1963}. We use a generic solution $u$ for illustration. The approach starts by defining a univariate set of $m_i$ collocation nodes $X^i = \left\{x_1^i,\ldots, x_{m_i}^i\right\}$ over the interval $[-1,1]$. Using these nodes, a univariate interpolation operator is then built as $I_{X^{i}}[u]:=\sum_{j=1}^{m_{i}} u(\cdot, x_j^i)\phi_j$, where $\phi_k(x_j^i)$ is the Lagrange basis function satisfying $\phi_j(x_k^i) = \delta_{jk}$. To extend this approach to high-dimensional parameter space, the method combines univariate nodes across multiple dimensions using a tensor product. Instead of using a full tensor grid -- which grows exponentially with the number of dimensions $d$ -- the sparse grid framework selects fewer nodes $m_i$ per dimension, drastically reducing computational costs while maintaining accuracy. The {\it sparse grid nodes} for a domain of dimension $d$ and {\it level} $q\; (\text{where }q\ge d)$ are defined as
+This section briefly outlines the sparse grid stochastic collocation method \cite{BaNoRi:2000, KlBa:2005, MaNi:2009, Sm:1963}. We use a generic solution $u$ for illustration. The approach starts by defining a univariate set of $m_i$ collocation nodes $X^i = \left\{x_1^i,\ldots, x_{m_i}^i\right\}$ over the interval $[-1,1]$. Using these nodes, a univariate interpolation operator is then built as 
+%
+\[
+I_{X^{i}}[u]:=\sum_{j=1}^{m_{i}} u(\cdot, x_j^i)\phi_j,
+\]
+%
+where $\phi_k(x_j^i)$ is the Lagrange basis function satisfying $\phi_j(x_k^i) = \delta_{jk}$. To extend the approach to high-dimensional parameter spaces, tensor products of univariate nodes are used. Rather than forming a full tensor grid -- which grows exponentially with the number of parameters $d$ -- the sparse grid framework constructs a reduced set of nodes in each dimension and use tensor product to generate sparse grids. The {\it sparse grid nodes} for a $d$-dimensional domain at {\it level} $q\; (\text{where }q\ge d)$ are defined as
+
+
 %
 \begin{equation*}
 H(q,d) = \bigcup_{q-d+1\le|\boldsymbol{i}|\le q} \left(X^{i_1}\times \cdots\times X^{i_d}\right)\in [-1,1]^d, 
