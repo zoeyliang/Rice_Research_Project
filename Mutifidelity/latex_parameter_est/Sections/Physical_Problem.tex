@@ -1,0 +1,45 @@
+% ========================================
+\section{Problem setting}\label{sec:Problem_setting}
+% ========================================
+We are interested in solving a parametrized partial differential equation under uncertainty quantification. Let $D\subset \mathbb{R}^n$ be a bounded, Lipschitz domain, and let $\mathcal{L}$ denote a (possibly nonlinear) differential operator posed on $D$. Uncertainty is introduced through randomness in the coefficients of $\mathcal{L}$ and/or the source term. Let $(\Omega, \mathcal{F}, P)$ be a complete probability space, where $\Omega$ denotes the set of outcomes, $\mathcal{F}\subset 2^{\Omega}$ is the associated $\sigma-$algebra of events, and $P:\mathcal{F}\rightarrow [0,1]$ is a probability measure. We assume that the coefficient field $a=a(x, \omega)$ and the source term $f = f(x, \omega)$, where $x\in D$ and $\omega\in \Omega$, depend on a finite-dimensional random vector. To parameterize this randomness, we introduce a $d$-dimensional random vector $\boldsymbol \omega :=(\omega_1(\omega),\ldots,\omega_d(\omega))$, with associated parameter space $W\subset \mathbb{R}^d$. We seek a solution map $u(\cdot, \boldsymbol{\omega}): W \to Z$, where $Z$ is a spatial function space, such that for $\boldsymbol \omega \in W$, the function $u(\cdot, \boldsymbol{\omega})$ satisfies the stochastic boundary value problem almost surely
+%
+\begin{equation}\label{eq:Problem}
+    \mathcal{L}(a)(u) = f \quad \text{in} \;\; D
+\end{equation}
+%
+with appropriate boundary conditions on $\partial D$.
+
+To characterize the dependence of the solution on both spatial and parametric variables, we adopt a Bochner space framework. For $q\in [1,\infty]$, the Bochner space $L^q(W,Z)$ is defined as
+%
+\[
+L^q(W,Z) = \left\{u:W\rightarrow Z\; \bigg\vert \;\left\|u\right\|_{L^q(W,Z)}<\infty\right\},
+\]
+%
+where the norm $\|u\|_{L^q(W,Z)}$ is given by
+%
+\[
+\left\Vert u \right\Vert_{L^q(\boldsymbol W,Z)} =\left\{\begin{array}{lll}
+     \left(\int_{\boldsymbol W} \left\Vert u(\cdot,\boldsymbol{\omega})  \right\Vert_{Z}^q \pi(\boldsymbol{\omega})d\boldsymbol{\omega} \right)^{1/q} = \left(\mathbb{E}\left[\left\Vert u(\cdot,\boldsymbol{\omega})  \right\Vert_{Z}^q\right]\right)^{1/q}, & 0<q<\infty, \\
+     \text{ess} \sup_{\boldsymbol{\omega}\in W}\left\Vert u(\cdot,\boldsymbol{\omega})  \right\Vert_{Z}, & q=\infty.
+\end{array}
+\right.
+\]
+and $\pi(\boldsymbol{\omega})$ denotes the joint probability density of $\boldsymbol{\omega}$.
+
+The goal of this work is to investigate the propagation of uncertainty through the solution $u$ and to develop efficient numerical methods for approximating the parametric expectation 
+%
+ \begin{equation}
+ \label{eq:QoI}
+      \mathbb{E}\left(u(\cdot,\boldsymbol \omega)\right)=\int_W u(\cdot,\boldsymbol{\omega})\pi(\boldsymbol\omega)d\boldsymbol{\omega},
+ \end{equation}
+%
+
+% Incorporating the uncertainty and 
+% %
+% \begin{equation}\label{eq:FreeBoundarya}
+%  -\nabla\,\cdot\,\left(\frac{1}{\mu(u(\cdot, \boldsymbol{\omega})) r}\nabla u(\cdot, \boldsymbol{\omega})\right) = \left\{ \begin{array}{ll}
+% \frac{d}{du} p(u(\cdot, \boldsymbol{\omega})) + \frac{1}{2\,\mu r} \frac{d}{du} g^2(u(\cdot, \boldsymbol{\omega})) & \text{ in } \Omega_p(u(\cdot, \boldsymbol{\omega})) \\
+% I_k(\boldsymbol\omega)/S_k & \text{ in } \Omega_{C_k} \\
+% 0 & \text{ elsewhere, } 
+% \end{array}\right.
+% \end{equation}
