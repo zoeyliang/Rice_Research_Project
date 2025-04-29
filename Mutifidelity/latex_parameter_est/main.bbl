@@ -1,0 +1,160 @@
+\begin{thebibliography}{10}
+
+\bibitem{ArGuMoWi:2025}
+L.~Artsimovich, G.~Bobrovskii, and E.~Gorbunov.
+\newblock Multifidelity uncertainty quantification for ice sheet simulations.
+\newblock {\em Computational Geosciences}, 29(5), 01 2025.
+
+\bibitem{BaScZo:2011}
+A.~Barth, C.~Schwab, and N.~Zollinger.
+\newblock Multi-level {M}onte {C}arlo finite element method for elliptic {PDE}s
+  with stochastic coefficients.
+\newblock {\em Numerische Mathematik}, 119(1):123--161, 2011.
+
+\bibitem{BeDeToMeBaRo:2007}
+W.~H. Beasley, L.~DeShea, L.~E. Toothaker, J.~L. Mendoza, D.~E. Bard, and J.~L.
+  Rodgers.
+\newblock Bootstrapping to test for nonzero population correlation coefficients
+  using univariate sampling.
+\newblock {\em Psychological Methods}, 12(4):414--433, 2007.
+
+\bibitem{BiHi:2017}
+A.~J. Bishara and J.~B. Hittner.
+\newblock Confidence intervals for correlations when data are not normal.
+\newblock {\em Behavior Research Methods}, 49:294--309, 2017.
+
+\bibitem{Cr:1946}
+H.~Cram\'er.
+\newblock {\em Mathematical {M}ethods of {S}tatistics}, volume vol. 9 of {\em
+  Princeton Mathematical Series}.
+\newblock Princeton University Press, Princeton, NJ, 1946.
+
+\bibitem{Ef:1979}
+B.~Efron.
+\newblock Bootstrap methods: another look at the jackknife.
+\newblock {\em The Annals of Statistics}, 7(1):1--26, 1979.
+
+\bibitem{EfTi:1993}
+B.~Efron and R.~J. Tibshirani.
+\newblock {\em An introduction to the bootstrap}, volume~57 of {\em Monographs
+  on Statistics and Applied Probability}.
+\newblock Chapman and Hall, New York, 1993.
+
+\bibitem{ElLiSa:2022}
+H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
+\newblock Surrogate approximation of the {G}rad-{S}hafranov free boundary
+  problem via stochastic collocation on sparse grids.
+\newblock {\em Journal of Computational Physics}, 448:110699, 20, 2022.
+
+\bibitem{ElLiSa:2023}
+H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
+\newblock Multilevel {M}onte {C}arlo methods for the {G}rad-{S}hafranov free
+  boundary problem.
+\newblock {\em Computer Physics Communications}, 298:109099, 2024.
+
+\bibitem{ElLiSa:2025}
+H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
+\newblock Surrogate-based multilevel {M}onte {C}arlo methods for uncertainty
+  quantification in the {G}rad-{S}hafranov free boundary problem.
+\newblock {\em Arxiv}, 2025.
+
+\bibitem{FiHaPe:1957}
+E.~C. Fieller, H.~O. Hartley, and E.~S. Pearson.
+\newblock Tests for rank correlation coefficients. {I}.
+\newblock {\em Biometrika}, 44:470--481, 1957.
+
+\bibitem{Fi:1915}
+R.~A. Fisher.
+\newblock Frequency distribution of the values of the correlation coefficient
+  in samples from an indefinitely large population.
+\newblock {\em Biometrika}, 10(4):507--521, 1915.
+
+\bibitem{Fi:1921}
+R.~A. Fisher.
+\newblock On the "{Probable} {Error}" of a {Coefficient} of {Correlation}
+  {Deduced} from a {Small} {Sample}.
+\newblock {\em Metron}, 1:3--32, 1921.
+
+\bibitem{Gi:2008}
+M.~B. Giles.
+\newblock Multilevel {M}onte {C}arlo path simulation.
+\newblock {\em Operations Research}, 56(3):607--617, 2008.
+
+\bibitem{Gi:2015}
+M.~B. Giles.
+\newblock Multilevel {M}onte {C}arlo methods.
+\newblock {\em Acta Numerica}, 24:259--328, 2015.
+
+\bibitem{GoGeElJa:2020}
+A.~A. Gorodetsky, G.~Geraci, M.~S. Eldred, and J.~D. Jakeman.
+\newblock A generalized approximate control variate framework for multifidelity
+  uncertainty quantification.
+\newblock {\em J. Comput. Phys.}, 408:109257, 29, 2020.
+
+\bibitem{GrGuJuWa:2023}
+A.~Gruber, M.~Gunzburger, L.~Ju, and Z.~Wang.
+\newblock A multifidelity {M}onte {C}arlo method for realistic computational
+  budgets.
+\newblock {\em Journal of Scientific Computing}, 94(1):Paper No. 2, 18, 2023.
+
+\bibitem{Ha:2007}
+A.~Hald.
+\newblock {\em A history of parametric statistical inference from {B}ernoulli
+  to {F}isher, 1713--1935}.
+\newblock Sources and Studies in the History of Mathematics and Physical
+  Sciences. Springer, New York, 2007.
+
+\bibitem{La:2001}
+T.~L. Lai.
+\newblock Sequential analysis: some classical problems and new challenges.
+\newblock {\em Statist. Sinica}, 11(2):303--408, 2001.
+\newblock With comments and a rejoinder by the author.
+
+\bibitem{Oe:1992}
+G.~W. Oehlert.
+\newblock A note on the delta method.
+\newblock {\em Amer. Statist.}, 46(1):27--29, 1992.
+
+\bibitem{Og:2006}
+H.~Ogasawara.
+\newblock Asymptotic expansion of the sample correlation coefficient under
+  nonnormality.
+\newblock {\em Computational Statistics \& Data Analysis}, 50(4):891--910,
+  2006.
+
+\bibitem{PeGuWi:2018}
+B.~Peherstorfer, M.~Gunzburger, and K.~Willcox.
+\newblock Convergence analysis of multifidelity {M}onte {C}arlo estimation.
+\newblock {\em Numerische Mathematik}, 139(3):683--707, 2018.
+
+\bibitem{PeWiGu:2016}
+B.~Peherstorfer, K.~Willcox, and M.~Gunzburger.
+\newblock Optimal model management for multifidelity {M}onte {C}arlo
+  estimation.
+\newblock {\em SIAM Journal on Scientific Computing}, 38(5):A3163--A3194, 2016.
+
+\bibitem{Pi:1937}
+E.~J.~G. Pitman.
+\newblock Significance tests which may be applied to samples from any
+  populations. ii. the correlation coefficient test.
+\newblock {\em Supplement to the Journal of the Royal Statistical Society},
+  4(2):225--232, 1937.
+
+\bibitem{Ri:1932}
+P.~R. Rider.
+\newblock On the distribution of the correlation coefficient in small samples.
+\newblock {\em Biometrika}, 24(3/4):382--403, 1932.
+
+\bibitem{So:1913}
+H.~E. Soper.
+\newblock On the probable error of the correlation coefficient to a second
+  approximation.
+\newblock {\em Biometrika}, 9(1/2):91--115, 1913.
+
+\bibitem{Wa:1947}
+A.~Wald.
+\newblock {\em Sequential {A}nalysis}.
+\newblock John Wiley \& Sons, Inc., New York; Chapman \& Hall, Ltd., London,
+  1947.
+
+\end{thebibliography}
