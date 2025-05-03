@@ -80,23 +80,27 @@ Note that by ensuring the condition $(ii)$ is satisfied, we can guarantee that $
 %
 
 \begin{lemma}\label{lemma:Y_k_Y_j}
-$Y_k$ and $Y_j$ are uncorrelated  for $2\le k<j\le K$.
-
+For any indices $2\le k<j\le K$, the correction terms $Y_k$ and $Y_j$ defined in \eqref{eq:MFMC_Yk} are uncorrelated; that is,
+\begin{equation*}
+    \text{Cov} \left[Y_k,Y_j\right]=0.
+\end{equation*}
+\end{lemma}
 
 \begin{proof}
-For $2\le k<j\le K$, we have $N_{k-1}\le N_k\le N_{j-1}$, we partition $N_{j-1}$ samples into three subsets of sizes $N_{k-1}$, $N_{k}-N_{k-1}$, and $N_{j-1} - N_{k}$, the samples in these three subsets are independent. From the definition of $Y_k$ in \eqref{eq:MFMC_Yk}
+Assume $2\le k<j\le K$. Since $N_{k-1}\le N_k\le N_{j-1}$, we can partition the $N_{j-1}$ samples into three disjoint subsets of sizes $N_{k-1}$, $N_{k}-N_{k-1}$, and $N_{j-1} - N_{k}$. The samples in these three subsets are mutually independent. From the definition of $Y_k$ in \eqref{eq:MFMC_Yk},  the covariance between $Y_k$ and $Y_j$ is then given by
 \begin{align*}
     \text{Cov}\left[Y_k,Y_j\right] &= \left(\frac{N_{k-1}}{N_k}-1\right) \left(\frac{N_{j-1}}{N_j}-1\right)\text{Cov}\left[A_{k, N_{k-1}}^{\text{MC}} - A_{k,N_{k}\backslash N_{k-1}}^{\text{MC}}, A_{j,N_{j-1}}^{\text{MC}} - A_{j,N_{j}\backslash N_{j-1}}^{\text{MC}}\right] \\
     & = M \left(\text{Cov}\left[A_{k,N_{k-1}}^{\text{MC}} - A_{k,N_{k}\backslash N_{k-1}}^{\text{MC}}, A_{j,N_{j-1}}^{\text{MC}}\right] - \text{Cov}\left[A_{k,N_{k-1}}^{\text{MC}} - A_{k,N_{k}\backslash N_{k-1}}^{\text{MC}}, A_{j,N_{j}\backslash N_{j-1}}^{\text{MC}}\right] \right)\\
     & = M \text{Cov}\left[A_{k,N_{k-1}}^{\text{MC}} - A_{k,N_{k}\backslash N_{k-1}}^{\text{MC}}, A_{j,N_{j-1}}^{\text{MC}}\right]
 \end{align*}
-where $M = (N_{k-1}/N_k-1) (N_{j-1}/N_j-1)$. The second term disappears since samples in $A_{j,N_{j}\backslash N_{j-1}}^{\text{MC}}$ are independent with the samples in $A_{k,N_{k-1}}^{\text{MC}}$ and $A_{k,N_{k}\backslash N_{k-1}}^{\text{MC}}$. Moreover, we can express $A_{j,N_{j-1}}^{\text{MC}}$ as
+where we define $M = (N_{k-1}/N_k-1) (N_{j-1}/N_j-1)$. The second term in the covariance vanishes due to independence between the samples used in $A_{j,N_{j}\backslash N_{j-1}}^{\text{MC}}$ and those in $Y_k$. Next, we express $A_{j,N_{j-1}}^{\text{MC}}$ as a weighted Monte Carlo estimator over the three disjoint sample subsets
 %
 \begin{equation*}
     A_{j,N_{j-1}}^{\text{MC}} = \frac{N_{k-1}}{N_{j-1}}A_{j,N_{k-1}}^{\text{MC}} + \frac{N_k - N_{k-1}}{N_{j-1}} A_{j,N_{k}\backslash N_{k-1}}^{\text{MC}} + \frac{N_{j-1} - N_k}{N_{j-1}} A_{j,N_{j-1}\backslash N_{k}}^{\text{MC}}.
 \end{equation*}
 %
-
+Substituting this expansion into the covariance expression yields
+%
 \begin{align*}
     \frac{\text{Cov}\left[Y_k,Y_j\right]}{M} &= \text{Cov}\left[A_{k,N_{k-1}}^{\text{MC}} - A_{k,N_{k}\backslash N_{k-1}}^{\text{MC}}, A_{j,N_{j-1}}^{\text{MC}}\right]\\
     % &= \text{Cov}\left[A_{N_{k-1}}^k, \frac{N_{k-1}}{N_{j-1}}A_{N_{k-1}}^j + \frac{N_k - N_{k-1}}{N_{j-1}} A_{N_{k}\backslash N_{k-1}}^j + \frac{N_{j-1} - N_k}{N_{j-1}} A_{N_{j-1}\backslash N_{k}}^j\right] \\
@@ -111,4 +115,3 @@ where $M = (N_{k-1}/N_k-1) (N_{j-1}/N_j-1)$. The second term disappears since sa
 \end{proof}
 
 
-\end{lemma}

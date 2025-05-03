@@ -1,7 +1,7 @@
 % ====================================================
 \section{Monte Carlo estimator}\label{sec:MC}
 % ====================================================
-A standard approach for approximating this expectation is the Monte Carlo (MC) method. Let $u_h (\cdot, \boldsymbol{\omega})$ denote a discrete approximation of $u(\cdot, \boldsymbol{\omega})$, obtained via spatial discretization with mesh parameter $h$.  For convenience, we use $u$ and $u_h$ to refer to the exact ($u(\cdot,\boldsymbol \omega)$) and discrete ($u_h(\cdot,\boldsymbol \omega)$) solutions evaluated at a realization $\boldsymbol \omega$.
+A standard approach for approximating this expectation is the Monte Carlo (MC) method. Let $u_h (\cdot, \boldsymbol{\omega})$ denote a discrete approximation of $u(\cdot, \boldsymbol{\omega})$, obtained via spatial discretization with mesh parameter $h$.  For convenience, we use $u$ and $u_h$ to refer to the exact $u(\cdot,\boldsymbol \omega)$ and discrete $u_h(\cdot,\boldsymbol \omega)$ solutions evaluated at a realization $\boldsymbol \omega$.
 
 The Monte Carlo Finite-Element estimator $A^{\text{MC}}_{N}$ is defined as the sample mean over $N$ independent and identically distributed (i.i.d.) samples $\boldsymbol{\omega}^{(1)},\ldots,\boldsymbol{\omega}^{(N)}$
 %
@@ -9,7 +9,7 @@ The Monte Carlo Finite-Element estimator $A^{\text{MC}}_{N}$ is defined as the s
     A^{\text{MC}}_{N} := \frac{1}{N}\sum_{i=1}^{N} u_{h}\left(\cdot, \boldsymbol{\omega}^{(i)}\right).
 \end{equation}
 %
-This estimator is unbiased, satisfying $\mathbb{E}(A^{\text{MC}}_{N}) = \mathbb{E}(u_{h})$, and has variance $\mathbb{V}(A^{\text{MC}}_{N}) = \mathbb{V}( u_{h})/{N}$, where the variance of a random field is $\mathbb{V}(u) := \mathbb{E}(\left\Vert u - \mathbb{E}(u)\right\Vert_Z^2)$. By the central limit theorem, the estimator \eqref{eq:MC_estimator} converges in distribution to $\mathbb{E}(u)$ as $N\rightarrow \infty$. To quantify the accuracy of the estimator, we use the  {\it normalized mean squared error (nMSE)}, defined as
+This estimator is unbiased, satisfying $\mathbb{E}(A^{\text{MC}}_{N}) = \mathbb{E}(u_{h})$, and has variance $\mathbb{V}(A^{\text{MC}}_{N}) = \mathbb{V}( u_{h})/{N}$, where the variance of a random field is $\mathbb{V}(u) := \mathbb{E}[\left\Vert u - \mathbb{E}(u)\right\Vert_Z^2]$. By the central limit theorem, the estimator \eqref{eq:MC_estimator} converges in distribution to $\mathbb{E}(u)$ as $N$ approaches infinity. To quantify the accuracy of the estimator, we use the  {\it normalized mean squared error (nMSE)}, defined as
 %
  \[
 \mathcal{E}_{A^{\text{MC}}_{N}}^2:=\frac{\mathbb E\left[\left\Vert\mathbb{E}(u)-A^{\text{MC}}_{N} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}.
