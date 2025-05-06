@@ -1,39 +1,41 @@
 % ====================================================
 \section{Monte Carlo estimator}\label{sec:MC}
 % ====================================================
-A standard approach for approximating this expectation is the Monte Carlo (MC) method. Let $u_h (\cdot, \boldsymbol{\omega})$ denote a discrete approximation of $u(\cdot, \boldsymbol{\omega})$, obtained via spatial discretization with mesh parameter $h$.  For convenience, we use $u$ and $u_h$ to refer to the exact $u(\cdot,\boldsymbol \omega)$ and discrete $u_h(\cdot,\boldsymbol \omega)$ solutions evaluated at a realization $\boldsymbol \omega$.
-
-The Monte Carlo Finite-Element estimator $A^{\text{MC}}_{N}$ is defined as the sample mean over $N$ independent and identically distributed (i.i.d.) samples $\boldsymbol{\omega}^{(1)},\ldots,\boldsymbol{\omega}^{(N)}$
+A standard approach to approximate the expectation in \eqref{eq:QoI} is the Monte Carlo method; see \cite{ElLiSa:2023,Gi:2008,Gi:2015,PeWiGu:2016}. Let $u_h (\cdot, \boldsymbol{\omega})$ denote a discrete approximation of the random field $u(\cdot, \boldsymbol{\omega})$, obtained by spatial discretization with mesh parameter $h$. The Monte Carlo Finite-Element estimator $A^{\text{MC}}_{N}$ is defined as the sample mean over $N$ independent and identically distributed (i.i.d.) realizations 
+% $\boldsymbol{\omega}^{(1)},\ldots,\boldsymbol{\omega}^{(N)}$
 %
 \begin{equation}\label{eq:MC_estimator}
     A^{\text{MC}}_{N} := \frac{1}{N}\sum_{i=1}^{N} u_{h}\left(\cdot, \boldsymbol{\omega}^{(i)}\right).
 \end{equation}
 %
-This estimator is unbiased, satisfying $\mathbb{E}(A^{\text{MC}}_{N}) = \mathbb{E}(u_{h})$, and has variance $\mathbb{V}(A^{\text{MC}}_{N}) = \mathbb{V}( u_{h})/{N}$, where the variance of a random field is $\mathbb{V}(u) := \mathbb{E}[\left\Vert u - \mathbb{E}(u)\right\Vert_Z^2]$. By the central limit theorem, the estimator \eqref{eq:MC_estimator} converges in distribution to $\mathbb{E}(u)$ as $N$ approaches infinity. To quantify the accuracy of the estimator, we use the  {\it normalized mean squared error (nMSE)}, defined as
+This estimator is unbiased, satisfying $\mathbb{E}(A^{\text{MC}}_{N}) = \mathbb{E}(u_{h})$, and has variance $\mathbb{V}(A^{\text{MC}}_{N}) = \mathbb{V}( u_{h})/{N}$, where the variance of the random field is defined as $\mathbb{V}(u) := \mathbb{E}[\left\Vert u - \mathbb{E}(u)\right\Vert_Z^2]$. By the central limit theorem, the MC estimator $A^{\text{MC}}_{N}$ converges in distribution to $\mathbb{E}(u)$ as $N$ approaches infinity. 
+
+To quantify the total approximation error of the estimator, we consider the  {\it normalized mean squared error (nMSE)}, defined as
 %
  \[
 \mathcal{E}_{A^{\text{MC}}_{N}}^2:=\frac{\mathbb E\left[\left\Vert\mathbb{E}(u)-A^{\text{MC}}_{N} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}.
 \] 
 %
-The nMSE can be decomposed into two components: a {\it bias error} arising from spatial discretization, and a {\it statistical error} due to finite sampling
+The nMSE decomposes into two contributions: a {\it bias error} from spatial discretization, and a {\it statistical error} due to finite sampling
 %
 \[
 \mathcal{E}_{A^{\text{MC}}_{N}}^2 = \frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(u_{h}) \right\Vert_{Z}^2+\mathbb E\left[\left\Vert \mathbb{E}(u_{h}) -A^{\text{MC}}_{N} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2} = \frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(u_{h}) \right\Vert_{Z}^2}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}+\frac{\mathbb{V}\left( u_{h}\right)}{N\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}=\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2.
 \]
 %
-Suppose the sample-wise discretization error satisfies the bound
+Suppose the sample-wise discretization error satisfies
 %
 \begin{equation*} \label{eq:Assumption_uhA}
 \left\|u\left(\cdot, \boldsymbol\omega^{(i)}\right)-u_h\left(\cdot,\boldsymbol\omega^{(i)}\right)\right\|_Z\leq C_m\left(\boldsymbol\omega^{(i)}\right)M^{-\alpha}\,,
 \end{equation*}
 %
-where $C_m(\boldsymbol\omega^{(i)})$ is a constant depending only on the geometry of the spatial domain and the particular realization $\boldsymbol\omega^{(i)}$, $\alpha>0$ is the convergence rate of spatial discretization, and $M$ denotes the number of spatial degrees of freedom. To simplify the analysis and enable uniform error control of the discretization error, we assume that $C_m(\boldsymbol\omega^{(i)})$ is uniformly bounded with respect to the random input $\boldsymbol\omega^{(i)}$, i.e. there exists a constant $C_m>0$ such that $C_m(\boldsymbol\omega^{(i)})\le C_m$ for all $i$, and this bound is independent of the sample realization.
+where $C_m(\boldsymbol\omega^{(i)})$ is a constant depending only on the geometry of the spatial domain and the particular realization $\boldsymbol\omega^{(i)}$, $\alpha>0$ is the convergence rate of spatial discretization, and $M$ denotes the number of spatial degrees of freedom. For simplicity and analytical tractability, we assume this constant is uniformly bounded across all realizations, i.e. $C_m(\boldsymbol\omega^{(i)})\le C_m$ for some $C_m>0$ independent of the sample realization $\boldsymbol\omega^{(i)}$.
+
 
 Given a user-specified threshold $\epsilon^2$  for the nMSE, we introduce a {\it splitting ratio} $\theta \in (0,1)$ to allocate the total error budget between bias and statistical components
 %
 \begin{equation} \label{eq:error-budget}
 %\textcolor{red}{\|u-u_h\|_{L^2(\boldsymbol W,Z)}\le C_mM^{-\alpha}\le \theta_1\epsilon},\qquad\text{ and }\qquad \|u_h-\widehat u_{h}\|_{L^2(\boldsymbol W,Z)} \le C_{p} P^{-\nu}\le \theta_2\epsilon\,.  
-\mathcal{E}_{\text{Bias}}^2=\|u-u_h\|_{L^2(\boldsymbol W,Z)}\le C_mM^{-\alpha}= \theta\epsilon^2, \quad\quad \mathcal{E}_{\text{Stat}}^2 = \frac{\sigma_1^2}{N\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}=(1-\theta)\epsilon^2,
+\mathcal{E}_{\text{Bias}}^2=\|u-u_h\|_{L^2(\boldsymbol \Omega,Z)}\le C_mM^{-\alpha}= \theta\epsilon^2, \quad\quad \mathcal{E}_{\text{Stat}}^2 = \frac{\sigma_1^2}{N\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}=(1-\theta)\epsilon^2,
 \end{equation}
 where $C_m$ is independent of the sample and $\sigma_1^2 = \mathbb{V}\left( u_{h}\right)$. To meet these error constraints, the number of spatial nodes $M$ and sample size $N$ must obey
 %

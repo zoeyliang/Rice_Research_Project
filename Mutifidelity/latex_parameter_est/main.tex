@@ -63,7 +63,7 @@
 
 \begin{document}
 \begin{frontmatter}
-\title{Efficient parameter estimation for Multi-fidelity Monte Carlo for uncertainty quantification}
+\title{Estimation of model correlations for multi-fidelity Monte Carlo for uncertainty quantification}
 
 
 \author[umdcs]{Matthias Heinkenschloss}
@@ -76,11 +76,11 @@
 % \ead{tonatiuh@arizona.edu}
 % \address[UA]{Department of Mathematics, The University of Arizona.}
 \begin{abstract}
-% We investigate the Grad-Shafranov free boundary problem in Tokamak fusion reactors under the influence of parameter uncertainties. Using both traditional Monte Carlo and multi-fidelity Monte Carlo sampling approaches, we quantify the impact of these uncertainties on model predictions, emphasizing the statistical characterization of solution variability across diverse parameter regimes. Our numerical results reveals that the multi-fidelity Monte Carlo estimator achieves statistical accuracy comparable to the Monte Carlo approach. However, the multi-fidelity method demonstrates superior computational efficiency, achieving a cost reduction by a factor of ..., while preserving fidelity in representing plasma boundary dynamics and geometric parameters. This work underscores the efficiency of multi-fidelity frameworks in addressing the computational demands of uncertainty quantification in complex fusion reactor models, offering a robust pathway for enhancing predictive capabilities in plasma physics. 
+We present an adaptive parameter estimation methodology to address the challenge of unknown model correlation coefficients in the multi-fidelity Monte Carlo framework for efficient uncertainty quantification in the presence of parametric variability. In practical applications for multi-fidelity Monte Carlo, key parameters such as model correlation coefficients are typically unknown and must be estimated from sample statistics. We address this challenge by deriving sensitivity bounds and confidence intervals for correlation coefficient estimators, which inform a sequential pilot sampling strategy with rigorous stopping criteria. This enables dynamic calibration of the multi-fidelity Monte Carlo estimators while ensuring controlled error propagation from parameter estimation to overall accuracy and cost. The resulting algorithm adaptively identifies the minimal pilot sample size required for reliable performance, avoiding unnecessary computational expense. Numerical experiments confirm the effectiveness of the proposed approach in delivering accurate statistical estimates with significantly fewer high-fidelity evaluations than standard Monte Carlo. This framework substantially improves the practicality and efficiency of MFMC in realistic scenarios.
 \end{abstract}
 
 \begin{keyword}
-Multi-fidelity Monte Carlo Finite-Element \sep Parameter estimation for correlation coefficient\sep Parametric expectation \sep Sparse Grid Stochastic Collocation \sep Uncertainty Quantification
+Multi-fidelity Monte Carlo Finite-Element \sep Parameter estimation for correlation coefficient\sep Parametric expectation \sep Uncertainty quantification
 %
 \MSC[2020] 
 \end{keyword}
@@ -92,7 +92,7 @@ Multi-fidelity Monte Carlo Finite-Element \sep Parameter estimation for correlat
 \input{./Sections/MC}
 \input{./Sections/MFMC}
 \input{./Sections/Parameter_Estimation}
-% \input{./Sections/Numerical_result}
+\input{./Sections/Numerical_result}
 \input{./Sections/Acknowledgment}
 \input{./Sections/Appendix}
 

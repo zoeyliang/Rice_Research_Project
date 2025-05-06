@@ -28,7 +28,10 @@ Note that both MFMC and MLMC share the goal of variance reduction, but differ in
 % Thus by introducing a control variate $\alpha (u_{h,2}-\mu_2)$, we can reduce the variance. Note that both $u_{h}^{(i)}$ and $u_{h,2}^{(i)}$ can be correlated or linearly independent (uncorrelated). To make the variance as small as possible, we want $\rho$ to be as large as possible, so it's better to make the two quantities correlated. If $u_{h,2}$ is a low fidelity model compared to $u_{h}$, this indicates that $u_{h,2}$ should reuse the samples of  $u_{h}$. 
 
 
-We now briefly review the core principles underlying multi-fidelity Monte Carlo. The MFMC framework combines a high-fidelity model $u_{h,1} = u_h$ with a series of low-fidelity models $u_{h,k}: W \rightarrow Z$ for $k=2,\ldots,K$.  The high-fidelity model yields accurate but computationally expensive evaluations, while the low-fidelity models are cheaper but less accurate. MFMC optimally allocates computational resources across the fidelity levels to reduce the overall estimator variance, reducing the reliance on costly high-fidelity samples while preserving estimator accuracy and robustness. For each model pair $u_{h,k}$ and $u_{h,j}$, we define the variance and the Pearson correlation coefficient as
+We now briefly review the core principles underlying multi-fidelity Monte Carlo, drawing on the framework in \cite{PeWiGu:2016}.  The MFMC framework combines a high-fidelity model $u_{h,1} = u_h$ with a series of low-fidelity models $u_{h,k}: \Omega \rightarrow Z$ for $k=2,\ldots,K$.  The high-fidelity model yields accurate but computationally expensive evaluations, whereas the low-fidelity models offer cheaper approximations with reduced accuracy. MFMC optimally allocates computational resources across the fidelity levels to reduce the overall estimator variance, reducing the reliance on costly high-fidelity samples while preserving estimator accuracy and robustness.
+
+
+For convenience, we may use $u$ and $u_{h,k}$ to refer to the exact $u(\cdot,\boldsymbol \omega)$ and discrete $u_{h,k}(\cdot,\boldsymbol \omega)$ solutions with random variable $\boldsymbol \omega$ in the later context. For each pair of $u_{h,k}$ and $u_{h,j}$, we define the variance and the Pearson correlation coefficient as
 %
 \begin{equation*}
     \sigma_k^2 = \mathbb{V}\left(u_{h,k}\right),\qquad \rho_{k,j} = \frac{\text{Cov}\left( u_{h,k}, u_{h,j}\right)}{\sigma_k\sigma_j}, \quad k,j=1,\dots, K,
@@ -111,8 +114,7 @@ where $C_k$ is the cost of generating a single sample of model $u_{h,k}$, and $N
 \scriptstyle \alpha_2,\ldots,\alpha_K\in \mathbb{R}
 \end{array}} &\displaystyle\sum\limits_{k=1}^K C_kN_k,\\
        \;\,\text{subject to} &\mathbb{V}\left(A^{\text{MF}}\right)- \epsilon_{\text{tar}}^2 = 0,\\[2pt]
-       &\displaystyle -N_1\le 0,\\
-        &\displaystyle N_{k-1}-N_k\le 0, \;\; k=2\ldots,K.
+       &\displaystyle -N_1\le 0,\quad \displaystyle N_{k-1}-N_k\le 0, \;\; k=2\ldots,K.
     \end{array}
 \end{equation}
 %
