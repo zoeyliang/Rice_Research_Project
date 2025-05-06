@@ -1,7 +1,8 @@
+%!TEX root = ../main.tex
 % ========================================
 \section{Problem setting}\label{sec:Problem_setting}
 % ========================================
-We are interested in solving a parametrized partial differential equation under uncertainty quantification. Let $D\subset \mathbb{R}^n$ be a bounded, Lipschitz domain, and let $\mathcal{L}$ denote a (possibly nonlinear) differential operator posed on $D$. Uncertainty is introduced through randomness in the coefficients of $\mathcal{L}$ and/or the source term. This randomness is modeled on a complete probability space $(\Omega, \mathcal{F}, P)$, where $\Omega$ denotes the set of outcomes, $\mathcal{F}\subset 2^{\Omega}$ is a $\sigma-$algebra of events, and $P:\mathcal{F}\rightarrow [0,1]$ is a probability measure. The input data -- such as the coefficient field $a=a(\boldsymbol x, \boldsymbol \omega)$ and source term $f = f(\boldsymbol x, \boldsymbol\omega)$ -- are modeled as random fields, i.e., measurable functions defined on $D\times \Omega$. The solution map $u(\cdot, \boldsymbol{\omega}): \Omega \to Z$, where $Z$ is an appropriate spatial function space (e.g. $H_0^1(D)$), is defined such that for almost every $\boldsymbol\omega\in \Omega$, the function $u(\cdot, \boldsymbol{\omega})$ satisfies the stochastic boundary value problem
+We are interested in solving a parametrized partial differential equation under uncertainty quantification. Let $D\subset \mathbb{R}^n$ be a bounded, Lipschitz domain, and let $\mathcal{L}$ denote a (possibly nonlinear) differential operator posed on $D$. Uncertainty is introduced through randomness in the coefficients of $\mathcal{L}$ and/or the source term. This randomness is modeled on a complete probability space $(\Omega, \mathcal{F}, P)$, where $\Omega$ denotes the set of outcomes, $\mathcal{F}\subset 2^{\Omega}$ is a $\sigma-$algebra of events, and $P:\mathcal{F}\rightarrow [0,1]$ is a probability measure. The input data -- such as the coefficient field $a=a(\boldsymbol x, \boldsymbol \omega)$ and source term $f = f(\boldsymbol x, \boldsymbol\omega)$ -- are modeled as random fields, i.e., measurable functions defined on $D\times \Omega$. The solution map $u(\cdot, \boldsymbol{\omega}): \Omega \to U$, where $U$ is an appropriate spatial function space (e.g. $H_0^1(D)$), is defined such that for almost every $\boldsymbol\omega\in \Omega$, the function $u(\cdot, \boldsymbol{\omega})$ satisfies the stochastic boundary value problem
 %
 \begin{equation}\label{eq:Problem}
     \mathcal{L}(a)(u) = f \quad \text{in} \;\; D
@@ -11,18 +12,18 @@ with appropriate boundary conditions on $\partial D$.
 
 % Moreover, we make the assumption that $a(\cdot, \omega)$ is bounded from below (either uniform or a random variable) on $D$ and $f(\cdot, \omega)$ is square integrable with respect to $P$. Then by the Lax-Milgram theorem, the problem admits a unique solution \cite{BaNoTe:2007}.
 
-To characterize the dependence of the solution on both spatial and probabilistic variables, we adopt a Bochner space framework. For $q\in [1,\infty]$, the Bochner space $L^q(\Omega,Z)$ consists of all strongly measurable mappings $u:\Omega\rightarrow Z$ with finite norm
+To characterize the dependence of the solution on both spatial and probabilistic variables, we adopt a Bochner space framework. For $q\in [1,\infty]$, the Bochner space $L^q(\Omega,U)$ consists of all strongly measurable mappings $u:\Omega\rightarrow U$ with finite norm
 %
 \[
-L^q(\Omega,Z) = \left\{u:\Omega\rightarrow Z\; \bigg\vert \;\left\|u\right\|_{L^q(\Omega,Z)}<\infty\right\},
+L^q(\Omega,U) = \left\{u:\Omega\rightarrow U\; \bigg\vert \;\left\|u\right\|_{L^q(\Omega,U)}<\infty\right\},
 \]
 %
-where the norm $\|u\|_{L^q(\Omega,Z)}$ is given by
+where the norm $\|u\|_{L^q(\Omega,U)}$ is given by
 %
 \[
-\left\Vert u \right\Vert_{L^q(\Omega,Z)} =\left\{\begin{array}{lll}
-     \left(\int_{\Omega} \left\Vert u(\cdot,\boldsymbol{\omega})  \right\Vert_{Z}^q \pi(\boldsymbol{\omega})d\boldsymbol{\omega} \right)^{1/q} = \left(\mathbb{E}\left[\left\Vert u(\cdot,\boldsymbol{\omega})  \right\Vert_{Z}^q\right]\right)^{1/q}, & 0<q<\infty, \\
-     \text{ess} \sup_{\boldsymbol{\omega}\in \Omega}\left\Vert u(\cdot,\boldsymbol{\omega})  \right\Vert_{Z}, & q=\infty.
+\left\Vert u \right\Vert_{L^q(\Omega,U)} =\left\{\begin{array}{lll}
+     \left(\int_{\Omega} \left\Vert u(\cdot,\boldsymbol{\omega})  \right\Vert_{U}^q \pi(\boldsymbol{\omega})d\boldsymbol{\omega} \right)^{1/q} = \left(\mathbb{E}\left[\left\Vert u(\cdot,\boldsymbol{\omega})  \right\Vert_{U}^q\right]\right)^{1/q}, & 0<q<\infty, \\
+     \text{ess} \sup_{\boldsymbol{\omega}\in \Omega}\left\Vert u(\cdot,\boldsymbol{\omega})  \right\Vert_{U}, & q=\infty.
 \end{array}
 \right.
 \]

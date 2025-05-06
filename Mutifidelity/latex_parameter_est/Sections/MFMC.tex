@@ -1,3 +1,4 @@
+%!TEX root = ../main.tex
 % ====================================================
 \section{Multi-fidelity Monte Carlo}\label{sec:MFMC}
 % ====================================================
@@ -28,7 +29,7 @@ Note that both MFMC and MLMC share the goal of variance reduction, but differ in
 % Thus by introducing a control variate $\alpha (u_{h,2}-\mu_2)$, we can reduce the variance. Note that both $u_{h}^{(i)}$ and $u_{h,2}^{(i)}$ can be correlated or linearly independent (uncorrelated). To make the variance as small as possible, we want $\rho$ to be as large as possible, so it's better to make the two quantities correlated. If $u_{h,2}$ is a low fidelity model compared to $u_{h}$, this indicates that $u_{h,2}$ should reuse the samples of  $u_{h}$. 
 
 
-We now briefly review the core principles underlying multi-fidelity Monte Carlo, drawing on the framework in \cite{PeWiGu:2016}.  The MFMC framework combines a high-fidelity model $u_{h,1} = u_h$ with a series of low-fidelity models $u_{h,k}: \Omega \rightarrow Z$ for $k=2,\ldots,K$.  The high-fidelity model yields accurate but computationally expensive evaluations, whereas the low-fidelity models offer cheaper approximations with reduced accuracy. MFMC optimally allocates computational resources across the fidelity levels to reduce the overall estimator variance, reducing the reliance on costly high-fidelity samples while preserving estimator accuracy and robustness.
+We now briefly review the core principles underlying multi-fidelity Monte Carlo, drawing on the framework in \cite{PeWiGu:2016}.  The MFMC framework combines a high-fidelity model $u_{h,1} = u_h$ with a series of low-fidelity models $u_{h,k}: \Omega \rightarrow U$ for $k=2,\ldots,K$.  The high-fidelity model yields accurate but computationally expensive evaluations, whereas the low-fidelity models offer cheaper approximations with reduced accuracy. MFMC optimally allocates computational resources across the fidelity levels to reduce the overall estimator variance, reducing the reliance on costly high-fidelity samples while preserving estimator accuracy and robustness.
 
 
 For convenience, we may use $u$ and $u_{h,k}$ to refer to the exact $u(\cdot,\boldsymbol \omega)$ and discrete $u_{h,k}(\cdot,\boldsymbol \omega)$ solutions with random variable $\boldsymbol \omega$ in the later context. For each pair of $u_{h,k}$ and $u_{h,j}$, we define the variance and the Pearson correlation coefficient as
@@ -37,7 +38,7 @@ For convenience, we may use $u$ and $u_{h,k}$ to refer to the exact $u(\cdot,\bo
     \sigma_k^2 = \mathbb{V}\left(u_{h,k}\right),\qquad \rho_{k,j} = \frac{\text{Cov}\left( u_{h,k}, u_{h,j}\right)}{\sigma_k\sigma_j}, \quad k,j=1,\dots, K,
 \end{equation*}
 %
-where the covariance is $\text{Cov}(u_{h,k}, u_{h,j}) := \mathbb{E}[\langle u_{h,k} - \mathbb{E}(u_{h,k}), u_{h,j} - \mathbb{E}(u_{h,j})\rangle_Z]$ and, by definition, $\rho_{k,k}=1$. The multi-fidelity Monte Carlo finite element estimator $A^{\text{MF}}$ augments a high-fidelity Monte Carlo estimate with control variate corrections from low-fidelity models
+where the covariance is $\text{Cov}(u_{h,k}, u_{h,j}) := \mathbb{E}[\langle u_{h,k} - \mathbb{E}(u_{h,k}), u_{h,j} - \mathbb{E}(u_{h,j})\rangle_U]$ and, by definition, $\rho_{k,k}=1$. The multi-fidelity Monte Carlo finite element estimator $A^{\text{MF}}$ augments a high-fidelity Monte Carlo estimate with control variate corrections from low-fidelity models
 %
 \begin{equation}\label{eq:MFMC_estimator}
     A^{\text{MF}} := A^{\text{MC}}_{1,N_1} + \sum_{k=2}^K \alpha_k\left(\overline{A}_{k,N_k} - \overline{A}_{k,N_{k-1}} \right),
@@ -90,7 +91,7 @@ Combining \eqref{eq:Var_Yk} and \eqref{eq:Cov_Yk}, the total variance of the MFM
 The normalized mean square error of the multi-fidelity Monte Carlo estimator, $\mathcal{E}_{A^{\text{MF}}}^2$, quantifies its accuracy and is decomposed into two components -- the bias error $\mathcal{E}_{\text{Bias}}^2$ and the statistical error $\mathcal{E}_{\text{Stat}}^2$, the decomposition is written as 
 %
 \[
-\mathcal{E}_{A^{\text{MF}}}^2= \frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(A^{\text{MF}}) \right\Vert_{Z}^2+\mathbb E\left[\left\Vert\mathbb{E}(A^{\text{MF}})-A^{\text{MF}} \right\Vert_{Z}^2\right]}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2} =\frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(A^{\text{MF}}) \right\Vert_{Z}^2}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}+ \frac{\mathbb{V}\left(A^{\text{MF}}\right)}{\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}=\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2,
+\mathcal{E}_{A^{\text{MF}}}^2= \frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(A^{\text{MF}}) \right\Vert_{U}^2+\mathbb E\left[\left\Vert\mathbb{E}(A^{\text{MF}})-A^{\text{MF}} \right\Vert_{U}^2\right]}{\left\Vert\mathbb{E}(u) \right\Vert_{U}^2} =\frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(A^{\text{MF}}) \right\Vert_{U}^2}{\left\Vert\mathbb{E}(u) \right\Vert_{U}^2}+ \frac{\mathbb{V}\left(A^{\text{MF}}\right)}{\left\Vert\mathbb{E}(u) \right\Vert_{U}^2}=\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2,
 \]
 %
 where the variance term $\mathbb{V}\left(A^{\text{MF}}\right)$  can be explicitly expressed using \eqref{eq:MFMC_variance}. A splitting ratio $\theta$ is introduced as before to balance the contributions between these two components. The spatial resolution required to achieve the biased tolerance $\theta \epsilon^2$ is determined by estimating the number of spatial grid points $M_L$ at refinement level $L$, given by
@@ -139,7 +140,7 @@ Under these assumptions, the optimal sample sizes $N_k^*$ and weights $\alpha_k^
     % \label{eq:MFMC_coefficients}
     % &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k},\\
     \label{eq:MFMC_SampleSize}
-    &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k},\qquad \;N_k^*=\frac{\sigma_1^2}{\epsilon^2(1-\theta)\left\Vert\mathbb{E}(u) \right\Vert_{Z}^2}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}\sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2-\rho_{1,j+1}^2\right)}, \quad \rho_{1,K+1}=0.
+    &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k},\qquad \;N_k^*=\frac{\sigma_1^2}{\epsilon^2(1-\theta)\left\Vert\mathbb{E}(u) \right\Vert_{U}^2}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}\sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2-\rho_{1,j+1}^2\right)}, \quad \rho_{1,K+1}=0.
 \end{align}
 %
 \end{theorem}
@@ -199,8 +200,8 @@ A smaller value of $\xi$ corresponds to greater computational savings, indicatin
 
 % Further more, we observe that
 % \begin{align*}
-%     \mathcal{W}_\text{MC}\mathbb{V}\left(A^{\text{MC}}\right) &=\frac{C_1\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2},\\
-%  \mathcal{W}_\text{MFMC}\mathbb{V}\left(A^{\text{MFMC}}\right) &=  \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2.
+%     \mathcal{W}_\text{MC}\mathbb{V}\left(A^{\text{MC}}\right) &=\frac{C_1\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{U}^2},\\
+%  \mathcal{W}_\text{MFMC}\mathbb{V}\left(A^{\text{MFMC}}\right) &=  \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{U}^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2.
 % \end{align*}
 % This implies that if both Monte Carlo and multifidelity Monte Carlo have  a same sampling cost, then $\mu=  \mathbb{V}\left(A^{\text{MFMC}}\right)/\mathbb{V}\left(A^{\text{MC}}\right)$. Therefore, 
 
