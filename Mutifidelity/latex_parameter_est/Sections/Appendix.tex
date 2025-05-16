@@ -83,7 +83,9 @@ Nest substituting $\alpha_k^*$ into the variance \eqref{eq:MFMC_variance}, the v
     \mathbb{V}\left[A^{\text{MF}}\right]=\sigma_1^2\left[\frac{1-\rho_{1,2}^2}{N_1} + \sum_{k=2}^{K-1} \frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{N_k} + \frac{\rho_{1,K}^2}{N_K} \right] = \sum_{k=1}^K\frac{d_k}{N_k},
 \end{equation}
 %
-Due to the decreasing of correlation coefficients in condition (i), the coefficients in the numerator are positive ($d_k\ge 0$), and $\mathbb{V}\left[A^{\text{MF}}\right]$ is convex in terms of $N_1,\ldots, N_K$. Since $f(N)=1/N, f^\prime (N)=-1/N^2, f^{\prime\prime}(N)=2/N^3>0$ for $N>0$. Therefore, optimization problem \eqref{eq:Optimization_pb_sample_size} with variance \eqref{eq:MFMC_var_convex} is a convex optimization problem, and local minimum is the global minimum.
+Due to the decreasing of correlation coefficients in condition (i), the coefficients in the numerator are positive ($d_k\ge 0$), and $\mathbb{V}\left[A^{\text{MF}}\right]$ is convex in terms of $N_1,\ldots, N_K$. 
+
+% Since $f(N)=1/N, f^\prime (N)=-1/N^2, f^{\prime\prime}(N)=2/N^3>0$ for $N>0$. Therefore, optimization problem \eqref{eq:Optimization_pb_sample_size} with variance \eqref{eq:MFMC_var_convex} is a convex optimization problem, and local minimum is the global minimum.
 
 
 Substituting $\alpha_k^*$ into $\partial L/\partial N_k=0$ yields a representation for $C_k$ in terms of the sample sizes $N_k$, variance contributions, correlation coefficients, and the Lagrangian multipliers
@@ -173,7 +175,7 @@ The corresponding total sampling cost $\mathcal{W}^\text{MF}$ is
 
 
 
-Consider other possible solutions such that $N_k^*$ is not strictly increases, but some equality might occur, namely there is a subset of indices of $\{1,\ldots, K\}$, defined as $\{\ell_1, \ldots, \ell_q\}$ such that $\ell_1=1$ and $\ell_{q+1} = K+1$, and
+Consider other feasible solutions such that $N_k^*$ is not strictly increases, but some equality might occur, namely there is a subset of indices of $\{1,\ldots, K\}$, defined as $\{\ell_1, \ldots, \ell_q\}$ such that $\ell_1=1$ and $\ell_{q+1} = K+1$, and
 \[
 N_{\ell_1}<N_{\ell_2}<\ldots < N_{\ell_{q-1}},\quad N_{\ell_i}=N_{\ell_i+1}=\ldots = N_{\ell_{i+1}-1}, \quad N_{\ell_{i+1}-1}<N_{\ell_{i+1}}, \qquad  i=1,\ldots,q-1.
 \]
