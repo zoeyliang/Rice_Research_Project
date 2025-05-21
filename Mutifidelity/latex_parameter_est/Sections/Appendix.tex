@@ -51,9 +51,9 @@ L = \sum_{k=1}^K C_kN_k +\lambda_0 \left(\frac{\sigma_1^2}{N_1} + \sum_{k=2}^K \
 To solve this, we apply the Karush-Kuhn-Tucker (KKT) conditions for \eqref{eq:Optimization_pb_sample_size}, leading to a system of equations for the partial derivatives of the Lagrangian with respect to the optimization variables $\alpha_k$ and $N_k$,  in addition to  primal feasibility, dual feasibility, and complementary slackness conditions
 %
 \begin{align*}
-\frac{\partial L}{\partial \alpha_j}=0,\quad \frac{\partial L}{\partial N_k}&=0,\quad j=2\ldots,K, \quad k=1\ldots,K,\\
-\mathbb{V}\left[A^{\text{MF}}\right]- \epsilon_{\text{tar}}^2 &= 0,\\
-   -N_1\le 0,\qquad N_{k-1}-N_k&\le 0, \quad k=2\ldots,K,\\
+\frac{\partial L}{\partial \alpha_j}=0,\quad \frac{\partial L}{\partial N_k}&=0,\quad j=2\ldots,K, \quad k=1\ldots,K, \quad [\text{Stationarity}]\\
+\mathbb{V}\left[A^{\text{MF}}\right]- \epsilon_{\text{tar}}^2 &= 0, \quad [\text{Primal feasibility}]\\ 
+   -N_1\le 0,\qquad N_{k-1}-N_k&\le 0, \quad k=2\ldots,K,\quad [\text{Primal feasibility}]\\ 
     \lambda_k &\ge 0,\quad k=1\ldots,K, \quad [\text{Dual feasibility}]\\ 
     \lambda_1 N_1=0,\qquad\lambda_k(N_{k-1}-N_k)&=0,\quad k=2\ldots,K. \quad [\text{Complementary slackness}]
 \end{align*}
@@ -85,7 +85,7 @@ Nest substituting $\alpha_k^*$ into the variance \eqref{eq:MFMC_variance}, the v
 %
 Due to the decreasing of correlation coefficients in condition (i), the coefficients in the numerator are positive ($d_k\ge 0$), and $\mathbb{V}\left[A^{\text{MF}}\right]$ is convex in terms of $N_1,\ldots, N_K$. 
 
-% Since $f(N)=1/N, f^\prime (N)=-1/N^2, f^{\prime\prime}(N)=2/N^3>0$ for $N>0$. Therefore, optimization problem \eqref{eq:Optimization_pb_sample_size} with variance \eqref{eq:MFMC_var_convex} is a convex optimization problem, and local minimum is the global minimum.
+Since $f(N)=1/N, f^\prime (N)=-1/N^2, f^{\prime\prime}(N)=2/N^3>0$ for $N>0$. Moreover, $N_1$ cannot be zero, otherwise the variance \eqref{eq:MFMC_var_convex} will be violated. Let $y_k = 1/N_k$, we can rewrite the optimization problem in terms of $y_k$ and this optimization problem has convex objective function ($\sum C_k/y_k$), equality constraint \eqref{eq:MFMC_var_convex} is affine ($\sum d_k y_k$), and inequality constraint is convex. Therefore, the reformulated optimization problem \eqref{eq:Optimization_pb_sample_size} is a convex optimization problem, and local minimum $y_k = 1/N_k$ is the global minimum.
 
 
 Substituting $\alpha_k^*$ into $\partial L/\partial N_k=0$ yields a representation for $C_k$ in terms of the sample sizes $N_k$, variance contributions, correlation coefficients, and the Lagrangian multipliers
