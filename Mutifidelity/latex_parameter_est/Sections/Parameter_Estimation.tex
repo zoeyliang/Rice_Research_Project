@@ -149,7 +149,7 @@ Note that as $\widehat\rho_{1,k}$ increases from -1 to 1, $(1+\widehat\rho_{1,k}
 \includegraphics[width=0.3\linewidth]{./figures/CI_Q_30.pdf}&
 \includegraphics[width=0.3\linewidth]{./figures/CI_distance.pdf}
 \end{tabular}
-\caption{Left: confidence interval for $\rho_{1,k}$ with $Q=5$. Middle: confidence interval for $\rho_{1,k}$ with $Q=30$. Right: length of confidence interval for $Q=30$. All plots are generated with $\widehat \rho_{1,k}=-1+0.05t$ with $t=0,\ldots,40$.} 
+\caption{Left: confidence interval for $\rho_{1,k}$ with $Q=5$. Middle: confidence interval for $\rho_{1,k}$ with $Q=30$. Right: length of confidence interval for $Q=30$. It is an even function in terms of $\widehat \rho_{1,k}$. All plots are generated with $\widehat \rho_{1,k}=-1+0.05t$ with $t=0,\ldots,40$. 95\% confidence interval with $z_{\alpha/2}=1.96$.} 
 \label{fig:CI_plot} 
 \end{figure}
 %
@@ -232,7 +232,7 @@ After obtaining the confidence interval \eqref{eq:Confidence_Interval_rho} for c
 \newline 
 
 \noindent {\bf Bootstrap method}
-This method does not consider the distribution and is thus flexible, but may suffer from extra sampling cost. Repeatedly sample for $B$ times, create a sample statistics with Bootstrap method. For condition (i) of Theorem \ref{thm:Sample_size_est}, let $H_0:$ correlation coefficients decrease significant (i.e. $|\rho_{1,k}|> |\rho_{1,k+1}|$). $H_1:$ there was no significant difference in adjacent correlation coefficients (i.e. $|\rho_{1,k}|\le |\rho_{1,k+1}|$). Estimate $|\widehat \rho_{k}^{(b)}|$ and $|\widehat \rho_{k+1}^{(b)}|$. Then estimate the $1-\alpha$ confidence interval for $|\widehat \rho_{k}^{(b)}| - |\widehat \rho_{k+1}^{(b)}|$. If the lower bound of the confidence interval is positive, then accept $H_0$  and reject $H_1$, and vice versa. If $H_1$ is accepted, then remove the model with $\widehat \rho_{1,k}$, since it has a larger cost. For condition (ii) of Theorem \ref{thm:Sample_size_est}, estimate $
+This method does not consider the distribution and is thus flexible, but may suffer from extra sampling cost. Repeatedly sample for $B$ times, create a sample statistics with Bootstrap method. For condition (i) of Theorem \ref{thm:Sample_size_est}, let $H_0:$ there was no significant difference in adjacent correlation coefficients (i.e. $|\rho_{1,k}|\le |\rho_{1,k+1}|$). $H_1:$ correlation coefficients decrease significant (i.e. $|\rho_{1,k}|> |\rho_{1,k+1}|$).  Estimate $|\widehat \rho_{k}^{(b)}|$ and $|\widehat \rho_{k+1}^{(b)}|$. Then estimate the $1-\alpha$ confidence interval for $|\widehat \rho_{k}^{(b)}| - |\widehat \rho_{k+1}^{(b)}|$. If the lower bound of the confidence interval is positive, then reject $H_0$ and accept $H_1$, and vice versa. If $H_1$ is accepted, then remove the model with $\widehat \rho_{1,k}$, since it has a larger cost. For condition (ii) of Theorem \ref{thm:Sample_size_est}, estimate $
 D_k^{(b)} = C_{k-1}((\widehat\rho_{1,k}^{(b)})^2-(\widehat \rho_{1,k+1}^{(b)})^2)-C_k((\widehat\rho_{1,k-1}^{(b)})^2-(\widehat \rho_{1,k}^{(b)})^2)$, and compute its corresponding $1-\alpha$ confidence intervals. If the lower bound of the confidence interval is positive, then the second condition (ii) holds. Finally, accept the confidence interval with $\widehat \rho_{1,k+1}$ for $k\ge 1$.
 \newline 
 
@@ -245,9 +245,9 @@ Consider Delta approximation (first order Taylor approximation) to D, we yield
 \[
 D\approx\frac{\partial D}{\partial Z_k}(z_k-\mu_{z_k})+\frac{\partial D}{\partial Z_{k+1}}(z_{k+1}-\mu_{z_{k+1}}),
 \]
-where $\frac{\partial D}{\partial Z_k} = \text{sign}(z_k)2e^{2|z_k|}/(e^{2|z_k|}+1)^2$ and $\mu_{z_k}$ is the expected value.  And the variance of $D$ is
+where $\frac{\partial D}{\partial Z_k} = \text{sign}(z_k)4e^{2|z_k|}/(e^{2|z_k|}+1)^2$ and $\mu_{z_k}$ is the expected value.  And the variance of $D$ is
 \[
-\text{Var}(D) \approx \left(\frac{\partial D}{\partial z_k}\right)^2 \text{Var}(z_k)+\left(\frac{\partial D}{\partial z_{k+1}}\right)^2 \text{Var}(z_{k+1})+2 \frac{\partial D}{\partial z_k} \frac{\partial D}{\partial z_{k+1}}\text{Cov}(z_k,z_{k+1})=\frac{1.06}{Q-3}\left[\left(\frac{2e^{2|z_k|}}{(e^{2|z_k|}+1)^2}\right)^2 +\left(\frac{2e^{2|z_{k+1}|}}{(e^{2|z_{k+1}|}+1)^2}\right)^2\right]
+\text{Var}(D) \approx \left(\frac{\partial D}{\partial z_k}\right)^2 \text{Var}(z_k)+\left(\frac{\partial D}{\partial z_{k+1}}\right)^2 \text{Var}(z_{k+1})+2 \frac{\partial D}{\partial z_k} \frac{\partial D}{\partial z_{k+1}}\text{Cov}(z_k,z_{k+1})=\frac{1.06}{Q-3}\left[\frac{16e^{4|z_k|}}{(e^{2|z_k|}+1)^4} +\frac{16e^{4|z_{k+1}|}}{(e^{2|z_{k+1}|}+1)^4}\right]
 \]
 Note that since $z_k$ and $z_{k+1}$ are independent, then the covariance term becomes 0 and after the Fisher transformation and its exact variance is known as $\sigma_{z_k} = 1.03/\sqrt{Q - 3}$.
 
@@ -259,7 +259,7 @@ We will consider t test (Student t-test) to determine whether there is a signifi
 \[
 t = \frac{D}{\sqrt{\text{Var}(D)}} \sim t_\nu, \quad \nu = Q-3
 \]
-
+where $t_\nu$ is a t distribution  with degrees of freedom of $\nu = Q-3$. If $t>t_{\alpha,\nu}$, we reject $H_0$, we think $\widehat \rho_{1,k}$ is obvious larger than $\widehat \rho_{1,k+1}$. Otherwise, $|\widehat \rho_{1,k}|$ is very close to $|\widehat \rho_{1,k+1}|$, in this scenario, we will discard the model with $|\widehat \rho_{1,k}|$ and keep the model with $|\widehat \rho_{1,k+1}|$.
 
 % If sample variances are similar in the sense that $0.5<\sigma_{z_k}^2/\sigma_{z_{k+1}}^2<2$, the corresponding $t$ statistic is
 % \[
@@ -275,27 +275,36 @@ t = \frac{D}{\sqrt{\text{Var}(D)}} \sim t_\nu, \quad \nu = Q-3
 
 
 
-If $t>t_{\alpha,\nu}$, we accept $H_0$ and reject $H_0$, we think $\widehat \rho_{1,k}$ is obvious larger than $\widehat \rho_{1,k+1}$. Otherwise, $|\widehat \rho_{1,k}|$ is very close to $|\widehat \rho_{1,k+1}|$, in this scenario, we will discard the model with $|\widehat \rho_{1,k}|$ and keep the model with $|\widehat \rho_{1,k+1}|$.
+
 
 For condition (ii) of Theorem \ref{thm:Sample_size_est}, consider
 \[
-E = -C_{k}\rho_{1,k-1}^2+(C_{k-1} + C_k)\rho_{1,k}^2  - C_{k-1}\rho_{1,k+1}^2 
+E = -C_{k}\widehat \rho_{1,k-1}^2+(C_{k-1} + C_k)\widehat\rho_{1,k}^2  - C_{k-1}\widehat\rho_{1,k+1}^2 =-C_{k}\text{tanh}^2(z_{k-1}) + (C_{k-1} + C_k)\text{tanh}^2(z_{k})-C_{k-1}\text{tanh}^2(z_{k+1})
 \]
-we want to check if $E>0$ holds or not. Let
-\[
-E_g = -C_{k}\text{tanh}^2(z_{k-1}) + (C_{k-1} + C_k)\text{tanh}^2(z_{k})-C_{k-1}\text{tanh}^2(z_{k+1})
-\]
+we want to check if $E>0$ holds or not. 
+%
 \begin{align*}
-    E_g &\approx \sum_{i=k-1}^{k+1}\frac{\partial E_g}{\partial z_i}(z_i-\mu_{z_i})=-2C_k\text{tanh}(z_{k-1})\text{sech}^2(z_{k-1})(z_{k-1}-\mu_{z_{k-1}})\\
-    &+2(C_{k-1} + C_k)\text{tanh}(z_{k})\text{sech}^2(z_{k})(z_{k}-\mu_{z_{k}}) - 2C_{k-1}\text{tanh}(z_{k+1})\text{sech}^2(z_{k+1})(z_{k+1}-\mu_{z_{k+1}})
+    E &\approx \sum_{i=k-1}^{k+1}\frac{\partial E}{\partial z_i}(z_i-\mu_{z_i})
 \end{align*}
+%
+where
+\begin{equation*}
+    \frac{\partial E}{\partial z_i}= \left\{\begin{array}{ll}
+-2C_k\text{tanh}(z_{k-1})\text{sech}^2(z_{k-1}), & i=k-1,\\
+2(C_{k-1} + C_k)\text{tanh}(z_{k})\text{sech}^2(z_{k}), & i=k,\\
+- 2C_{k-1}\text{tanh}(z_{k+1})\text{sech}^2(z_{k+1}), & i=k+1.
+\end{array}
+\right.
+\end{equation*}
+
+
 with variance
 \[
-\text{Var}(E_g)\approx \sum_{i=k-1}^{k+1}\left(\frac{\partial E_g}{\partial z_i}\right)^2 \text{Var}(z_i) + 2\sum_{i<j}\frac{\partial E_g}{\partial z_i}\frac{\partial E_g}{\partial z_j}\text{Cov}(z_i,z_j)
+\text{Var}(E)\approx \sum_{i=k-1}^{k+1}\left(\frac{\partial E}{\partial z_i}\right)^2 \text{Var}(z_i) + 2\sum_{i<j}\frac{\partial E}{\partial z_i}\frac{\partial E}{\partial z_j}\text{Cov}(z_i,z_j)
 \]
 Note that since $z_{k-1}$, $z_k$ and $z_{k+1}$ are independent, then the covariance term becomes 0. Consider
 \[
-t=\frac{E_g}{\sqrt{\text{Var}(E_g)}} \sim t_\nu, \quad \nu = Q-3
+t=\frac{E}{\sqrt{\text{Var}(E)}} \sim t_\nu, \quad \nu = Q-3
 \]
 If $t>t_{\alpha,\nu}$, we accept accept $E>0$, namely the second condition (ii) holds.
 
