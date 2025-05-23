@@ -143,6 +143,7 @@ We can calculate the center and the length of the confidence interval explicitly
 \]
 Note that as $\widehat\rho_{1,k}$ increases from -1 to 1, $(1+\widehat\rho_{1,k})/(1-\widehat\rho_{1,k})$ increases from 0 to infinity, the center of the confidence interval increases and the confidence interval is always within [-1,1]. If $\widehat\rho_{1,k}\in[0,1]$ increases, $(1+\widehat\rho_{1,k})/(1-\widehat\rho_{1,k})\in [1,\infty)$ increases, interval length decreases, the center of the confidence interval is greater than $\widehat \rho_{1,k}$. When $\widehat\rho_{1,k}\in[-1,0]$ increases, $(1+\widehat\rho_{1,k})/(1-\widehat\rho_{1,k})\in [0,1)$, interval length increases, the center of the confidence interval is smaller than $\widehat \rho_{1,k}$. The largest length of confidence interval occurs when $\widehat \rho_{1,k}=0$, the largest length is $2(e^{2z_{\alpha/2}\sigma_{z_k}}-1)/(e^{2z_{\alpha/2}\sigma_{z_k}}+1)$. Moreover, we can also show that the length of the confidence interval is an even function of $\widehat \rho_{1,k}$, i.e. length$(\widehat \rho_{1,k})=$ length$(-\widehat \rho_{1,k})$. See Figure \ref{fig:CI_plot}.
 
+%
 \begin{figure}[!b]\centering
 \begin{tabular}{ccc}
 \includegraphics[width=0.3\linewidth]{./figures/CI_Q_5.pdf}&
@@ -259,7 +260,7 @@ We will consider t test (Student t-test) to determine whether there is a signifi
 \[
 t = \frac{D}{\sqrt{\text{Var}(D)}} \sim t_\nu, \quad \nu = Q-3
 \]
-where $t_\nu$ is a t distribution  with degrees of freedom of $\nu = Q-3$. If $t>t_{\alpha,\nu}$, we reject $H_0$, we think $\widehat \rho_{1,k}$ is obvious larger than $\widehat \rho_{1,k+1}$. Otherwise, $|\widehat \rho_{1,k}|$ is very close to $|\widehat \rho_{1,k+1}|$, in this scenario, we will discard the model with $|\widehat \rho_{1,k}|$ and keep the model with $|\widehat \rho_{1,k+1}|$.
+where $t_\nu$ is a t distribution  with degrees of freedom of $\nu = Q-3$. If $t>t_{\alpha,\nu}$, where $t_{\alpha,\nu}$ is a value in the t distribution table,  we reject $H_0$, we think $\widehat \rho_{1,k}$ is obvious larger than $\widehat \rho_{1,k+1}$. Otherwise, $|\widehat \rho_{1,k}|$ is very close to $|\widehat \rho_{1,k+1}|$, in this scenario, we will discard the model with $|\widehat \rho_{1,k}|$ and keep the model with $|\widehat \rho_{1,k+1}|$.
 
 % If sample variances are similar in the sense that $0.5<\sigma_{z_k}^2/\sigma_{z_{k+1}}^2<2$, the corresponding $t$ statistic is
 % \[
