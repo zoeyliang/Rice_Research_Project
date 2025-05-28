@@ -85,7 +85,7 @@ Next substituting $\alpha_k^*$ into the variance \eqref{eq:MFMC_variance}, the v
 %
 Due to the decreasing of correlation coefficients in condition (i), the coefficients in the numerator are positive ($d_k\ge 0$), and $\mathbb{V}\left[A^{\text{MF}}\right]$ is convex in terms of $N_1,\ldots, N_K$. 
 
-Since $f(N)=1/N, f^\prime (N)=-1/N^2, f^{\prime\prime}(N)=2/N^3>0$ for $N>0$. Moreover, $N_1$ cannot be zero, otherwise the variance \eqref{eq:MFMC_var_convex} will be violated. Let $y_k = 1/N_k$, we can rewrite the optimization problem in terms of $y_k$ and this optimization problem has convex objective function ($\sum C_k/y_k$), equality constraint \eqref{eq:MFMC_var_convex} is affine ($\sum d_k y_k$), and inequality constraint is convex. Therefore, the reformulated optimization problem \eqref{eq:Optimization_pb_sample_size} is a convex optimization problem, and local minimum $y_k = 1/N_k$ is the global minimum.
+Since $f(N)=1/N, f^\prime (N)=-1/N^2, f^{\prime\prime}(N)=2/N^3>0$ for $N>0$, $f$ is convex. Moreover, $N_1$ cannot be zero, otherwise the variance \eqref{eq:MFMC_var_convex} will be violated. Let $y_k = 1/N_k$, we can rewrite the optimization problem in terms of $y_k$ and this optimization problem has convex objective function ($\sum C_k/y_k$), equality constraint \eqref{eq:MFMC_var_convex} is affine ($\sum d_k y_k$), and inequality constraint is convex. Therefore, the reformulated optimization problem \eqref{eq:Optimization_pb_sample_size} is a convex optimization problem, and local minimum $y_k = 1/N_k$ is the global minimum.
 
 
 Substituting $\alpha_k^*$ into $\partial L/\partial N_k=0$ yields a representation for $C_k$ in terms of the sample sizes $N_k$, variance contributions, correlation coefficients, and the Lagrangian multipliers
@@ -226,6 +226,94 @@ The corresponding total sampling cost $\mathcal{W}^\text{MF}$ is
 \end{proof}
 %
 
+\subsection{Proof of Theorem \ref{thm:Sample_size_est_conf_interval} }
 
+\begin{proof}
+	Since the samples in estimating $\widehat \rho_{1,k}$ and $\widehat\rho_{1,k+1}$ are independent, then 
+	%
+	\begin{align*}
+	\text{Var}\left[\Delta_k\right] &= \text{Var}\left[\widehat \rho_{1,k}^2\right] + \text{Var}\left[\widehat \rho_{1,k+1}^2\right]\approx 4\widehat \rho_{1,k}^2\text{Var}\left[\text{tanh}(z_k)\right]+4\widehat \rho_{1,k+1}^2\text{Var}\left[\text{tanh}(z_{k+1})\right]\\
+	&\approx 4\widehat \rho_{1,k}^2\left(1-\widehat \rho_{1,k}^2\right)^2\text{Var}\left[z_k\right]+4\widehat \rho_{1,k+1}^2\left(1-\widehat \rho_{1,k+1}^2\right)^2\text{Var}\left[z_{k+1}\right] \\
+	&= 4\left(\widehat \rho_{1,k}^2\left(1-\widehat \rho_{1,k}^2\right)^2+\widehat \rho_{1,k+1}^2\left(1-\widehat \rho_{1,k+1}^2\right)^2\right)\frac{1.06}{Q-3}
+	\end{align*}
+	The confidence interval for $\Delta_k$ is 
+	\[
+	CI_{\Delta_k} = \left[\Delta_k-t_{\alpha/2, \nu} \sqrt{\text{Var}\left[\Delta_k\right]}, \Delta_k+t_{\alpha/2,\nu} \sqrt{\text{Var}\left[\Delta_k\right]}\right] = \left[\Delta_k^{\text{lower}},\Delta_k^{\text{upper}}\right]
+	\]
+	Since we have different and  unknown variance for $\widehat \rho_{1,k}^2$ and $\widehat \rho_{1,k+1}^2$, the degree of freedom $\nu$ is approximated using the {\it Welch-Satterthwaite} equation
+	\[
+	\nu = \frac{\left(\text{Var}\left[\widehat \rho_{1,k}^2\right] + \text{Var}\left[\widehat \rho_{1,k+1}^2\right]\right)^2}{\frac{\left(\text{Var}\left[\widehat \rho_{1,k}^2\right]\right)^2 }{Q-1}+ \frac{\left(\text{Var}\left[\widehat \rho_{1,k+1}^2\right]\right)^2 }{Q-1} }
+	\]
+	
+	
+	
+	% If no normality is assumed, we consider the two successive level $k$ and $k+1$, and consider the worst square difference
+	% \begin{equation}
+	% \label{eq:delta_rho_square}
+	%     \Delta_k^{\text{min}} = \max \left\{\left(\rho_{1,k}^{\text{lower}}\right)^2 - \left(\rho_{1,k+1}^{\text{upper}}\right)^2,0\right\},\quad \Delta_k^{\text{max}} = \left(\rho_{1,k}^{\text{upper}}\right)^2 - \left(\rho_{1,k+1}^{\text{lower}}\right)^2,
+	% \end{equation}
+	% where $\rho_{1,1}^{\text{lower}} =\rho_{1,1}^{\text{upper}}= 1, \rho_{1,K+1}^{\text{lower}}=\rho_{1,K+1}^{\text{upper}} = 0$. If $\Delta_k^{\text{min}}=0$, it indicates that level $k$ and $k+1$ may encounter overlap and does not have obvious distinction, we could consider to combine these two levels. Moreover, if uncertainty is small and confidence interval is almost symmetric, we believe that the true value is most likely to fall near the middle of the interval $\overline{\rho}_{1,k} = \frac{1}{2}(\rho_{1,k}^{\text{lower}}+\rho_{1,k}^{\text{upper}})$, we can consider the midpoint of each confidence interval (instead of two endpoints) and substitute into \eqref{eq:delta_rho_square}.
+	
+	% \[
+	% \overline{\rho}_{1,k} = \frac{\rho_{1,k}^{\text{lower}}+\rho_{1,k}^{\text{upper}}}{2}, \quad \Delta_k = \max \left\{\overline{\rho}_{1,k}^2 - \overline{\rho}_{1,k+1}^2,0\right\},
+	% \]
+	% we consider the constrained optimization problem \ref{eq:Optimization_pb_sample_size}
+	% %
+	% \begin{equation}\label{eq:Optimization_pb_sample_size2}
+	%     \begin{array}{ll}
+	%     \min \limits_{\begin{array}{c}\scriptstyle N_1,\ldots, N_K\in \mathbb{R} \\[-4pt]
+	% \end{array}} &\displaystyle\sum\limits_{k=1}^K C_kN_k,\\
+	%        \;\,\text{subject to} &\mathbb{V}\left[A^{\text{MF}}\right]=\sigma_1^2 \sum_{k=1}^K\frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{N_k}=   \epsilon_{\text{tar}}^2,\\[2pt]
+	%        &\displaystyle -N_1\le 0,\quad \displaystyle N_{k-1}-N_k\le 0, \;\; k=2\ldots,K.
+	%     \end{array}
+	% \end{equation}
+	% %
+	% Condition (ii) of Theorem \ref{thm:Sample_size_est} indicates that $S^\prime<0$ in \eqref{eq:S_n_S_prime}, therefore,  both $\mathbb{V}[A^{\text{MF}}]$ and optimal sample size $N_k$ are monotonically decreasing in  $\rho_{1,k}$ as shown in \eqref{eq:partial_var_rho}.  Thus, the largest sample size and variance occur at the lower confidence bounds $\widehat\rho_{1,k}^{\text{low}}$.
+	
+	% To compute this upper bound on sample size, Substituting  $\rho_{1,k} = \widehat\rho_{1,k}^{\text{low}}$ into the variance constraint of \eqref{eq:Optimization_pb_sample_size2}, we solve the optimization problem with equality using Lagrange multipliers. The resulting Lagrangian is
+	% %
+	% \[
+	% L = \sum_{k=1}^K C_kN_k +\lambda_0 \left(\frac{\sigma_1^2}{N_1} - \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\left(\widehat\rho_{1,k}^{\text{low}}\right)^2\sigma_1^2\right)-\lambda_1 N_1+\sum_{k=2}^K\lambda_k(N_{k-1} - N_k),
+	% \]
+	% %
+	% Setting $\partial L / \partial N_k = 0$ yields the sample sizes $N_k^{\text{max}}$ as claimed.
+	% %
+	% \[
+	% N_k^{\text{max}} = \frac{\sigma_1^2}{\epsilon_{\text{tar}}^2}\sqrt{\frac{(\text{CI}_{\rho_{1,k}}^{\text{L}})^2-(\text{CI}_{\rho_{1,k+1}}^{\text{L}})^2}{C_k}}\sum_{j=1}^K\sqrt{C_j\left((\text{CI}_{\rho_{1,j}}^{\text{L}})^2-(\text{CI}_{\rho_{1,j+1}}^{\text{L}})^2\right)},\quad \text{for}\quad  k=1,\ldots,K.
+	% \]
+	% %
+	
+	% At the upper endpoint $\widehat\rho_{1,k}^{\text{high}}$, the variance constraint is not active, and the optimal solution to the relaxed problem yields no meaningful lower bound (e.g., $N_k = 0$ is feasible). To obtain a practical confidence interval, we instead linearize $N_k$ with respect to $\rho_{1,k}$ using a first-order Taylor expansion:
+	
+	
+	% At the upper endpoint $\widehat\rho_{1,k}^{\text{high}}$, the variance constraint is strictly satisfied, and the corresponding Lagrange multiplier $\lambda_0$ vanishes due to complementary slackness. The optimization problem then reduces to minimizing the cost subject only to the non-decreasing sample sizes
+	% %
+	% \[
+	% \min \limits_{\begin{array}{c}\scriptstyle N_1,\ldots, N_K\in \mathbb{R}\end{array}}\sum\limits_{k=1}^K C_kN_k, \quad \text{subject to} \quad  0\le N_1\le \cdots \le N_K.
+	% \]
+	% %
+	% While the trivial solution $N_k^{\text{min}} = 0$ satisfies these constraints, it does not produce a meaningful lower bound. 
+	
+	Moreover, if $\widehat \rho_{1,k}$ is close to $\rho$ (the confidence interval has small length), then we  can linearize $N_k$ with respect to the estimated correlation $\widehat\rho_{1,k}$ using a first-order Taylor expansion
+	%
+	\[
+	N_k\left(\widehat\rho_{1,k}\right)\approx N_k^*+ \frac{\partial N_k}{\partial \rho_{1,k}} \left( \widehat\rho_{1,k}-\rho_{1,k}\right).
+	\]
+	%
+	The variance of this linearized estimate is approximated by
+	%
+	\begin{align*}
+	\text{Var}\left[N_k\left(\widehat\rho_{1,k}\right)\right] &\approx \left(\frac{\partial N_k}{\partial \rho_{1,k}}\Bigg |_{\rho_{1,k} = \widehat\rho_{1,k}} \right)^2 \cdot \text{Var}\left[\widehat\rho_{1,k}\right] \approx \left(\frac{\partial N_k}{\partial \rho_{1,k}}\Bigg |_{\rho_{1,k} = \widehat\rho_{1,k}} \right)^2 \cdot \left(\frac{\partial \text{tanh}(z_k)}{\partial z_k}\right)^2\text{Var}[z_k],\\
+	&= \left(\frac{\partial N_k}{\partial \rho_{1,k}}\Bigg |_{\rho_{1,k} = \widehat\rho_{1,k}} \right)^2\left(1-\widehat\rho_{1,k}^2\right)^2\frac{1.03^2}{Q-3}.
+	\end{align*}
+	%
+	This leads to a confidence interval for the linearized sample size estimate
+	%
+	\[
+	\text{CI}_{N_k} = N_k\left(\widehat\rho_{1,k}\right)\pm t_{\alpha/2,Q-3}\sqrt{\text{Var}\left[N_k\left(\widehat\rho_{1,k}\right)\right]}.
+	\]
+	%
+	Moreover, given $\rho_{1,k}\in \text{CI}_{\rho_{1,k}}$, the sample size corresponding to \eqref{eq:delta_rho_square} is \eqref{eq:upper_lower_N_k}. Combining this with the linearized estimate yields the result.
+\end{proof}
 
 
