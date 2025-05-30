@@ -60,12 +60,14 @@ To solve this, we apply the Karush-Kuhn-Tucker (KKT) conditions for \eqref{eq:Op
 %
 The partial derivatives of the Lagrangian with respect to $\alpha_k$ and $N_k$ are computed as
 %
-\begin{align*}
+\begin{align}
+\label{eq:partial_L_alpha_k}
     \frac{\partial L}{\partial \alpha_k}&=\lambda_0\left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\left(2\alpha_k\sigma_k^2 - 2\rho_{1,k}\sigma_1\sigma_k\right),\quad k=2,\dots,K,\\
     % \frac{\partial L}{\partial N_1}&=C_1 + \lambda_0\left(-\frac{\sigma_1^2}{N_1^2} - \frac{\alpha_2^2\sigma_2^2-2\alpha2\rho_{1,2}\sigma_1\sigma_2}{N_1^2}\right)-\lambda_1+\lambda_2,\\
+    \label{eq:partial_L_N_k}
     \frac{\partial L}{\partial N_k}&=C_k+\lambda_0\left(\frac{\alpha_k^2\sigma_k^2 - 2\alpha_k\rho_{1,k}\sigma_1\sigma_k}{N_k^2}-\frac{\alpha_{k+1}^2\sigma_{k+1}^2 - 2\alpha_{k+1}\rho_{1,k+1}\sigma_1\sigma_{k+1}}{N_k^2}\right)-\lambda_k+\lambda_{k+1}, \quad k=1,\dots,K,
     % \frac{\partial L}{\partial N_K}&=C_K + \lambda_0\left(\frac{\alpha_K^2\sigma_K^2 - 2\alpha_K\rho_{1,K}\sigma_1\sigma_K}{N_K^2}\right)-\lambda_K.
-\end{align*}
+\end{align}
 %
 where $\alpha_1 = 1, \alpha_{K+1} = 0$ and $\lambda_{K+1} = 0$. 
 
@@ -234,7 +236,7 @@ The corresponding total sampling cost $\mathcal{W}^\text{MF}$ is
 	\begin{align*}
 	\text{Var}\left[\Delta_k\right] &= \text{Var}\left[\widehat \rho_{1,k}^2\right] + \text{Var}\left[\widehat \rho_{1,k+1}^2\right]\approx 4\widehat \rho_{1,k}^2\text{Var}\left[\text{tanh}(z_k)\right]+4\widehat \rho_{1,k+1}^2\text{Var}\left[\text{tanh}(z_{k+1})\right]\\
 	&\approx 4\widehat \rho_{1,k}^2\left(1-\widehat \rho_{1,k}^2\right)^2\text{Var}\left[z_k\right]+4\widehat \rho_{1,k+1}^2\left(1-\widehat \rho_{1,k+1}^2\right)^2\text{Var}\left[z_{k+1}\right] \\
-	&= 4\left(\widehat \rho_{1,k}^2\left(1-\widehat \rho_{1,k}^2\right)^2+\widehat \rho_{1,k+1}^2\left(1-\widehat \rho_{1,k+1}^2\right)^2\right)\frac{1.06}{Q-3}
+	&= 4\left(\widehat \rho_{1,k}^2\left(1-\widehat \rho_{1,k}^2\right)^2+\widehat \rho_{1,k+1}^2\left(1-\widehat \rho_{1,k+1}^2\right)^2\right)\frac{1.03^2}{Q-3}
 	\end{align*}
 	The confidence interval for $\Delta_k$ is 
 	\[

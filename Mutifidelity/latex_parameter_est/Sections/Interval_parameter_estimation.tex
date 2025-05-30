@@ -1,0 +1,145 @@
+% ========================================
+\section{Fix interval parameter estimation}\label{sec:Fix_interval_parameter_est}
+% ========================================
+Theorem \eqref{thm:Sample_size_est} provide an estimate for the weights and sample size assuming we know the parameters exactly. However, in reality, we dont know the exact real value and what we know is an interval for which the parameters lie in. We consider a fixed interval for each parameter $\rho_{1,k}\in \text{CI}_{\rho_{1,k}}=[a_k,b_k]$, and consider the constrained optimization problem \eqref{eq:Optimization_pb_sample_size}. We want to derive similar results compared to Theorem \eqref{thm:Sample_size_est} for interval-based parameters.
+% %
+% \begin{equation}\label{eq:Optimization_pb_sample_size2}
+%     \begin{array}{ll}
+%     \min \limits_{\begin{array}{c}\scriptstyle N_1,\ldots, N_K\in \mathbb{R} \\[-4pt]
+% \end{array}} &\displaystyle\sum\limits_{k=1}^K C_kN_k,\\
+%        \;\,\text{subject to} &\mathbb{V}\left(A^{\text{MF}}\right)=\frac{\sigma_1^2}{N_1} - \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\rho_{1,k}^2\sigma_1^2\le   \epsilon_{\text{tar}}^2,\\[2pt]
+%        &\displaystyle -N_1\le 0,\quad \displaystyle N_{k-1}-N_k\le 0, \;\; k=2\ldots,K.
+%     \end{array}
+% \end{equation}
+% %
+
+From \eqref{eq:partial_L_alpha_k}, the interval of $\alpha_k$ is 
+\[
+\alpha_k\in \left[\frac{a_k\sigma_1}{\sigma_k}, \frac{b_k\sigma_1}{\sigma_k}\right].
+\]
+Let $G_k =\alpha_k^2\sigma_k^2-2\alpha_k\rho_{1,k}\sigma_1\sigma_k$. It is a quadratic function in terms of $\alpha_k$. $\partial G_k/\partial \alpha_k = 2\alpha_k\sigma_k^2 - 2\rho_{1,k}\sigma_1\sigma_k$.
+
+
+\[
+G_k^{\text{min}}(\alpha_k) = -\rho_{1,k}^2\sigma_1^2,\quad
+G_k^{\text{max}}(\alpha_k) =\left\{\begin{array}{ll}
+\left(b_k^2-2a_kb_k\right)\sigma_1^2, & 0\le a_k\le b_k,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\le 0,\\
+\left(a_k^2-2a_kb_k\right)\sigma_1^2, &a_k\le b_k\le 0,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\ge 0.
+\end{array}
+\right.
+\]
+
+Define $\Delta_k = G_{k+1} - G_k$, and estimate the following upper and lower bounds for $\Delta_k$,
+\begin{align*}
+\Delta_k^{\text{lower}}&:=G^{\text{min}}_{k+1}(\alpha_{k+1}) - G^{\text{max}}_{k}(\alpha_k)\\
+&=\left\{\begin{array}{ll}
+\left[-\rho_{1,k+1}^2-\left(b_k^2-2a_kb_k\right)\right]\sigma_1^2, & 0\le a_k\le b_k,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\le 0,\\
+\left[-\rho_{1,k+1}^2-\left(a_k^2-2a_kb_k\right)\right]\sigma_1^2, &a_k\le b_k\le 0,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\ge 0.
+\end{array}
+\right.\\
+&=\left\{\begin{array}{ll}
+\left[-\max\left\{a_{k+1}^2,b_{k+1}^2\right\}-\left(b_k^2-2a_kb_k\right)\right]\sigma_1^2, & 0\le a_k\le b_k,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\le 0,\\
+\left[-\max\left\{a_{k+1}^2,b_{k+1}^2\right\}-\left(a_k^2-2a_kb_k\right)\right]\sigma_1^2, &a_k\le b_k\le 0,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\ge 0.
+\end{array}
+\right.
+\end{align*}
+
+
+
+\begin{align*}
+ \Delta_k^{\text{upper}}&:= G^{\text{max}}_{k+1}(\alpha_{k+1}) - G^{\text{min}}_{k}(\alpha_k)\\
+ &=\left\{\begin{array}{ll}
+\left[b_{k+1}^2-2a_{k+1}b_{k+1}+\rho_{1,k}^2\right]\sigma_1^2, & 0\le a_{k+1}\le b_{k+1},\;\; \text{ or } \;\;a_{k+1}\le 0, b_{k+1}\ge 0, a_{k+1}+b_{k+1}\le 0,\\
+\left[a_{k+1}^2-2a_{k+1}b_{k+1}+\rho_{1,k}^2\right]\sigma_1^2, &a_{k+1}\le b_{k+1}\le 0,\;\; \text{ or } \;\;a_{k+1}\le 0, b_{k+1}\ge 0, a_{k+1}+b_{k+1}\ge 0.
+\end{array}
+\right.\\
+&=\left\{\begin{array}{ll}
+\left[b_{k+1}^2-2a_{k+1}b_{k+1}+\max\left\{a_{k}^2,b_{k}^2\right\}\right]\sigma_1^2, & 0\le a_{k+1}\le b_{k+1},\;\; \text{ or } \;\;a_{k+1}\le 0, b_{k+1}\ge 0, a_{k+1}+b_{k+1}\le 0,\\
+\left[a_{k+1}^2-2a_{k+1}b_{k+1}+\max\left\{a_{k}^2,b_{k}^2\right\}\right]\sigma_1^2, &a_{k+1}\le b_{k+1}\le 0,\;\; \text{ or } \;\;a_{k+1}\le 0, b_{k+1}\ge 0, a_{k+1}+b_{k+1}\ge 0.
+\end{array}
+\right.
+\end{align*}
+
+Note that $\widetilde{\Delta}_k^{\text{lower}}$ can be positive, negative or equal to zero, due to the overlapping of the interval of the parameters, but $\Delta_k^{\text{upper}}$ is always positive. Define $\widetilde{\Delta}_k^{\text{lower}}\le \Delta_k \le \Delta_k^{\text{upper}}$, where
+\[
+\widetilde{\Delta}_k^{\text{lower}}:=\Delta_i^{\text{lower}}, \quad i=\max\left\{i\le k\;\;\vert\;\; \Delta_i^{\text{lower}}>0\right\}.
+\]
+Note that $\max\{i\le k\vert \Delta_i^{\text{lower}}>0\}$ cannot be empty since $N_1$ is not equal to zero.
+
+From $\partial L/\partial N_k=0$, 
+\[
+N_k = \sqrt{\lambda_0}\sqrt{\frac{\Delta_k}{C_k}}
+\]
+
+The variance 
+\[
+\mathbb{V}\left[A^{\text{MF}}\right] = \sum_{k=1}^K\frac{G_{k+1} - G_k}{N_k} = \sum_{k=1}^K\frac{\Delta_k}{N_k} =\frac{1}{\sqrt{\lambda_0}}\sum_{k=1}^K \sqrt{C_k\Delta_k}= \epsilon_{\text{tar}}^2
+\]
+with $G_{K+1} = 0$.
+\[
+\sqrt{\lambda_0} = \frac{1}{\epsilon_{\text{tar}}^2}\sum_{k=1}^K \sqrt{C_k\Delta_k}
+\]
+
+\[
+N_k = \frac{1}{\epsilon_{\text{tar}}^2}\sqrt{\frac{\Delta_k}{C_k}}\sum_{j=1}^K \sqrt{C_j\Delta_j}.
+\]
+
+\[
+N_k \in \left[\frac{1}{\epsilon_{\text{tar}}^2}\sqrt{\frac{\widetilde{\Delta}_k^{\text{lower}}}{C_k}}\sum_{j=1}^K \sqrt{C_j\widetilde{\Delta}_k^{\text{lower}}},\frac{1}{\epsilon_{\text{tar}}^2}\sqrt{\frac{\Delta_k^{\text{upper}}}{C_k}}\sum_{j=1}^K \sqrt{C_j\Delta_j^{\text{upper}}}\right]
+\]
+
+
+
+% As shown in \eqref{eq:partial_var_rho}, since $S^\prime<0$ in \eqref{eq:S_n_S_prime}, both the variance $\mathbb{V}(A^{\text{MF}})$ and the optimal sample sizes $N_k$ are monotonically decreasing functions of the correlation coefficients $\rho_{1,k}$. In other words, increasing $\rho_{1,k}$ reduces the variance of the MFMC estimator, which in turn lowers the required number of samples. Consequently, the most conservative (i.e., largest) sample sizes within the uncertainty range occur when $\rho_{1,k}$ attains the lower bound $\text{CI}_{\rho_{1,k}}^{\text{L}}$ of its confidence interval.
+
+% To compute this upper bound on sample size, we substitute $\rho_{1,k} = \text{CI}_{\rho_{1,k}}^{\text{L}}$ into the variance constraint of the optimization problem \eqref{eq:Optimization_pb_sample_size2}. In this setting, the variance constraint becomes active (i.e., satisfied with equality), and the optimal sample sizes are obtained using the method of Lagrange multipliers. The corresponding Lagrangian is
+% %
+% \[
+% L = \sum_{k=1}^K C_kN_k +\lambda_0 \left(\frac{\sigma_1^2}{N_1} - \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)(\text{CI}_{\rho_{1,k}}^{\text{L}})^2\sigma_1^2\right)-\lambda_1 N_1+\sum_{k=2}^K\lambda_k(N_{k-1} - N_k),
+% \]
+% %
+% Enforcing stationary via $\partial L / \partial N_k = 0$ yields the optimal sample sizes at the lower bound of the correlation coefficient
+% %
+% \[
+% N_k^{\text{max}} = \frac{\sigma_1^2}{\epsilon_{\text{tar}}^2}\sqrt{\frac{(\text{CI}_{\rho_{1,k}}^{\text{L}})^2-(\text{CI}_{\rho_{1,k+1}}^{\text{L}})^2}{C_k}}\sum_{j=1}^K\sqrt{C_j\left((\text{CI}_{\rho_{1,j}}^{\text{L}})^2-(\text{CI}_{\rho_{1,j+1}}^{\text{L}})^2\right)},\quad \text{for}\quad  k=1,\ldots,K.
+% \]
+% %
+% At the upper endpoint $\text{CI}_{\rho_{1,k}}^{\text{U}}$, the variance constraint is strictly satisfied, and the corresponding Lagrange multiplier $\lambda_0$ vanishes due to complementary slackness. The optimization problem then reduces to minimizing the cost subject only to the non-decreasing sample sizes
+% %
+% \[
+% \min \limits_{\begin{array}{c}\scriptstyle N_1,\ldots, N_K\in \mathbb{R}\end{array}}\sum\limits_{k=1}^K C_kN_k, \quad \text{subject to} \quad  0\le N_1\le \cdots \le N_K.
+% \]
+% %
+% While the trivial solution $N_k^{\text{min}} = 0$ satisfies these constraints, it does not produce a meaningful lower bound. To obtain a more informative characterization of the uncertainty in $N_k$, we linearize $N_k$ with respect to the estimated correlation $\rho_{1,k}^{(Q)}$ using a first-order Taylor expansion
+% %
+% \[
+%  N_k\left(\rho_{1,k}^{(Q)}\right)\approx N_k^*+ \frac{\partial N_k}{\partial \rho_{1,k}} \left( \rho_{1,k}^{(Q)}-\rho_{1,k}\right).
+% \]
+% %
+% The variance of this linearized estimate is approximated by
+% %
+% \begin{align*}
+%     \text{Var}\left(N_k\left(\rho_{1,k}^{(Q)}\right)\right) &\approx \left(\frac{\partial N_k}{\partial \rho_{1,k}}\Bigg |_{\rho_{1,k} = \rho_{1,k}^{(Q)}} \right)^2 \cdot \text{Var}\left(\rho_{1,k}^{(Q)}\right) \approx \left(\frac{\partial N_k}{\partial \rho_{1,k}}\Bigg |_{\rho_{1,k} = \rho_{1,k}^{(Q)}} \right)^2 \cdot \left(\frac{\partial \text{tanh}(z)}{\partial z}\right)^2\text{Var}(z),\\
+%     &= \left(\frac{\partial N_k}{\partial \rho_{1,k}}\Bigg |_{\rho_{1,k} = \rho_{1,k}^{(Q)}} \right)^2 \cdot \left(1-\left(\rho_{1,k}^{(Q)}\right)^2\right)^2\frac{1.03^2}{Q-3}.
+% \end{align*}
+% %
+% This leads to a confidence interval for the linearized sample size estimate
+% %
+% \[
+% \text{CI}_{N_k} := \left[\text{CI}_{N_k}^{\text{L}},\text{CI}_{N_k}^{\text{U}}\right]=\left[N_k^*-1.96\sqrt{\text{Var}\left(N_k\left(\rho_{1,k}^{(Q)}\right)\right)}, N_k^*+1.96\sqrt{\text{Var}\left(N_k\left(\rho_{1,k}^{(Q)}\right)\right)}\right].
+% \]
+% %
+% which we then intersect with the upper bound $N_k^{\text{max}}$ to obtain a truncated and feasible confidence interval
+% %
+% \[
+% \text{CI}_{N_k} = \left[\text{CI}_{N_k}^{\text{L}},\text{CI}_{N_k}^{\text{U}}\right]\cap \left[0, N_k^{\text{max}}\right].
+% \]
+% %
+
+
+% Finally, this range induces a confidence interval for the cost-efficiency metric $\xi$ introduced in \eqref{eq:MFMC_sampling_cost}, with bounds given by
+% %
+% \begin{equation}\label{eq:MFMC_sampling_cost_efficiency_CI}
+%     \xi \in  \left[\sum_{k=1}^K C_k \text{CI}_{N_k}^{\text{L}},\;\;\min \left\{\sum_{k=1}^K C_k \text{CI}_{N_k}^{\text{U}},\frac{1}{C_1} \left(\sum_{k=1}^K\sqrt{C_k\left(a_{k}^2 - a_{k+1}^2\right)}\right)^2\right\}\right].
+% \end{equation}
+% %
