@@ -392,7 +392,7 @@ E\approx \sum_{k=i_1}^{K_1^*} \frac{\partial E_1}{\partial z_k}(z_k - \mu_{z_k})
 % \end{equation*}
 % %
 
-The confidence interval, together with the sensitivity analysis, forms the basis of a robust stopping rule for adaptive sampling. Specifically, we determine the minimal pilot sample size $Q$ required for reliable parameter estimation by sequentially updating sample statistics as $Q$ increases \cite{La:2001,Wa:1947}. Sampling continues until both accuracy and confidence criteria are satisfied. This adaptive strategy is summarized in Algorithm~\ref{algo:Parameter_Estimation} and is integrated into the enhanced model selection procedure described in Section~\ref{sec:Model_Selection} (Algorithm~\ref{algo:MFMC_Algo_model_selection}).
+The confidence interval, [\sout{together with the sensitivity analysis}], forms the basis of a robust stopping rule for adaptive sampling. Specifically, we determine the minimal pilot sample size $Q$ required for reliable parameter estimation by sequentially updating sample statistics as $Q$ increases \cite{La:2001,Wa:1947}. Sampling continues until both accuracy and confidence criteria are satisfied. This adaptive strategy is summarized in Algorithm~\ref{algo:Parameter_Estimation} and is integrated into the enhanced model selection procedure described in Section~\ref{sec:Model_Selection} (Algorithm~\ref{algo:MFMC_Algo_model_selection}).
 
 
 \normalem
@@ -649,9 +649,7 @@ The confidence interval, together with the sensitivity analysis, forms the basis
 
 %
 \subsection{Sample size and total cost estimate}
-Given the confidence intervals $\forall \rho_{1,k} \in \text{CI}_{\rho_{1,k}}$ for the correlation coefficients as defined in \eqref{eq:Confidence_Interval_rho}, we want to estimate how the sample size, and total sampling cost if we use interval-based parameters for the the multi-fidelity Monte Carlo estimator. We want to solve the following optimization problem: 
-
-For all $\rho_{1,k} \in \text{CI}_{\rho_{1,k}}$, 
+Given the confidence intervals $\rho_{1,k} \in \text{CI}_{\rho_{1,k}}$ for the correlation coefficients defined in \eqref{eq:Confidence_Interval_rho}, we seek to estimate how the sample size and total sampling cost are affected when using interval-based parameters in the multi-fidelity Monte Carlo estimator. To this end, we consider the following optimization problem: for all $\rho_{1,k} \in \text{CI}_{\rho_{1,k}}$, determine the sampling strategy that minimizes total cost while achieving a prescribed target variance $\epsilon_{\text{tar}}^2$. The optimization problem is formulated as
 %
 \begin{equation}\label{eq:Optimization_pb_Confidence_Interval}
     \begin{array}{ll}
@@ -663,6 +661,7 @@ For all $\rho_{1,k} \in \text{CI}_{\rho_{1,k}}$,
     \end{array}
 \end{equation}
 %
+By solving \eqref{eq:Optimization_pb_Confidence_Interval} over the full range of correlation values allowed by each $\text{CI}_{\rho_{1,k}}$, we obtain upper and lower bounds on both the optimal sample sizes and the associated total cost. This quantifies the uncertainty in resource allocation stemming from limited information about $\rho_{1,k}$ during the pilot phase.
 
 % This involves solving an optimization problem that minimizes the total computational cost while satisfying an upper bound on the estimator variance and enforcing monotonicity constraints on the sample sizes. 
 %
