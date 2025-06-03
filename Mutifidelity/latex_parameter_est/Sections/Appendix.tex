@@ -242,7 +242,7 @@ The corresponding total sampling cost $\mathcal{W}^\text{MF}$ is
 	\[
 	CI_{\Delta_k} = \left[\Delta_k-t_{\alpha/2, \nu} \sqrt{\text{Var}\left[\Delta_k\right]}, \Delta_k+t_{\alpha/2,\nu} \sqrt{\text{Var}\left[\Delta_k\right]}\right] = \left[\Delta_k^{\text{lower}},\Delta_k^{\text{upper}}\right]
 	\]
-	Since we have different and  unknown variance for $\widehat \rho_{1,k}^2$ and $\widehat \rho_{1,k+1}^2$, the degree of freedom $\nu$ is approximated using the {\it Welch-Satterthwaite} equation
+	Since we have different and  unknown variance for $\widehat \rho_{1,k}^2$ and $\widehat \rho_{1,k+1}^2$ and same sample size $Q$, the degree of freedom $\nu$ is approximated using the {\it Welch-Satterthwaite} equation
 	\[
 	\nu = \frac{\left(\text{Var}\left[\widehat \rho_{1,k}^2\right] + \text{Var}\left[\widehat \rho_{1,k+1}^2\right]\right)^2}{\frac{\left(\text{Var}\left[\widehat \rho_{1,k}^2\right]\right)^2 }{Q-1}+ \frac{\left(\text{Var}\left[\widehat \rho_{1,k+1}^2\right]\right)^2 }{Q-1} }
 	\]
@@ -296,7 +296,7 @@ The corresponding total sampling cost $\mathcal{W}^\text{MF}$ is
 	% %
 	% While the trivial solution $N_k^{\text{min}} = 0$ satisfies these constraints, it does not produce a meaningful lower bound. 
 	
-	Moreover, if $\widehat \rho_{1,k}$ is close to $\rho$ (the confidence interval has small length), then we  can linearize $N_k$ with respect to the estimated correlation $\widehat\rho_{1,k}$ using a first-order Taylor expansion
+	Moreover, if $\widehat \rho_{1,k}$ is close to $\rho_k$ (the confidence interval has small length), then we  can linearize $N_k$ with respect to the estimated correlation $\widehat\rho_{1,k}$ using a first-order Taylor expansion
 	%
 	\[
 	N_k\left(\widehat\rho_{1,k}\right)\approx N_k^*+ \frac{\partial N_k}{\partial \rho_{1,k}} \left( \widehat\rho_{1,k}-\rho_{1,k}\right).
