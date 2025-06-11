@@ -15,83 +15,6 @@ Theorem \eqref{thm:Sample_size_est} provide an estimate for the weights and samp
 \end{equation}
 %
 
-% From \eqref{eq:partial_L_alpha_k}, the interval of $\alpha_k$ is 
-% \[
-% \alpha_k\in \left[\frac{a_k\sigma_1}{\sigma_k}, \frac{b_k\sigma_1}{\sigma_k}\right].
-% \]
-% Let $G_k =\alpha_k^2\sigma_k^2-2\alpha_k\rho_{1,k}\sigma_1\sigma_k$. It is a quadratic function in terms of $\alpha_k$. $\partial G_k/\partial \alpha_k = 2\alpha_k\sigma_k^2 - 2\rho_{1,k}\sigma_1\sigma_k$.
-
-
-% \[
-% G_k^{\text{min}}(\alpha_k) = -\rho_{1,k}^2\sigma_1^2,\quad
-% G_k^{\text{max}}(\alpha_k) =\left\{\begin{array}{ll}
-% \left(b_k^2-2a_kb_k\right)\sigma_1^2, & 0\le a_k\le b_k,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\le 0,\\
-% \left(a_k^2-2a_kb_k\right)\sigma_1^2, &a_k\le b_k\le 0,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\ge 0.
-% \end{array}
-% \right.
-% \]
-
-% Define $\Delta_k = G_{k+1} - G_k$, and estimate the following upper and lower bounds for $\Delta_k$,
-% \begin{align*}
-% \Delta_k^{\text{lower}}&:=G^{\text{min}}_{k+1}(\alpha_{k+1}) - G^{\text{max}}_{k}(\alpha_k)\\
-% &=\left\{\begin{array}{ll}
-% \left[-\rho_{1,k+1}^2-\left(b_k^2-2a_kb_k\right)\right]\sigma_1^2, & 0\le a_k\le b_k,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\le 0,\\
-% \left[-\rho_{1,k+1}^2-\left(a_k^2-2a_kb_k\right)\right]\sigma_1^2, &a_k\le b_k\le 0,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\ge 0.
-% \end{array}
-% \right.\\
-% &=\left\{\begin{array}{ll}
-% \left[-\max\left\{a_{k+1}^2,b_{k+1}^2\right\}-\left(b_k^2-2a_kb_k\right)\right]\sigma_1^2, & 0\le a_k\le b_k,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\le 0,\\
-% \left[-\max\left\{a_{k+1}^2,b_{k+1}^2\right\}-\left(a_k^2-2a_kb_k\right)\right]\sigma_1^2, &a_k\le b_k\le 0,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\ge 0.
-% \end{array}
-% \right.
-% \end{align*}
-
-
-
-% \begin{align*}
-%  \Delta_k^{\text{upper}}&:= G^{\text{max}}_{k+1}(\alpha_{k+1}) - G^{\text{min}}_{k}(\alpha_k)\\
-%  &=\left\{\begin{array}{ll}
-% \left[b_{k+1}^2-2a_{k+1}b_{k+1}+\rho_{1,k}^2\right]\sigma_1^2, & 0\le a_{k+1}\le b_{k+1},\;\; \text{ or } \;\;a_{k+1}\le 0, b_{k+1}\ge 0, a_{k+1}+b_{k+1}\le 0,\\
-% \left[a_{k+1}^2-2a_{k+1}b_{k+1}+\rho_{1,k}^2\right]\sigma_1^2, &a_{k+1}\le b_{k+1}\le 0,\;\; \text{ or } \;\;a_{k+1}\le 0, b_{k+1}\ge 0, a_{k+1}+b_{k+1}\ge 0.
-% \end{array}
-% \right.\\
-% &=\left\{\begin{array}{ll}
-% \left[b_{k+1}^2-2a_{k+1}b_{k+1}+\max\left\{a_{k}^2,b_{k}^2\right\}\right]\sigma_1^2, & 0\le a_{k+1}\le b_{k+1},\;\; \text{ or } \;\;a_{k+1}\le 0, b_{k+1}\ge 0, a_{k+1}+b_{k+1}\le 0,\\
-% \left[a_{k+1}^2-2a_{k+1}b_{k+1}+\max\left\{a_{k}^2,b_{k}^2\right\}\right]\sigma_1^2, &a_{k+1}\le b_{k+1}\le 0,\;\; \text{ or } \;\;a_{k+1}\le 0, b_{k+1}\ge 0, a_{k+1}+b_{k+1}\ge 0.
-% \end{array}
-% \right.
-% \end{align*}
-
-% Note that $\widetilde{\Delta}_k^{\text{lower}}$ can be positive, negative or equal to zero, due to the overlapping of the interval of the parameters, but $\Delta_k^{\text{upper}}$ is always positive. Define $\widetilde{\Delta}_k^{\text{lower}}\le \Delta_k \le \Delta_k^{\text{upper}}$, where
-% \[
-% \widetilde{\Delta}_k^{\text{lower}}:=\Delta_i^{\text{lower}}, \quad i=\max\left\{i\le k\;\;\vert\;\; \Delta_i^{\text{lower}}>0\right\}.
-% \]
-% Note that $\max\{i\le k\vert \Delta_i^{\text{lower}}>0\}$ cannot be empty since $N_1$ is not equal to zero.
-
-% From $\partial L/\partial N_k=0$, 
-% \[
-% N_k = \sqrt{\lambda_0}\sqrt{\frac{\Delta_k}{C_k}}
-% \]
-
-% The variance 
-% \[
-% \mathbb{V}\left[A^{\text{MF}}\right] = \sum_{k=1}^K\frac{G_{k+1} - G_k}{N_k} = \sum_{k=1}^K\frac{\Delta_k}{N_k} =\frac{1}{\sqrt{\lambda_0}}\sum_{k=1}^K \sqrt{C_k\Delta_k}= \epsilon_{\text{tar}}^2
-% \]
-% with $G_{K+1} = 0$.
-% \[
-% \sqrt{\lambda_0} = \frac{1}{\epsilon_{\text{tar}}^2}\sum_{k=1}^K \sqrt{C_k\Delta_k}
-% \]
-
-% \[
-% N_k = \frac{1}{\epsilon_{\text{tar}}^2}\sqrt{\frac{\Delta_k}{C_k}}\sum_{j=1}^K \sqrt{C_j\Delta_j}.
-% \]
-
-% \[
-% N_k \in \left[\frac{1}{\epsilon_{\text{tar}}^2}\sqrt{\frac{\widetilde{\Delta}_k^{\text{lower}}}{C_k}}\sum_{j=1}^K \sqrt{C_j\widetilde{\Delta}_k^{\text{lower}}},\frac{1}{\epsilon_{\text{tar}}^2}\sqrt{\frac{\Delta_k^{\text{upper}}}{C_k}}\sum_{j=1}^K \sqrt{C_j\Delta_j^{\text{upper}}}\right]
-% \]
-
-
-
 As shown in \eqref{eq:partial_var_rho}, since $S^\prime<0$ in \eqref{eq:S_n_S_prime}, the variance $\mathbb{V}(A^{\text{MF}})$ is monotonically decreasing functions of the correlation coefficients $\rho_{1,k}$. To ensure the variance always falls below the tolerance, we therefore require $\mathbb{V}\left[A^{\text{MF}}\right]$ evaluate at the lower bound $b_k$ of the intervals be equal to $\epsilon_{\text{tar}}^2$, namely
 %
 \[
@@ -103,6 +26,88 @@ The sample sizes that holds for all $\rho_{1,k}\in [b_k,d_k]$ is then
 \[
 N_k = \frac{\sigma_1^2}{\epsilon_{\text{tar}}^2}\sqrt{\frac{b_k^2-b_{k+1}^2}{C_k}}\sum_{j=1}^K\sqrt{C_j\left(b_j^2-b_{j+1}^2\right)},\quad \text{for}\quad  k=1,\ldots,K.
 \]
+
+
+
+\section{Fix interval parameter estimation over all values in the interval}
+From \eqref{eq:partial_L_alpha_k}, the interval of $\alpha_k$ is 
+\[
+\alpha_k\in \left[\frac{a_k\sigma_1}{\sigma_k}, \frac{b_k\sigma_1}{\sigma_k}\right].
+\]
+Let $G_k =\alpha_k^2\sigma_k^2-2\alpha_k\rho_{1,k}\sigma_1\sigma_k$. It is a quadratic function in terms of $\alpha_k$. $\partial G_k/\partial \alpha_k = 2\alpha_k\sigma_k^2 - 2\rho_{1,k}\sigma_1\sigma_k$.
+
+
+\[
+G_k^{\text{min}}(\alpha_k) = -\rho_{1,k}^2\sigma_1^2,\quad
+G_k^{\text{max}}(\alpha_k) =\left\{\begin{array}{ll}
+\left(b_k^2-2a_kb_k\right)\sigma_1^2, & 0\le a_k\le b_k,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\le 0,\\
+\left(a_k^2-2a_kb_k\right)\sigma_1^2, &a_k\le b_k\le 0,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\ge 0.
+\end{array}
+\right.
+\]
+
+Define $\Delta_k = G_{k+1} - G_k$, and estimate the following upper and lower bounds for $\Delta_k$,
+\begin{align*}
+\Delta_k^{\text{lower}}&:=G^{\text{min}}_{k+1}(\alpha_{k+1}) - G^{\text{max}}_{k}(\alpha_k)\\
+&=\left\{\begin{array}{ll}
+\left[-\rho_{1,k+1}^2-\left(b_k^2-2a_kb_k\right)\right]\sigma_1^2, & 0\le a_k\le b_k,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\le 0,\\
+\left[-\rho_{1,k+1}^2-\left(a_k^2-2a_kb_k\right)\right]\sigma_1^2, &a_k\le b_k\le 0,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\ge 0.
+\end{array}
+\right.\\
+&=\left\{\begin{array}{ll}
+\left[-\max\left\{a_{k+1}^2,b_{k+1}^2\right\}-\left(b_k^2-2a_kb_k\right)\right]\sigma_1^2, & 0\le a_k\le b_k,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\le 0,\\
+\left[-\max\left\{a_{k+1}^2,b_{k+1}^2\right\}-\left(a_k^2-2a_kb_k\right)\right]\sigma_1^2, &a_k\le b_k\le 0,\;\; \text{ or } \;\;a_k\le 0, b_k\ge 0, a_k+b_k\ge 0.
+\end{array}
+\right.
+\end{align*}
+
+
+
+\begin{align*}
+ \Delta_k^{\text{upper}}&:= G^{\text{max}}_{k+1}(\alpha_{k+1}) - G^{\text{min}}_{k}(\alpha_k)\\
+ &=\left\{\begin{array}{ll}
+\left[b_{k+1}^2-2a_{k+1}b_{k+1}+\rho_{1,k}^2\right]\sigma_1^2, & 0\le a_{k+1}\le b_{k+1},\;\; \text{ or } \;\;a_{k+1}\le 0, b_{k+1}\ge 0, a_{k+1}+b_{k+1}\le 0,\\
+\left[a_{k+1}^2-2a_{k+1}b_{k+1}+\rho_{1,k}^2\right]\sigma_1^2, &a_{k+1}\le b_{k+1}\le 0,\;\; \text{ or } \;\;a_{k+1}\le 0, b_{k+1}\ge 0, a_{k+1}+b_{k+1}\ge 0.
+\end{array}
+\right.\\
+&=\left\{\begin{array}{ll}
+\left[b_{k+1}^2-2a_{k+1}b_{k+1}+\max\left\{a_{k}^2,b_{k}^2\right\}\right]\sigma_1^2, & 0\le a_{k+1}\le b_{k+1},\;\; \text{ or } \;\;a_{k+1}\le 0, b_{k+1}\ge 0, a_{k+1}+b_{k+1}\le 0,\\
+\left[a_{k+1}^2-2a_{k+1}b_{k+1}+\max\left\{a_{k}^2,b_{k}^2\right\}\right]\sigma_1^2, &a_{k+1}\le b_{k+1}\le 0,\;\; \text{ or } \;\;a_{k+1}\le 0, b_{k+1}\ge 0, a_{k+1}+b_{k+1}\ge 0.
+\end{array}
+\right.
+\end{align*}
+
+Note that $\widetilde{\Delta}_k^{\text{lower}}$ can be positive, negative or equal to zero, due to the overlapping of the interval of the parameters, but $\Delta_k^{\text{upper}}$ is always positive. Define $\widetilde{\Delta}_k^{\text{lower}}\le \Delta_k \le \Delta_k^{\text{upper}}$, where
+\[
+\widetilde{\Delta}_k^{\text{lower}}:=\Delta_i^{\text{lower}}, \quad i=\max\left\{i\le k\;\;\vert\;\; \Delta_i^{\text{lower}}>0\right\}.
+\]
+Note that $\max\{i\le k\vert \Delta_i^{\text{lower}}>0\}$ cannot be empty since $N_1$ is not equal to zero.
+
+From $\partial L/\partial N_k=0$, 
+\[
+N_k = \sqrt{\lambda_0}\sqrt{\frac{\Delta_k}{C_k}}
+\]
+
+The variance 
+\[
+\mathbb{V}\left[A^{\text{MF}}\right] = \sum_{k=1}^K\frac{G_{k+1} - G_k}{N_k} = \sum_{k=1}^K\frac{\Delta_k}{N_k} =\frac{1}{\sqrt{\lambda_0}}\sum_{k=1}^K \sqrt{C_k\Delta_k}= \epsilon_{\text{tar}}^2
+\]
+with $G_{K+1} = 0$.
+\[
+\sqrt{\lambda_0} = \frac{1}{\epsilon_{\text{tar}}^2}\sum_{k=1}^K \sqrt{C_k\Delta_k}
+\]
+
+\[
+N_k = \frac{1}{\epsilon_{\text{tar}}^2}\sqrt{\frac{\Delta_k}{C_k}}\sum_{j=1}^K \sqrt{C_j\Delta_j}.
+\]
+
+\[
+N_k \in \left[\frac{1}{\epsilon_{\text{tar}}^2}\sqrt{\frac{\widetilde{\Delta}_k^{\text{lower}}}{C_k}}\sum_{j=1}^K \sqrt{C_j\widetilde{\Delta}_k^{\text{lower}}},\frac{1}{\epsilon_{\text{tar}}^2}\sqrt{\frac{\Delta_k^{\text{upper}}}{C_k}}\sum_{j=1}^K \sqrt{C_j\Delta_j^{\text{upper}}}\right]
+\]
+
+
+
+
 % %
 % At the upper endpoint $\text{CI}_{\rho_{1,k}}^{\text{U}}$, the variance constraint is strictly satisfied, and the corresponding Lagrange multiplier $\lambda_0$ vanishes due to complementary slackness. The optimization problem then reduces to minimizing the cost subject only to the non-decreasing sample sizes
 % %
