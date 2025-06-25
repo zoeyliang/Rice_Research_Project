@@ -40,8 +40,8 @@ Error control for the MC, MLMC, and MFMC estimators is governed by the mean squa
 Welford's algorithm \cite{Welford:1962} provides a numerically stable framework for incremental computation of sample statistics with $\mathcal{O}(1)$ memory complexity, essential for large-scale multifidelity simulations where full sample retention is infeasible. For models $k \in \{1, \dots, K\}$ with $k=1$ denoting the high-fidelity model, we initialize accumulators $m_k^{(0)} = 0$ (mean), $v_k^{(0)} = 0$ (unnormalized variance), and $r_k^{(0)} = 0$ (unnormalized covariance for $k \geq 2$). At each sample iteration $i \geq 1$, given sample $\boldsymbol{\omega}^{(i)}$, the algorithm computes outputs $u_k^{(i)}$ and executes updates
 %
 \begin{align*}
-    m_k^{(i)} &= m_k^{(i-1)} + \frac{1}{i}\left( u_{k}^{(i)}-m_k^{(i-1)}\right),\qquad v_k^{(i)} = v_k^{(i-1)} + \left\langle  u_{k}^{(i)}-m_k^{(i-1)}, \;\; u_{k}^{(i)}-m_k^{(i)}\right\rangle,\\
-    r_k^{(i)} &= r_k^{(i-1)} + \left \langle  u_{1}^{(i)}-m_{1}^{(i-1)},\;\; u_{k}^{(i)}- m_{k}^{(i)}\right\rangle, \quad \text{for }k\ge 2.
+    m_k^{(i)} &= m_k^{(i-1)} + \frac{1}{i}\left( u_{k}^{(i)}-m_k^{(i-1)}\right),\qquad v_k^{(i)} = v_k^{(i-1)} + \left\langle  u_{k}^{(i)}-m_k^{(i-1)}, \;\; u_{k}^{(i)}-m_k^{(i)}\right\rangle_Z,\\
+    r_k^{(i)} &= r_k^{(i-1)} + \left \langle  u_{1}^{(i)}-m_{1}^{(i-1)},\;\; u_{k}^{(i)}- m_{k}^{(i)}\right\rangle_Z, \quad \text{for }k\ge 2.
 \end{align*}
 %
 After processing $N$ samples, final statistics are computed as $\widehat{\mu}_k = m_k^{(N)}$, $\widehat{\sigma}_k^2 = v_k^{(N)}/(N-1)$, and $\widehat{\text{Cov}}_{1,k} = r_k^{(N)}/(N-1)$, with correlations $\widehat{\rho}_{1,k} = \widehat{\text{Cov}}_{1,k}/(\widehat{\sigma}_1 \widehat{\sigma}_k)$. These yield unbiased estimators for means, variances and covariances. The algorithm's stability stems from orthogonal residual updates that minimize rounding error propagation, particularly critical when estimating correlations near $\pm 1$ $(\text{Cov}_{1,k}\approx \sigma_1\sigma_k)$ where conventional methods falter.
@@ -94,7 +94,7 @@ The offline computational cost of MFMC comprises two key components: constructio
 \end{table}
 %
 
-The second component concerns estimation of MFMC statistical parameters. We first need to determine whether $u_{h,1}(\cdot, \boldsymbol{\omega})$ satisfy normal distribution. Since degree of freedom is one, we consider using normalized Euclidean distance in the normal probability plot (quantile-quantile plot).
+The second component concerns estimation of MFMC statistical parameters. We first need to determine whether $u_{h,1}(\cdot, \boldsymbol{\omega})$ satisfy normal distribution. Since degree of freedom is one and we measure the distance between two functions, we consider using Mahalanobis distance \cite{Ma:2018} in the normal probability plot (quantile-quantile plot).
 \[
 d\left[u_{1}^{(i)}, A_{1,Q}^{\text{MC}}\right] = \sqrt{\frac{\left\Vert u_{1}^{(i)} - A_{1,Q}^{\text{MC}}\right\Vert_Z^2}{\mathbb{V}\left[u_{h,1}(\cdot, \boldsymbol{\omega}))\right]}}
 \]
@@ -109,9 +109,9 @@ d\left[u_{1}^{(i)}, A_{1,Q}^{\text{MC}}\right] = \sqrt{\frac{\left\Vert u_{1}^{(
 \label{fig:Test_normal}
 \end{figure}
 %
-% Figure \ref{fig:Test_normal} shows that $u_{h,1}(\cdot, \boldsymbol{\omega})$ is not normal. If it is Gaussian, $d^2$ should follow $\chi^2$ distribution and we should expect the data to be around the reference line of normal distribution and its associated confidence interval. However, the squared distance of each data deviate from the red line. The sample quatiles has downward inflection, which indidates that the data is left skewed.
+Figure \ref{fig:Test_normal} shows that $u_{h,1}(\cdot, \boldsymbol{\omega})$ is not normal. If it is Gaussian, $d^2$ should follow $\chi^2$ distribution and we should expect the data to be around the reference line of normal distribution and its associated confidence interval. However, the squared distance of each data deviate from the red line. The sample quatiles has downward inflection, which indidates that the data is left skewed.
 
-% If at least $u_{h,1}(\cdot, \boldsymbol{\omega})$ and $u_{h,k}(\cdot, \boldsymbol{\omega})$ are not normal, $u_{h,1}(\cdot, \boldsymbol{\omega})$ and $u_{h,k}(\cdot, \boldsymbol{\omega})$ are not bivariate normal, therefore, they are not bivariate normal.
+If at least $u_{h,1}(\cdot, \boldsymbol{\omega})$ and $u_{h,k}(\cdot, \boldsymbol{\omega})$ are not normal, $u_{h,1}(\cdot, \boldsymbol{\omega})$ and $u_{h,k}(\cdot, \boldsymbol{\omega})$ are not bivariate normal, therefore, they are not bivariate normal.
 
 
 We adopt a dynamic strategy, outlined in Algorithm~\ref{algo:Parameter_Estimation}, that iteratively refines sample statistics. To ensure unbiased and statistically independent estimates, each pairwise correlation coefficient $\rho_{1,k}$ between the high-fidelity model and the $k$-th low-fidelity model is computed using independently drawn sample sets. Consequently, for $K$ low-fidelity models and $Q$ pilot samples per correlation, the total number of high-fidelity evaluations is $KQ$. In our experiments, we assume a correlation estimation error of $\delta_1 = 10\%$ and use an error-splitting parameter $\theta_1 = 0.5$. $z_{\alpha/2} = 1.96$ ($95\%$ confidence interval. The corresponding parameter estimation costs and pilot sample sizes -- computed via Algorithm~\ref{algo:Parameter_Estimation} -- are given in Table~\ref{Tab:Offline_cost} for each spatial level $L$.
