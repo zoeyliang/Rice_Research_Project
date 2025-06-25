@@ -45,6 +45,7 @@
 \newcommand{\Grids}{\boldsymbol{\chi}}
 
 \newtheorem{theorem}{Theorem}%[section]
+\newtheorem{lemma}{Lemma}%[section]
 \newtheorem{VariationalForm}[theorem]{Variational Formulation}
 % =============================================
 
@@ -75,7 +76,7 @@
 % \ead{tonatiuh@arizona.edu}
 % \address[UA]{Department of Mathematics, The University of Arizona.}
 \begin{abstract}
-We investigate the Grad-Shafranov free boundary problem in Tokamak fusion reactors under the influence of parameter uncertainties. Using both traditional Monte Carlo and multi-fidelity Monte Carlo sampling approaches, we quantify the impact of these uncertainties on model predictions, emphasizing the statistical characterization of solution variability across diverse parameter regimes. Our numerical results reveals that the multi-fidelity Monte Carlo estimator achieves statistical accuracy comparable to the Monte Carlo approach. However, the multi-fidelity method demonstrates superior computational efficiency, achieving a cost reduction by a factor of ..., while preserving fidelity in representing plasma boundary dynamics and geometric parameters. This work underscores the efficiency of multi-fidelity frameworks in addressing the computational demands of uncertainty quantification in complex fusion reactor models, offering a robust pathway for enhancing predictive capabilities in plasma physics. 
+We study the Grad–Shafranov free boundary problem in tokamak reactors under parametric uncertainty, using Monte Carlo, multilevel, and multi-fidelity Monte Carlo (MFMC) sampling strategies to quantify its impact on solution variability. A complementary optimization problem is formulated for the multifidelity Monte Carlo, enabling the derivation of optimal sample allocations based on target estimator accuracy. Numerical experiments demonstrate that MFMC achieves statistical accuracy comparable to standard Monte Carlo while reducing computational cost by a factor of approximately 40. The method reliably captures plasma boundary dynamics and geometric features, highlighting the efficiency and scalability of multi-fidelity approaches for uncertainty quantification in complex fusion models.
 \end{abstract}
 
 \begin{keyword}
@@ -90,8 +91,10 @@ Multi-fidelity Monte Carlo Finite-Element \sep Parametric expectation \sep Spars
 \input{./Sections/Sparse_Grid_Stochastic_Collocation}
 \input{./Sections/MC}
 \input{./Sections/MFMC}
+\input{./Sections/Parameter_estimation}
 \input{./Sections/Numerical_result}
 \input{./Sections/Acknowledgment}
+\input{./Sections/Appendix}
 
 
 

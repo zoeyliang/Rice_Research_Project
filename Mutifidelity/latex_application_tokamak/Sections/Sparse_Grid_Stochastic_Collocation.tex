@@ -1,16 +1,13 @@
 % ============================================================
 \section{Sparse grid stochastic collocation}\label{sec:SC}
 % ============================================================
-This section outlines the sparse grid stochastic collocation method \cite{BaNoRi:2000, KlBa:2005, MaNi:2009, Sm:1963}. We use a generic solution $u$ for illustration. 
-The method begins with a univariate set of $m_i$ collocation nodes $X^i = \left\{x_1^i,\ldots, x_{m_i}^i\right\}$ over $[-1,1]$, and defines the univariate interpolation operator
+We briefly outline the sparse grid stochastic collocation method \cite{BaNoRi:2000, KlBa:2005, MaNi:2009, Sm:1963} using a generic solution $u$ for illustration. Starting from a univariate set of $m_i$ collocation nodes $X^i = \left\{x_1^i,\ldots, x_{m_i}^i\right\}$ over $[-1,1]$, the univariate interpolation operator is
 %
 \[
 I_{X^{i}}[u]:=\sum_{j=1}^{m_{i}} u(\cdot, x_j^i)\phi_j,
 \]
 %
-where $\phi_k(x_j^i)$ are the Lagrange basis functions satisfying $\phi_j(x_k^i) = \delta_{jk}$.
-
-To extend this construction to a $d$-dimensional parameter space, the method forms tensor products of univariate operators. Rather than using a full tensor grid -- which suffers from exponential growth in $d$ -- the sparse grid approach selects a reduced set of nodes per dimension to build a sparse approximation. The sparse grid nodes at {\it level} $q\; (\text{where }q\ge d)$ are given by
+where $\phi_j$ are Lagrange basis functions satisfying $\phi_j(x_k^i) = \delta_{jk}$. To extend this construction to a $d$-dimensional parameter space,  tensor products of univariate operators are constructed. Rather than using a full tensor grid, which suffers from exponential growth in $d$, the sparse grid approach selects a reduced set of nodes per dimension to build a sparse approximation. At {\it level} $q\; (\text{where }q\ge d)$, the sparse grid nodes are
 %
 \begin{equation*}
 H(q,d) = \bigcup_{q-d+1\le|\boldsymbol{i}|\le q} \left(X^{i_1}\times \cdots\times X^{i_d}\right)\in [-1,1]^d, 
@@ -18,22 +15,21 @@ H(q,d) = \bigcup_{q-d+1\le|\boldsymbol{i}|\le q} \left(X^{i_1}\times \cdots\time
 %
 where $|\boldsymbol{i}| = i_1+\ldots+i_d$ specifies the refinement rule. These nodes yield a sparse but sufficiently rich representation of the domain, capturing key features of $u$ with far fewer evaluations than a full grid.
 
-For our application, the collocation nodes are chosen as the extrema of Chebyshev polynomials \cite{BaNoRi:2000, ClCu:1960}, with the $j$-th node calculated as $x_j^i=-\cos(\frac{ \pi(j-1)}{m_i-1})$ for $j=1, \ldots, m_i$ with $m_1 =1$ and $m_i = 2^{i-1}+1$ for $i\ge 2$.  This ensures the nested structure $X^i\subset X^{i+1}$, so that the multidimensional sparse grid nodes satisfy 
+We use Chebyshev extrema as collocation nodes \cite{BaNoRi:2000, ClCu:1960}, defined by $x_j^i=-\cos(\frac{ \pi(j-1)}{m_i-1})$ for $j=1, \ldots, m_i$ with $m_1 =1$ and $m_i = 2^{i-1}+1$ for $i\ge 2$, ensuring nestedness $X^i\subset X^{i+1}$. The corresponding multidimensional sparse grid nodes satisfy 
 %
 \begin{equation}
 \label{eq:NestedColPts}
 H(q,d)\subset H(q+1,d),\quad \text{and}\quad H(q,d) = \bigcup_{|\boldsymbol{i}|=q} \left(X^{i_1}\times \cdots\times X^{i_d}\right).
 \end{equation}
 %
-The hierarchical structure allows the reuse of function evaluations across levels, improving efficiency. Interpolation over $H(q,d)$  is carried out using the {\it Smolyak quadrature formula}, 
+Interpolation over $H(q,d)$  is performed using the {\it Smolyak quadrature formula}, 
 %
 \begin{equation}
 \label{eq: Smolyak_Quad_formula}
 \mathcal{S}_{q, d}[u] = \sum_{q+1\le |\boldsymbol{i}|\le q+d} (-1)^{q+d-|\boldsymbol{i}|} \binom{d-1}{q+d-|\boldsymbol{i}|}\cdot \left(\mathrm I_{X^{i_1}}\otimes\cdots\otimes \mathrm I_{X^{i_d}}\right) [u].
 \end{equation} 
 %
-which combines univariate interpolation operators across dimensions into an high-dimensional approximation. By exploiting both sparsity and hierarchy, this method achieves a balance between accuracy and computational cost, making it well suited for stochastic problems with high-dimensional uncertainty.
-
+which combines univariate interpolants into a high-dimensional approximation. This hierarchical and sparse structure allows for efficient reuse of evaluations and makes the method well-suited for high-dimensional stochastic problems.
 
 
 % Let $N$ denote the number of sparse grid nodes. The sparse grid stochastic collocation method is equivalent to solving $N$ deterministic parametrized problems \eqref{eq:FreeBoundary} at each nodal point in $H(q,d)$.
