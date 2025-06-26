@@ -6,7 +6,7 @@ The ramifications of inadequate pilot sampling manifest through two primary fail
 
 % Second, variance in correlation estimates introduces non-Gaussian tails in the sampling distribution of the cost efficiency $\xi$, leading to high-probability violations of the theoretical variance reduction bound. These effects compound when multiple correlated models are active, as errors propagate geometrically through the weight allocation system.
 
-To mitigate these issues, we develop a rigorous framework for pilot sample sizing based on dual criteria: (1) statistically valid confidence intervals for $\rho_{1,k}$ controlling estimation uncertainty, and (2) bounded error propagation in the cost efficiency metric $\xi$. Our approach combines Fisher transformation techniques for confidence interval construction with sensitivity analysis of $\xi$ to correlation perturbations, establishing direct linkages between statistical precision and computational efficiency. This methodology ensures that pilot sampling expenditure remains commensurate with both statistical requirements and computational budget constraints, preventing both wasteful oversampling and efficiency-degrading undersampling.
+To mitigate these issues, we develop a dynamic framework for pilot sample sizing based on dual criteria: (1) statistically valid confidence intervals for $\rho_{1,k}$ controlling estimation uncertainty, and (2) bounded error propagation in the cost efficiency metric $\xi$. Our approach combines Fisher transformation techniques for confidence interval construction with sensitivity analysis of $\xi$ to correlation perturbations, establishing direct linkages between statistical precision and computational efficiency. This methodology ensures that pilot sampling expenditure remains commensurate with both statistical requirements and computational budget constraints, preventing both wasteful oversampling and efficiency-degrading undersampling.
 
 
 Let $u_k^{(i)} := u_{h,k}(\cdot, \boldsymbol{\omega}^{(i)})$. Given $Q$ joint samples of high- and low-fidelity outputs, define the sample correlation estimator:
@@ -187,14 +187,14 @@ Initialization:
     % [$\text{index},\xi^{(p)}$] = Multi-fidelity Model Selection ($\boldsymbol{\rho}^{(p)},\boldsymbol{C}$).
     
     
-    [$\text{idx},\xi^{(Q)}$] $\gets$ Multi-fidelity Model Selection ($\boldsymbol{\rho}^{(Q)},\boldsymbol{C}$).\\
+    [$\text{idx}^{(Q)},\xi^{(Q)}$] $\gets$ Multi-fidelity Model Selection ($\boldsymbol{\rho}^{(Q)},\boldsymbol{C}$).\\
     
     \eIf{bivariate normality holds}{
-        \If{$\max_k |t_k| \leq \delta$ and $Q \geq \max\{30, Q_{\max \{idx\}} \}$ \text{as in } \eqref{eq:Pilot_sample_size_estimate}  }{
+        \If{$\max_k |t_k| \leq \delta$, $Q \geq \max\{30, Q_{\max \{idx\}} \}$ \text{as in } \eqref{eq:Pilot_sample_size_estimate} and $\text{idx}^{(Q)}=\text{idx}^{(p)}$ }{
             $\text{converged} \gets \text{True}$.
         }
     }{
-        \If{$\max_k |t_k| \leq \delta$}{
+        \If{$\max_k |t_k| \leq \delta$ and $\text{idx}^{(Q)}=\text{idx}^{(p)}$}{
             $\text{converged} \gets \text{True}$.
         }
     }

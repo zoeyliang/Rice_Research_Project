@@ -125,25 +125,25 @@ The solution to this problem, which yields explicit expressions for the optimal 
 
 
 %
-\begin{theorem}
+\begin{theorem}[Optimal MFMC Sample Allocation]
 \label{thm:Sample_size_est}
-Consider a set of $K$ models, $u_k$ for $k=1,\ldots,K$, where each model is characterized by the standard deviation $\sigma_k$ of its output, the correlation coefficient $\rho_{1,k}$ between the highest-fidelity model $u_{h,1}$ and the $k$-th low-fidelity model, and the computational cost per sample $C_k$. Assume the following conditions hold
+Consider an ensemble of $K$ models $\{u_{h,k}\}_{k=1}^K$ ordered by decreasing fidelity, where each model $u_{h,k}$ is characterized by the standard deviation $\sigma_k$ of its output, the correlation coefficient $\rho_{1,k}$ with the highest-fidelity model $u_{h,1}$, and the computational cost per sample evaluation $C_k$. Assume the following conditions hold
 %
 \begin{alignat*}{5}
     &(i)\;\; |\rho_{1,1}|>\ldots>|\rho_{1,K}|,& \qquad \qquad
-    &(ii)\;\; \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2},\quad \quad k=2,\ldots,K.
+    &(ii)\;\; \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2},\quad \quad k=2,\ldots,K,  \quad \text{with} \quad \rho_{1,K+1} := 0
 \end{alignat*}
 %
-Under these assumptions, the optimal sample sizes $N_k^*$ and weights $\alpha_k^*$, for $k=1,\ldots, K$, solving the optimization problem \eqref{eq:Optimization_pb_sample_size} are
+Under these assumptions, the optimal weights $\alpha_k^*$ and sample sizes $N_k^*$ solving the optimization problem \eqref{eq:Optimization_pb_sample_size} are
 %
 \begin{align}
     % \label{eq:MFMC_coefficients}
     % &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k},\\
     \label{eq:MFMC_SampleSize}
-    &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k},\qquad \;N_k^*=\frac{\sigma_1^2}{\epsilon_\text{tar}^2}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}\sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2-\rho_{1,j+1}^2\right)}, \quad \rho_{1,K+1}=0.
+    &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k},\qquad \;N_k^*=\frac{\sigma_1^2}{\epsilon_\text{tar}^2}\sqrt{\frac{\rho_{1,k}^2-\rho_{1,k+1}^2}{C_k}}\sum_{j=1}^K\sqrt{C_j\left(\rho_{1,j}^2-\rho_{1,j+1}^2\right)}, \quad \text{with}\;\;\rho_{K+1}=0.
 \end{align}
 %
-Using the optimal weights $\alpha_k^*$ and sample size estimates $N_k^*$, the variance of the MFMC estimator in \eqref{eq:MFMC_variance} can be expressed as
+The corresponding variance of the MFMC estimator \eqref{eq:MFMC_variance} is
 %
 \begin{equation}
 \label{eq:MFMC_variance_optimal}
@@ -152,7 +152,7 @@ Using the optimal weights $\alpha_k^*$ and sample size estimates $N_k^*$, the va
 \sigma_1^2 \sum_{k=1}^K\frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{N_k^*},\quad \text{with}\;\;\rho_{K+1}=0.
 \end{equation}
 %
-and the corresponding total sampling cost $\mathcal{W}^\text{MF}$ is
+and the total sampling cost is
 %
 \begin{equation}\label{eq:MFMC_sampling_cost}
     \mathcal{W}^\text{MF} = \sum_{k=1}^K C_k N_k^* = \frac{\sigma_1^2}{\epsilon_{\text{tar}}^2}\left(\sum_{k=1}^K\sqrt{C_k\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)}\right)^2,\quad \text{with}\;\;\rho_{K+1}=0.
@@ -160,14 +160,13 @@ and the corresponding total sampling cost $\mathcal{W}^\text{MF}$ is
 %
 \end{theorem}
 
-
-In practice, however, the correlation parameters $\rho_{1,k}$ and the per-sample cost $C_k$ are typically unknown a priori and must be estimated from the sample data. Moreover, since the optimal sample sizes $N_k^*$ are real-valued, they must be rounded to integers for implementation. Departing from the rounding strategy in \cite{GrGuJuWa:2023, PeWiGu:2016}, which applies the floor function for values exceeding one and ceiling otherwise, we adopt a simpler and uniform approach: all sample sizes are rounded up to the nearest integer using the ceiling function, i.e., $\lceil N_k^* \rceil$. \JLcolor{An assumption for the rounding scheme to hold is that $\sum_{k=1}^K C_kN_k^*\ge \sum_{k=1}^K C_k$, which avoid that degenearte case when all real-valued sample size estimation are all below 1. }This rounding scheme guarantees that the realized variance remains below the target variance bound, as rounding up results in slightly smaller variance than predicted by \eqref{eq:MFMC_variance_optimal}. As a result, the total sampling cost under this rounding satisfies the inequality
+In practice, the correlation coefficients $\rho_{1,k}$ and per-sample costs $C_k$ are typically unknown a priori and must be estimated from the sample data. Furthermore, the theoretically optimal sample sizes $N_k^* \in \mathbb{R}$ require integer rounding for implementation. Departing from the conditional rounding strategy in \cite{GrGuJuWa:2023, PeWiGu:2016} (floor function when $N_k^* > 1$, ceiling otherwise), we adopt a uniform conservative approach: all sample sizes are rounded up using the ceiling function $\lceil N_k^* \rceil$,  subject to the feasibility condition $\sum_{k=1}^K C_k N_k^* \geq \sum_{k=1}^K C_k$ to exclude degenerate cases where all $N_k^* < 1$. This rounding scheme guarantees $\mathbb{V}[A^{\mathrm{MF}}] \leq \epsilon_{\mathrm{tar}}^2$ since increased sample sizes reduce estimator variance. Consequently, the total computational cost satisfies
 %
 \begin{equation}\label{eq:sampling_cost_bound}
     \sum_{k=1}^K C_k N_k^*\le \sum_{k=1}^K C_k \left\lceil N_k^*\right\rceil<\sum_{k=1}^K C_k N_k^* + \sum_{k=1}^K C_k,
 \end{equation}
 %
-where the additional term $\sum_{k=1}^K C_k$ accounts for the fact that $N_k^*\le \lceil N_k^*\rceil< N_k^*+1$. This naturally leads to the consideration of whether the additive overhead introduced by rounding distorts the asymptotic behavior of the total sampling cost, particularly in regimes where some $N_k^*$ fall below one. To analyze this, define the auxiliary quantity $B_k = C_k(\rho_{1,k}^2 - \rho_{1,k+1}^2)$ in \eqref{eq:MFMC_sampling_cost} for all $k=1,\dots, K$, with the convention $\rho_{K+1}=0$. 
+where the additive overhead $\sum_{k=1}^K C_k$ originates from $N_k^*\le \lceil N_k^*\rceil< N_k^*+1$. To analyze whether this overhead introduced by rounding distorts asymptotic cost behavior, define $B_k := C_k(\rho_{1,k}^2 - \rho_{1,k+1}^2)$ for $k=1,\dots,K$ with $\rho_{1,K+1} = 0$. Condition (ii) of Theorem~\ref{thm:Sample_size_est} implies
 % Substituting into the sampling cost expression,  \eqref{eq:MFMC_sampling_cost} becomes
 % %
 % \begin{equation*}\label{eq:MFMC_sampling_cost_2}
@@ -175,29 +174,29 @@ where the additional term $\sum_{k=1}^K C_k$ accounts for the fact that $N_k^*\l
 % \end{equation*}
 %
 % The quantity $B_k$ depends on the product of the cost per sample $C_k$ and the difference between two successive correlations $(\rho_{1,k}^2 - \rho_{1,k+1}^2)$. Depending on how these components interact, $B_k$ may decay, grow, or remain constant as $k$ increases.
-Under condition (ii) of Theorem \ref{thm:Sample_size_est}, the following inequality holds
 %
 \begin{equation}
 \label{eq:Bk_Ck_decay_rate}
     \frac{\sqrt{B_{k}}}{\sqrt{B_{k-1}}}>\frac{C_{k}}{C_{k-1}}, \quad k=2,\ldots,K.
 \end{equation}
 %
-This inequality implies that, in the asymptotic regime where $K$ is large,  the sequence $\sqrt{B_k}$ decays more slowly -- or grows more rapidly -- than the cost sequence $C_k$, regardless of the specific trend of $\sqrt{B_k}$. \JLcolor{Using this fact and the assumption that $\sum_{k=1}^K C_kN_k^*\ge \sum_{k=1}^K C_k$}, the additive overhead term
-$\sum_{k=1}^K C_k$ in the cost bounds becomes asymptotically negligible relative to the leading-order term $\sum_{k=1}^K C_kN_k^*$. It follows that the total sampling cost with integer-rounded sample sizes retains the same asymptotic behavior as the cost computed using the real-valued optimal sizes in \eqref{eq:MFMC_sampling_cost}.
+This inequality induces a strictly increasing sequence $\{\sqrt{B_k}/C_k\}_{k=1}^K$. Consequently, as $K \to \infty$, the sequence $\sqrt{B_k}$ decays slower (or grows faster) than $C_k$ in relative terms. Combined with the feasibility condition ($\sum_{k=1}^K C_kN_k^*\ge \sum_{k=1}^K C_k$), this ensures the overhead $\sum_{k=1}^K C_k$ is asymptotically negligible compared to $\sum_{k=1}^K C_k N_k^* \propto \left( \sum_{k=1}^K \sqrt{B_k} \right)^2$. Thus, integer-rounded sampling costs preserve the asymptotic behavior of \eqref{eq:MFMC_sampling_cost}.
+
+
+This inequality implies that, in the asymptotic regime where $K$ is large,  the sequence $\sqrt{B_k}$ decays more slowly -- or grows more rapidly -- than the cost sequence $C_k$, regardless of the specific trend of $\sqrt{B_k}$. \JLcolor{Using this fact and the assumption that $\sum_{k=1}^K C_kN_k^*\ge \sum_{k=1}^K C_k$}, the additive overhead term $\sum_{k=1}^K C_k$ in the cost bounds becomes asymptotically negligible relative to the leading-order term $\sum_{k=1}^K C_kN_k^*$. 
 
 
 % Using the fact that $N_k$ increases and the value of $\alpha_k$, we observe that the MFMC estimator variance $\mathbb{V}\left(A^{\text{MFMC}}\right)$ in \eqref{eq:MFMC_variance2} always decreases as the model number $K$ increases. This reflects the fact that the low fidelity models are used as control variates to reduce the variance of the high fidelity model. However, this $K$ cannot be arbitrarily large, since the first summation term in \eqref{eq:MFMC_sampling_cost} grows, the second summation reflect the variance decay of the MFMC estimator. Thus this is a tie between these two terms. If $K$ is sufficiently large,  in order to achieve an optimal sampling cost, we need to study the decay and growth of these two terms. We will choose the $K$ such that the product of two summation terms in \eqref{eq:MFMC_sampling_cost} is minimum, i.e. If $K$ is sufficiently large, we need to find $K\in \mathbb{N}$ such that 
 % \begin{equation}\label{eq:Optimal_K}
 %    K = \text{argmin} \sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2. 
 % \end{equation}
-
-The efficiency of the multi-fidelity Monte Carlo estimator relative to the standard Monte Carlo estimator is quantified by the ratio
+The efficiency gain over standard Monte Carlo is quantified by
 %
 \begin{equation}\label{eq:MFMC_sampling_cost_efficiency}
     \xi = \frac{\mathcal{W}^\text{MF}}{\mathcal{W}^\text{MC}} = \frac{1}{C_1} \left(\sum_{k=1}^K\sqrt{C_k\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)}\right)^2,
 \end{equation}
 %
-A smaller value of $\xi$ corresponds to greater computational savings, indicating a more effective MFMC estimator.
+where smaller $\xi$ indicates greater computational savings, with $\xi < 1$ confirming MFMC superiority.
 
 % Further more, we observe that
 % \begin{align*}

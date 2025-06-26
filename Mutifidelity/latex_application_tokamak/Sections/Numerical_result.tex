@@ -41,7 +41,7 @@ Welford's algorithm \cite{Welford:1962} provides a numerically stable framework 
 %
 \begin{align*}
     m_k^{(i)} &= m_k^{(i-1)} + \frac{1}{i}\left( u_{k}^{(i)}-m_k^{(i-1)}\right),\qquad v_k^{(i)} = v_k^{(i-1)} + \left\langle  u_{k}^{(i)}-m_k^{(i-1)}, \;\; u_{k}^{(i)}-m_k^{(i)}\right\rangle_Z,\\
-    r_k^{(i)} &= r_k^{(i-1)} + \left \langle  u_{1}^{(i)}-m_{1}^{(i-1)},\;\; u_{k}^{(i)}- m_{k}^{(i)}\right\rangle_Z, \quad \text{for }k\ge 2.
+    r_k^{(i)} &= r_k^{(i-1)} + \left \langle  u_{1}^{(i)}-m_{1}^{(i-1)},\;\; u_{k}^{(i)}- m_{k}^{(i)}\right\rangle_Z, \quad \text{for }\;\; k\ge 2.
 \end{align*}
 %
 After processing $N$ samples, final statistics are computed as $\widehat{\mu}_k = m_k^{(N)}$, $\widehat{\sigma}_k^2 = v_k^{(N)}/(N-1)$, and $\widehat{\text{Cov}}_{1,k} = r_k^{(N)}/(N-1)$, with correlations $\widehat{\rho}_{1,k} = \widehat{\text{Cov}}_{1,k}/(\widehat{\sigma}_1 \widehat{\sigma}_k)$. These yield unbiased estimators for means, variances and covariances. The algorithm's stability stems from orthogonal residual updates that minimize rounding error propagation, particularly critical when estimating correlations near $\pm 1$ $(\text{Cov}_{1,k}\approx \sigma_1\sigma_k)$ where conventional methods falter.
@@ -69,35 +69,35 @@ After processing $N$ samples, final statistics are computed as $\widehat{\mu}_k 
 % =============================
 \subsection{Offline cost of surrogate construction and parameter estimation in MFMC}
 % =============================
-The offline computational cost of MFMC comprises two key components: construction of low-fidelity surrogate models and estimation of statistical parameters. The first component involves building surrogate models corresponding to a high-fidelity model on spatial grid level $L$. As detailed in Section~\ref{sec:Cost_MFMC_with_SC}, we use sparse grid stochastic collocation with level $q=1$ collocation nodes to construct surrogate models on spatial grid levels $0$ through $L-1$, as defined in \eqref{eq:NestedColPts} and described in Section~\ref{sec:SC}. For a range of tolerances $\epsilon \in [2\times 10^{-4}, 8\times 10^{-3}]$, the high-fidelity models that satisfy the prescribed discretization error correspond to spatial levels $L = 2,3,4,5$. The associated surrogate construction times are reported in Table~\ref{Tab:Offline_cost}.
+The offline computational expenditure in MFMC comprises two principal components: surrogate model construction and statistical parameter estimation. For surrogate development, we use level $q=1$ sparse grid stochastic collocation as detailed in Section~\ref{sec:Cost_MFMC_with_SC} to build low-fidelity models on spatial grid levels $0$ through $L-1$, where $L$ denotes the high-fidelity grid level satisfying the prescribed discretization error tolerance $\epsilon$. Table~\ref{Tab:Offline_cost} quantifies the exponential growth in surrogate construction time across tolerance values $\epsilon \in [2\times 10^{-4}, 8\times 10^{-3}]$, corresponding to refinement levels $L = 2$ to $5$.
+
+
 %
 \begin{table}[ht]
 \centering
 \scalebox{0.8}{
-\begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-\multicolumn{1}{|c|}{Tolerance $\epsilon$} &$2\times 10^{-4}$&$4\times 10^{-4}\sim 1\times 10^{-3}$&$2\times 10^{-3} \sim 4\times 10^{-3}$&$6\times 10^{-3} \sim 8\times 10^{-3}$\\
+Tolerance $\epsilon$ & $2\times 10^{-4}$ & $4\times 10^{-4}\sim 1\times 10^{-3}$ & $2\times 10^{-3} \sim 4\times 10^{-3}$ & $6\times 10^{-3} \sim 8\times 10^{-3}$ \\
 \hline
-\multicolumn{1}{|c|}{ Spatial grid level $L$ }&5&4&3&2\\
+Spatial grid level $L$ & 5 & 4 & 3 & 2 \\
 \hline
-\multicolumn{1}{|c|}{ Surrogate construction time [s]}&2.39e+03&5.53e+02&1.08e+02&2.11e+01\\
+Surrogate construction time [s] & $2.39\times 10^3$ & $5.53\times 10^2$ & $1.08\times 10^2$ & $2.11\times 10^1$ \\
 \hline
-\multicolumn{1}{|c|}{Parameter estimation time [s]}&1.21e+04&3.87e+03&4.54e+02&1.66e+02\\
-% &2.02e+00&7.90e+00&3.10e+01&1.52e+02&8.12e+02&3.56e+03\\
+Parameter estimation time [s] & $1.21\times 10^4$ & $3.87\times 10^3$ & $4.54\times 10^2$ & $1.66\times 10^2$ \\
 \hline
-\multicolumn{1}{|c|}{Pilot sample size}& 30&50&30&50\\
+Pilot sample size & 30 & 50 & 30 & 50 \\
 \hline
 \end{tabular}
 }
-\caption{Offline costs and pilot sample sizes for surrogate model construction and parameter estimation across tolerances. The second row gives the spatial grid level required to control discretization error. The third and fourth rows report CPU time (in seconds) for constructing sparse grid surrogates (sparse grid level $q=1$ and spatial grid levels $0$ to $L-1$) and performing parameter estimation using the dynamic strategy. The final row lists the corresponding pilot sample sizes.}
+\caption{Offline costs and pilot sample sizes for surrogate construction and parameter estimation. The spatial grid level (Row 2) specifies the minimal discretization needed for controlled numerical error. Subsequent rows quantify computational expenses: Row 3 reports CPU time (seconds) for sparse grid surrogate construction at level $q=1$ across spatial refinements $0$ to $L-1$, while Row 4 details parameter estimation costs using Section~\ref{sec:Parameter_Estimation}'s dynamic strategy. Row 5 lists corresponding pilot sample sizes governing statistical accuracy.}
 \label{Tab:Offline_cost}
 \end{table}
 %
 
-The second component concerns estimation of MFMC statistical parameters. We first need to determine whether $u_{h,1}(\cdot, \boldsymbol{\omega})$ satisfy normal distribution. Since degree of freedom is one and we measure the distance between two functions, we consider using Mahalanobis distance \cite{Ma:2018} in the normal probability plot (quantile-quantile plot).
-\[
-d\left[u_{1}^{(i)}, A_{1,Q}^{\text{MC}}\right] = \sqrt{\frac{\left\Vert u_{1}^{(i)} - A_{1,Q}^{\text{MC}}\right\Vert_Z^2}{\mathbb{V}\left[u_{h,1}(\cdot, \boldsymbol{\omega}))\right]}}
-\]
+
+
+Statistical parameter estimation requires accurate computation of variances and cross-correlations between models, with the latter posing significant challenges due to distributional characteristics. We assess the Gaussianity of $u_{h,1}(\cdot, \boldsymbol{\omega})$ through quantile-quantile analysis of Mahalanobis distances \cite{Ma:2018}, a rotationally invariant metric that accounts for covariance structure when measuring deviations from normality. \JLcolor{Here we use it since sample realization and mean are functions.} The left panel of Figure \ref{fig:Test_normal} demonstrates departure from the $\chi^2$ reference distribution, with squared distances $d^2$ violating theoretical confidence bounds. This confirms non-Gaussian behavior, thus invalidating the bivariate normal assumption essential for parametric correlation methods and requiring robust bootstrap approaches as detailed in Section~\ref{sec:Parameter_Estimation}.
 
 %
 \begin{figure}[ht!]\centering
@@ -105,29 +105,33 @@ d\left[u_{1}^{(i)}, A_{1,Q}^{\text{MC}}\right] = \sqrt{\frac{\left\Vert u_{1}^{(
 \includegraphics[height=0.36\linewidth]{./figures/test_normal.pdf}&
 \includegraphics[height=0.36\linewidth]{./figures/CI_bootstrap.pdf}
 \end{tabular}
-\caption{Left: quantile-quantile plot of sample $d^2$ quantiles v.s. theoretical $\chi^2$ quantiles. The figure is generated with 400 samples of direct solver on the reference mesh. 95\% confidence interval generated with Bootstrap with 400 samples with 1000 repeated sampling. The normal distribution is plotted with the reference red line. Right: 95\% confidence interval generated with Bootstrap.}
+\caption{Left: Quantile-quantile plot of squared Mahalanobis distances $d\left[u_{1}^{(i)}, A_{1,Q}^{\text{MC}}\right] = \sqrt{\left\Vert u_{1}^{(i)} - A_{1,Q}^{\text{MC}}\right\Vert_Z^2/{\mathbb{V}\left[u_{h,1}(\cdot, \boldsymbol{\omega}))\right]}}$ versus $\chi^2(1)$ distribution (400 samples, reference mesh). Dashed lines indicate 95\% bootstrap confidence bands (1000 resamples). Right: Bootstrap confidence intervals for correlation (50 samples, 2000 resamples).
+}
 \label{fig:Test_normal}
 \end{figure}
 %
-Figure \ref{fig:Test_normal} shows that $u_{h,1}(\cdot, \boldsymbol{\omega})$ is not normal. If it is Gaussian, $d^2$ should follow $\chi^2$ distribution and we should expect the data to be around the reference line of normal distribution and its associated confidence interval. However, the squared distance of each data deviate from the red line. The sample quatiles has downward inflection, which indidates that the data is left skewed.
-
-If at least $u_{h,1}(\cdot, \boldsymbol{\omega})$ and $u_{h,k}(\cdot, \boldsymbol{\omega})$ are not normal, $u_{h,1}(\cdot, \boldsymbol{\omega})$ and $u_{h,k}(\cdot, \boldsymbol{\omega})$ are not bivariate normal, therefore, they are not bivariate normal.
-
-
-We adopt a dynamic strategy, outlined in Algorithm~\ref{algo:Parameter_Estimation}, that iteratively refines sample statistics. To ensure unbiased and statistically independent estimates, each pairwise correlation coefficient $\rho_{1,k}$ between the high-fidelity model and the $k$-th low-fidelity model is computed using independently drawn sample sets. Consequently, for $K$ low-fidelity models and $Q$ pilot samples per correlation, the total number of high-fidelity evaluations is $KQ$. In our experiments, we assume a correlation estimation error of $\delta_1 = 10\%$ and use an error-splitting parameter $\theta_1 = 0.5$. $z_{\alpha/2} = 1.96$ ($95\%$ confidence interval. The corresponding parameter estimation costs and pilot sample sizes -- computed via Algorithm~\ref{algo:Parameter_Estimation} -- are given in Table~\ref{Tab:Offline_cost} for each spatial level $L$.
 
 
 
-Table~\ref{Tab:MFMC_parameters} reports the estimated correlation coefficients for all candidate low-fidelity models prior to model selection under the dynamic strategy. For comparison, the table also includes benchmark values obtained using a fixed sample size of 500. The resulting sampling cost efficiencies $\xi$, computed using \eqref{eq:MFMC_sampling_cost_efficiency}, are
+Our dynamic estimation strategy (Algorithm~\ref{algo:Parameter_Estimation}) computes pairwise correlation coefficients $\rho_{1,k}$ using independently drawn sample sets to ensure statistical independence. For $K$ low-fidelity models with $Q$ pilot samples per correlation, this requires $KQ$ high-fidelity evaluations. With target confidence interval length $\delta = 10\%$ and $z_{\alpha/2} = 1.96$ (95\% confidence), the resulting parameter estimation costs and pilot sample sizes are quantified in Table~\ref{Tab:Offline_cost}. \JLcolor{The bootstrap validation in Figure \ref{fig:Test_normal} (right) confirms estimator consistency, with bootstrap mean (0.9979) closely aligning with sample correlation (0.9975) despite non-Gaussian distributions.}
+
+
+Table~\ref{Tab:MFMC_parameters} presents estimated correlation coefficients for candidate low-fidelity models prior to dynamic model selection, alongside benchmark values from fixed 500-sample estimation. The resulting sampling cost efficiencies $\xi$ (computed via \eqref{eq:MFMC_sampling_cost_efficiency}) demonstrate remarkable consistency
 %
 \begin{alignat*}{2}
     &\text{Fixed-sample:}\quad &\xi = 8.85\times 10^{-3}, 2.76\times 10^{-3}, 7.70\times 10^{-4}, 5.93\times 10^{-4},\\
     &\text{Dynamic:}\quad &\xi =8.81\times 10^{-3}, 2.65\times 10^{-3}, 7.22\times 10^{-4},  5.97\times 10^{-4}.
 \end{alignat*}
 %
-for spatial levels $L=2,3,4,5$, respectively. These values differ by less than 5\%.
-Furthermore, we compute the constant $A$ in \eqref{eq:delta_xi_bound} for each high-fidelity model at $L=2,3,4,5$, obtaining values of 2.69, 2.68, 2.53, and 2.22, respectively. Notably, the theoretical upper bound in \eqref{eq:delta_xi_bound} significantly overestimates the actual variation in $\xi$, indicating that small deviations in parameter estimates have minimal impact on overall efficiency. A comparison of correlation coefficients between the dynamic sampling and fixed sample size approach further supports this conclusion, as the two methods yield highly consistent results, differing by at most two decimal places in most cases. These findings demonstrate the effectiveness of dynamic sampling in achieving accurate parameter estimation while reducing computational costs.
+for spatial levels $L=2,3,4,5$ respectively, exhibiting maximal deviations below $5\%$. Further validation comes from computing the theoretical constant $A$ in \eqref{eq:delta_xi_bound}, yielding values $2.69, 2.68, 2.53, 2.22$ for increasing $L$. 
 
+
+\JLcolor{Crucially, the bound significantly overestimates actual $\xi$ variations—confirming that parameter estimate perturbations negligibly impact efficiency. This stability is corroborated by correlation coefficient comparisons: dynamic and fixed-sample methods agree within $0.01$ across all entries. Collectively, these results demonstrate that dynamic sampling achieves parametric accuracy comparable to fixed benchmarks while reducing offline computational burden.}
+
+
+ 
+\JLcolor{Notably, the theoretical upper bound in \eqref{eq:delta_xi_bound} significantly overestimates the actual variation in $\xi$, indicating that small deviations in parameter estimates have minimal impact on overall efficiency.
+}
 
 
 
@@ -146,8 +150,8 @@ Furthermore, we compute the constant $A$ in \eqref{eq:delta_xi_bound} for each h
 \cline{2-8}	
 &\multicolumn{1}{|c|}{$M_\ell$} &$2685$ &$8019$ &$30449$ &$120697$ &$484080$ &$1934365$\\
 \hline
-\multirow{1}{*}{$6\times 10^{-3}\;\;\sim \;\;8\times 10^{-3}$} 
-&\multicolumn{1}{|c|}{$\rho_{1,k} (k=3-\ell)$}&9.7892e-01&9.9751e-01&1&\multicolumn{3}{c|}{}\\
+\multirow{1}{*}{$[6,8]\times 10^{-3}$} 
+&\multicolumn{1}{|c|}{$\rho_{1,k} (k=3-\ell)$}&0.97892&0.99751&1&\multicolumn{3}{c|}{}\\
 % &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$&\multirow{3}{*}{}&\multirow{3}{*}{}&\multirow{3}{*}{}\\
 \cline{2-5}		
 % &\multicolumn{1}{|c|}{$\sigma_{k}$}&9.7398e-03  &1.2180e-02 &1.1058e-02&&&\\
@@ -159,8 +163,8 @@ Furthermore, we compute the constant $A$ in \eqref{eq:delta_xi_bound} for each h
 % \hline
 % &\multicolumn{1}{|c|}{$\xi$}&8.81e-03\\
 \hline
-\multirow{1}{*}{$2\times 10^{-3}\;\;\sim \;\;4\times 10^{-3}$} 
-&\multicolumn{1}{|c|}{$\rho_{1,k} (k=4-\ell)$}&9.8352e-01&9.9660e-01 &9.9938e-01&1&&\\
+\multirow{1}{*}{$[2,4]\times 10^{-3}$} 
+&\multicolumn{1}{|c|}{$\rho_{1,k} (k=4-\ell)$}&0.98352&0.99660&0.99938&1&\multicolumn{2}{c|}{}\\
 \cline{2-6}	
 % &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,4}$&$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$&\multirow{3}{*}{}&\multirow{3}{*}{}\\
 % \cline{2-6}		
@@ -179,7 +183,7 @@ Furthermore, we compute the constant $A$ in \eqref{eq:delta_xi_bound} for each h
 % \cline{2-7}	
 % &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0487e-04&1.4379e-04&1.4983e-04&1.3733e-04  &- &\\
 \cline{2-7}	
-\multirow{1}{*}{$4\times 10^{-4}\;\;\sim \;\;1\times 10^{-3}$}&\multicolumn{1}{|c|}{$\rho_{1,k} (k=5-\ell)$}&9.8288e-01&9.9682e-01&9.9941e-01  &9.9976e-01&1 &\\
+\multirow{1}{*}{$[0.4, 1]\times 10^{-3}$}&\multicolumn{1}{|c|}{$\rho_{1,k} (k=5-\ell)$}&0.98288&0.99682&0.99941  &0.99976&1 &\\
 % \hline
 % &\multicolumn{1}{|c|}{Sample no. and time}&50&3.8655e+03\\
 % \hline
@@ -191,13 +195,13 @@ Furthermore, we compute the constant $A$ in \eqref{eq:delta_xi_bound} for each h
 % \cline{2-8}	
 % &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0164e-04&1.0662e-04&1.1679e-04&1.1589e-04&1.0646e-04&-\\
 \cline{2-8}	
-\multirow{1}{*}{$2\times 10^{-4}$}&\multicolumn{1}{|c|}{$\rho_{1,k} (k=6-\ell)$}&9.8044e-01&9.9787e-01&9.9960e-01&9.9975e-01&9.9970e-01   &1\\
+\multirow{1}{*}{$2\times 10^{-4}$}&\multicolumn{1}{|c|}{$\rho_{1,k} (k=6-\ell)$}&0.98044&0.99787&0.99960&0.99975&0.99970   &1\\
 % \hline
 % &\multicolumn{1}{|c|}{Sample no. and time}&30&1.2147e+04\\
 % \hline
 % &\multicolumn{1}{|c|}{$\xi$}&5.97e-04\\
 \hline
-\multicolumn{8}{|c|}{Benchmark samping with 500 samples} \\
+\multicolumn{8}{|c|}{Benchmark sampling (500 samples)} \\
 \hline
 % \multirow{2}{*}{$6\times 10^{-3}\;\;\sim \;\;8\times 10^{-3}$} &\multicolumn{1}{|c|}{Candidate model $k$} &$\widehat u_{h,3}$&$\widehat u_{h,2}$&$\widehat u_{h,1}$&\multirow{3}{*}{}&\multirow{3}{*}{}&\multirow{3}{*}{}\\
 % \cline{2-5}		
@@ -205,7 +209,7 @@ Furthermore, we compute the constant $A$ in \eqref{eq:delta_xi_bound} for each h
 % \cline{2-5}	
 % &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0286e-04&1.2604e-04&-&&&\\
 % \cline{2-5}
-\multirow{1}{*}{$6\times 10^{-3}\;\;\sim \;\;8\times 10^{-3}$}&\multicolumn{1}{|c|}{$\rho_{1,k} (k=3-\ell)$}&9.8238e-01&9.9762e-01&1&&&\\
+\multirow{1}{*}{$[6, 8]\times 10^{-3}$}&\multicolumn{1}{|c|}{$\rho_{1,k} (k=3-\ell)$}&0.98238&0.99762&1&\multicolumn{3}{c|}{}\\
 % \hline
 % &\multicolumn{1}{|c|}{$\xi$}&8.8504e-03\\
 \hline
@@ -215,7 +219,7 @@ Furthermore, we compute the constant $A$ in \eqref{eq:delta_xi_bound} for each h
 % \cline{2-6}	
 % &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$} &1.0206e-04 &1.2480e-04 &1.1911e-04 &- &&\\
 % \cline{2-6}	
-\multirow{1}{*}{$2\times 10^{-3}\;\;\sim \;\;4\times 10^{-3}$}&\multicolumn{1}{|c|}{$\rho_{1,k} (k=4-\ell)$}&9.8394e-01&9.9720e-01 &9.9919e-01&1&&\\
+\multirow{1}{*}{$[2,4]\times 10^{-3}$}&\multicolumn{1}{|c|}{$\rho_{1,k} (k=4-\ell)$}&0.98394&0.99720 &0.99919&1&\multicolumn{2}{c|}{}\\
 % \hline
 % &\multicolumn{1}{|c|}{$\xi$}&2.7609e-03\\
 \hline
@@ -225,7 +229,7 @@ Furthermore, we compute the constant $A$ in \eqref{eq:delta_xi_bound} for each h
 % \cline{2-7}	
 % &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0209e-04 &1.2485e-04 &1.1916e-04 &1.1745e-04 &- &\\
 % \cline{2-7}	
-\multirow{1}{*}{$4\times 10^{-4}\;\;\sim \;\;1\times 10^{-3}$} &\multicolumn{1}{|c|}{$\rho_{1,k} (k=5-\ell)$}&9.8392e-01 &9.9727e-01 &9.9925e-01 &9.9977e-01 &1 &\\
+\multirow{1}{*}{$[0.4,1]\times 10^{-3}$} &\multicolumn{1}{|c|}{$\rho_{1,k} (k=5-\ell)$}&0.98392 &0.99727 &0.99925 &0.99977&1 &\\
 % \hline
 % &\multicolumn{1}{|c|}{$\xi$}&7.7012e-04\\
 \hline
@@ -235,17 +239,15 @@ Furthermore, we compute the constant $A$ in \eqref{eq:delta_xi_bound} for each h
 % \cline{2-8}	
 % &\multicolumn{1}{|c|}{$\text{Cov}\left(\widehat u_{h,1},\widehat u_{h,k}\right)$}&1.0209e-04&1.2485e-04&1.1916e-04&1.1745e-04&1.1717e-04&-\\
 % \cline{2-8}	
-\multirow{1}{*}{$2\times 10^{-4}$}&\multicolumn{1}{|c|}{$\rho_{1,k} (k=6-\ell)$}&9.8390e-01   &9.9728e-01   &9.9925e-01   &9.9977e-01   &9.9976e-01   &1\\
+\multirow{1}{*}{$2\times 10^{-4}$}&\multicolumn{1}{|c|}{$\rho_{1,k} (k=6-\ell)$}&0.98390   &0.99728   &0.99925   &0.99977   &0.99976   &1\\
 % \hline
 % &\multicolumn{1}{|c|}{$\xi$}&5.9298e-04\\
 \hline
 \end{tabular}}
-\caption{Estimated statistical parameters for different tolerances $\epsilon$ in terms of nMSE. The top section presents results from the dynamic strategy with $\delta=10\%, \theta_1=0.5$, while the bottom section corresponds to 500 pilot samples. The high-fidelity model $\widehat u_{h,1}$ is the finite element solution on spatial grid level $L$, with $\rho_{1,1}=1$ for all entries in the table. Candidate low-fidelity models $\widehat u_{h,k}$ ($k \geq 2$) are generated using 25 sparse grid nodes (level $q=1$) on spatial grids of levels 0 to $L-1$. All parameters are estimated using Welford's algorithm.}
+\caption{Estimated correlation coefficients $\widehat \rho_{1,k}$ between high-fidelity model $ u_{h,1}$ (spatial level $L$) and candidate low-fidelity models $ u_{h,k}$ (sparse grid level $q=1$ on coarser meshes). Top: Dynamic strategy ($\delta=10\%$) with adaptive sample sizes $N_\ell$ in Table \ref{Tab:Offline_cost}. Bottom: Fixed 500-sample benchmark. All models satisfy $\rho_{1,1}=1$ by construction. Parameters estimated via Welford's algorithm.}
 \label{Tab:MFMC_parameters}
 \end{table}
 %
-
-
 
 
 
@@ -305,8 +307,8 @@ Furthermore, we compute the constant $A$ in \eqref{eq:delta_xi_bound} for each h
 % \label{Tab:MFMC_parameters}
 % \end{table}
 % %
+Using the same fixed-sample configuration ($\epsilon=2\times10^{-4}$, $Q=500$) from Table~\ref{Tab:MFMC_parameters}, we quantify per-sample evaluation costs $W_\ell$ (high-fidelity) and $W_\ell^e$ (low-fidelity) across spatial levels $\ell=0$ to $5$ (Figure~\ref{fig:CostEstimatePlot}, left). Within the MFMC framework, preliminary cost assignments follow $C_1 = W_L$ for the high-fidelity model and $C_k = W_{L-k+1}^e$ for low-fidelity candidates. However, Theorem~\ref{thm:Sample_size_est} imposes selective inclusion criteria: only models satisfying its parametric conditions (Correlation Monotonicity and Cost Hierarchy) are retained. For $\epsilon=2\times10^{-4}$, the correlation sequence $|\rho_{1,2}| < |\rho_{1,3}|$ violates Condition (i)'s monotonicity requirement, requiring the exclusion of $u_{h,2}$ from the final estimator despite its nominal cost efficiency.
 
-Using the same experimental setup for estimating statistical parameters with a fixed sample size of 500 at a tolerance of $\epsilon=2\times 10^{-4}$ (as reported in Table \ref{Tab:MFMC_parameters}), we compute the per-sample costs for both the high-fidelity model $(W_\ell)$ and low-fidelity models $(W_\ell^e)$ across spatial levels 0 to 5. The results, shown in the left plot of Figure \ref{fig:CostEstimatePlot}, illustrate the expenses incurred at different spatial levels.  Before model selection, the cost per sample $C_k$ in the MFMC framework is linked to the model evaluation cost per sample by $C_1=W_{L}$ for the high-fidelity model and $C_k=W_{L-k+1}^e$ for the low-fidelity models. However, not all candidate low-fidelity models are necessarily included in the final MFMC estimator, as their associated parameters must satisfy the conditions of Theorem \ref{thm:Sample_size_est}. The model selection algorithm filters out low-fidelity models that fail to enhance computational efficiency. For instance, when $\epsilon=2\times 10^{-4}$, the correlation coefficients associated with $\widehat u_{h,2}$ and  $\widehat u_{h,3}$ violate the non-increasing property (Condition (i) of Theorem \ref{thm:Sample_size_est}), leading to the exclusion of $\widehat u_{h,2}$ from the final estimator. 
 
 % %
 % \begin{table}[ht]
