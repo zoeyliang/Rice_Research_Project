@@ -9,18 +9,18 @@ A standard approach to approximate the expectation in \eqref{eq:QoI} is the Mont
     A^{\text{MC}}_{N} := \frac{1}{N}\sum_{i=1}^{N} u_{h}\left(\cdot, \boldsymbol{\omega}^{(i)}\right).
 \end{equation}
 %
-This estimator is unbiased, satisfying $\mathbb{E}(A^{\text{MC}}_{N}) = \mathbb{E}(u_{h})$, and has variance $\mathbb{V}(A^{\text{MC}}_{N}) = \mathbb{V}( u_{h})/{N}$, where the variance of the random field is defined as $\mathbb{V}(u) := \mathbb{E}[\left\Vert u - \mathbb{E}(u)\right\Vert_U^2]$. By the central limit theorem, the MC estimator $A^{\text{MC}}_{N}$ converges in distribution to $\mathbb{E}(u)$ as $N$ approaches infinity. 
+This estimator is unbiased, satisfying $\mathbb{E}[A^{\text{MC}}_{N}] = \mathbb{E}[u_{h}]$, and has variance $\mathbb{V}[A^{\text{MC}}_{N}] = \mathbb{V}[u_{h}]/{N}$, where the variance of the random field is defined as $\mathbb{V}[u] := \mathbb{E}[\left\Vert u - \mathbb{E}(u)\right\Vert_U^2]$. By the central limit theorem, the MC estimator $A^{\text{MC}}_{N}$ converges in distribution to $\mathbb{E}[u]$ as $N$ approaches infinity. 
 
 To quantify the total approximation error of the estimator, we consider the  {\it normalized mean squared error (nMSE)}, defined as
 %
  \[
-\mathcal{E}_{A^{\text{MC}}_{N}}^2:=\frac{\mathbb E\left[\left\Vert\mathbb{E}(u)-A^{\text{MC}}_{N} \right\Vert_{U}^2\right]}{\left\Vert\mathbb{E}(u) \right\Vert_{U}^2}.
+\mathcal{E}_{A^{\text{MC}}_{N}}^2:=\frac{\mathbb E\left[\left\Vert\mathbb{E}[u]-A^{\text{MC}}_{N} \right\Vert_{U}^2\right]}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}.
 \] 
 %
 The nMSE decomposes into two contributions: a {\it bias error} from spatial discretization, and a {\it statistical error} due to finite sampling
 %
 \[
-\mathcal{E}_{A^{\text{MC}}_{N}}^2 = \frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(u_{h}) \right\Vert_{U}^2+\mathbb E\left[\left\Vert \mathbb{E}(u_{h}) -A^{\text{MC}}_{N} \right\Vert_{U}^2\right]}{\left\Vert\mathbb{E}(u) \right\Vert_{U}^2} = \frac{\left\Vert\mathbb{E}(u)-\mathbb{E}(u_{h}) \right\Vert_{U}^2}{\left\Vert\mathbb{E}(u) \right\Vert_{U}^2}+\frac{\mathbb{V}\left( u_{h}\right)}{N\left\Vert\mathbb{E}(u) \right\Vert_{U}^2}=\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2.
+\mathcal{E}_{A^{\text{MC}}_{N}}^2 = \frac{\left\Vert\mathbb{E}[u]-\mathbb{E}[u_{h}] \right\Vert_{U}^2+\mathbb E\left[\left\Vert \mathbb{E}[u_{h}] -A^{\text{MC}}_{N} \right\Vert_{U}^2\right]}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2} = \frac{\left\Vert\mathbb{E}[u]-\mathbb{E}[u_{h}] \right\Vert_{U}^2}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}+\frac{\mathbb{V}\left[u_{h}\right]}{N\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}=\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2.
 \]
 %
 Suppose the sample-wise discretization error satisfies

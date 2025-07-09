@@ -23,8 +23,7 @@ where $\nabla$ and $\nabla \cdot$ denote gradient and divergence operator in Car
 where $u_N \in [0,1]$ is the normalized poloidal flux, scaled between its values on the \textit{magnetic axis} and the plasma boundary; the parameters $r_0$, $\alpha_1$, and $\alpha_2$ characterize the outer radius of the vacuum chamber and control the sharpness of the current profile, while $\beta$ (the poloidal beta) measures the ratio of plasma pressure to magnetic pressure. The plasma boundary $\partial \Omega_p$, which depends on the solution $u$ and is defined by the last closed streamline, introduces a free-boundary aspect to the problem. The problem is further complicated by nonlinear dependencies in the boundary location, source terms, and possibly spatially varying permeability.
 
 
-
-Let $\Omega$ be a bounded Lipschitz domain enclosing the confinement region $\Omega_p$, the external coils $\Omega_{c_i}$, and surrounding structural components.  Following \cite{Gr:1999}, the solution space $Z$ for \eqref{eq:FreeBoundary} is defined as
+Let $\Omega \subset \mathbb{R}^2$ be a bounded Lipschitz domain enclosing the confinement region $\Omega_p$, the external coils $\Omega_{c_i}$, and surrounding structural components.  Following \cite{Gr:1999}, the solution space $Z$ for \eqref{eq:FreeBoundary} is defined as
 %
 \begin{equation}\label{eq:Soln_space}
     Z:=\left\{u:\Omega\rightarrow \mathbb{R} \,\Bigg| \,\int_\Omega u^2rdrdz<\infty; \,  \int_\Omega\frac{|\nabla u|^2}{r}drdz<\infty; \, u(0,z)=0 \right\}\cap C^0(\overline{\Omega}),
@@ -68,7 +67,7 @@ The objective of this paper is to investigate the propagation of uncertainty and
 %
  \begin{equation}
  \label{eq:QoI}
-      \mathbb{E}\left(u(\cdot,\boldsymbol \omega)\right)=\int_W u(\cdot,\boldsymbol{\omega})\pi(\boldsymbol\omega)d\boldsymbol{\omega},
+      \mathbb{E}\left[u(\cdot,\boldsymbol \omega)\right]=\int_W u(\cdot,\boldsymbol{\omega})\pi(\boldsymbol\omega)d\boldsymbol{\omega},
  \end{equation}
 %
 along with derived quantities from \eqref{eq:QoI} such as the plasma boundary and features of the solution, including the location of $x$-points.

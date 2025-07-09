@@ -1,35 +1,34 @@
 % ============================================================
 \section{Sparse grid stochastic collocation}\label{sec:SC}
 % ============================================================
-We briefly outline the sparse grid stochastic collocation method \cite{BaNoRi:2000, KlBa:2005, MaNi:2009, Sm:1963} using a generic solution $u$ for illustration. Starting from a univariate set of $m_i$ collocation nodes $X^i = \left\{x_1^i,\ldots, x_{m_i}^i\right\}$ over $[-1,1]$, the univariate interpolation operator is
+We present the sparse grid stochastic collocation framework \cite{BaNoRi:2000, KlBa:2005, MaNi:2009, Sm:1963} for approximating a generic solution $u(\boldsymbol{\xi})$ where $\boldsymbol{\xi} \in [-1,1]^d$ is a $d$-dimensional random vector. The method constructs multivariate interpolants using hierarchical univariate approximations. For each dimension $i=1,\ldots,d$, consider a sequence of univariate interpolation operators at level $i$
 %
 \[
-I_{X^{i}}[u]:=\sum_{j=1}^{m_{i}} u(\cdot, x_j^i)\phi_j,
+I_{X^{i}}[u]:=\sum_{j=1}^{m_{i}} u(\cdot, \xi_j^i)\phi_j,
 \]
 %
-where $\phi_j$ are Lagrange basis functions satisfying $\phi_j(x_k^i) = \delta_{jk}$. To extend this construction to a $d$-dimensional parameter space,  tensor products of univariate operators are constructed. Rather than using a full tensor grid, which suffers from exponential growth in $d$, the sparse grid approach selects a reduced set of nodes per dimension to build a sparse approximation. At {\it level} $q\; (\text{where }q\ge d)$, the sparse grid nodes are
+where $X^i = \{\xi_1^i,\ldots, \xi_{m_i}^i\}$ are $m_i$ collocation nodes in $[-1,1]$ and $\{\phi_j\}$ are Lagrange basis polynomials satisfying  $\phi_j(\xi_k^i) = \delta_{jk}$. To extend to $d$ dimensions while avoiding exponential complexity, we use the {\it Smolyak sparse grid} construction. For approximation {\it level} $q \geq d$, the {\it sparse grid operator} is defined as
 %
-\begin{equation*}
-H(q,d) = \bigcup_{q-d+1\le|\boldsymbol{i}|\le q} \left(X^{i_1}\times \cdots\times X^{i_d}\right)\in [-1,1]^d, 
-\end{equation*}
-%
-where $|\boldsymbol{i}| = i_1+\ldots+i_d$ specifies the refinement rule. These nodes yield a sparse but sufficiently rich representation of the domain, capturing key features of $u$ with far fewer evaluations than a full grid.
-
-We use Chebyshev extrema as collocation nodes \cite{BaNoRi:2000, ClCu:1960}, defined by $x_j^i=-\cos(\frac{ \pi(j-1)}{m_i-1})$ for $j=1, \ldots, m_i$ with $m_1 =1$ and $m_i = 2^{i-1}+1$ for $i\ge 2$, ensuring nestedness $X^i\subset X^{i+1}$. The corresponding multidimensional sparse grid nodes satisfy 
-%
-\begin{equation}
-\label{eq:NestedColPts}
-H(q,d)\subset H(q+1,d),\quad \text{and}\quad H(q,d) = \bigcup_{|\boldsymbol{i}|=q} \left(X^{i_1}\times \cdots\times X^{i_d}\right).
+\begin{equation}\label{eq: Smolyak_Quad_formula}
+\mathcal{S}_{q,d}[u] := \sum_{q+1 \leq |\boldsymbol{i}| \leq q+d} (-1)^{q+d-|\boldsymbol{i}|} \binom{d-1}{q+d-|\boldsymbol{i}|} \bigotimes_{k=1}^d I_{X^{i_k}}[u],
 \end{equation}
 %
-Interpolation over $H(q,d)$  is performed using the {\it Smolyak quadrature formula}, 
+where $\boldsymbol{i} = (i_1,\ldots,i_d) \in \mathbb{N}^d$ with $|\boldsymbol{i}| = \sum_{k=1}^d i_k$. The corresponding {\it sparse grid node} set is
 %
-\begin{equation}
-\label{eq: Smolyak_Quad_formula}
-\mathcal{S}_{q, d}[u] = \sum_{q+1\le |\boldsymbol{i}|\le q+d} (-1)^{q+d-|\boldsymbol{i}|} \binom{d-1}{q+d-|\boldsymbol{i}|}\cdot \left(\mathrm I_{X^{i_1}}\otimes\cdots\otimes \mathrm I_{X^{i_d}}\right) [u].
-\end{equation} 
+\begin{equation}\label{eq:sparse_grid_nodes}
+\mathcal{H}_{q,d} := \bigcup_{q-d+1 \leq |\boldsymbol{i}| \leq q} \left( X^{i_1} \times \cdots \times X^{i_d} \right)\in [-1,1]^d.
+\end{equation}
 %
-which combines univariate interpolants into a high-dimensional approximation. This hierarchical and sparse structure allows for efficient reuse of evaluations and makes the method well-suited for high-dimensional stochastic problems.
+This adaptive selection of tensor products achieves approximation rates comparable to full tensor grids while reducing the node count from $\mathcal{O}(m^d)$ to $\mathcal{O}(m (\log m)^{d-1})$.
+
+We implement \textit{nested} Clenshaw-Curtis nodes using Chebyshev extrema \cite{BaNoRi:2000, ClCu:1960}, defined by $\xi_j^i=-\cos(\frac{ \pi(j-1)}{m_i-1})$ for $j=1, \ldots, m_i$ with $m_1 =1$ and $m_i = 2^{i-1}+1$ for $i\ge 2$. This nesting property  $X^i\subset X^{i+1}$ ensures
+%
+\begin{equation}\label{eq:nested_grids}
+\mathcal{H}_{q,d} \subset \mathcal{H}_{q+1,d}, \quad \forall q \geq d, \quad \text{and}\quad \mathcal{H}_{q,d} = \bigcup_{|\boldsymbol{i}|=q} \left(X^{i_1}\times \cdots\times X^{i_d}\right),
+\end{equation}
+%
+enabling efficient hierarchical refinement. This hierarchical structure facilitates efficient model evaluation reuse, making sparse collocation particularly suitable for high-dimensional uncertainty quantification problems.
+
 
 
 % Let $N$ denote the number of sparse grid nodes. The sparse grid stochastic collocation method is equivalent to solving $N$ deterministic parametrized problems \eqref{eq:FreeBoundary} at each nodal point in $H(q,d)$.

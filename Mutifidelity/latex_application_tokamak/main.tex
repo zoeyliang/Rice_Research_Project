@@ -76,7 +76,7 @@
 % \ead{tonatiuh@arizona.edu}
 % \address[UA]{Department of Mathematics, The University of Arizona.}
 \begin{abstract}
-We study the Grad–Shafranov free boundary problem in tokamak reactors under parametric uncertainty, using Monte Carlo, multilevel, and multi-fidelity Monte Carlo (MFMC) sampling strategies to quantify its impact on solution variability. A complementary optimization problem is formulated for the multifidelity Monte Carlo, enabling the derivation of optimal sample allocations based on target estimator accuracy. Numerical experiments demonstrate that MFMC achieves statistical accuracy comparable to standard Monte Carlo while reducing computational cost by a factor of approximately 40. The method reliably captures plasma boundary dynamics and geometric features, highlighting the efficiency and scalability of multi-fidelity approaches for uncertainty quantification in complex fusion models.
+We study the Grad–Shafranov free boundary problem in tokamak reactors under parametric uncertainty, using Monte Carlo, multilevel, and multi-fidelity Monte Carlo sampling strategies to quantify its impact on solution variability. A complementary optimization problem is formulated for the multifidelity Monte Carlo, enabling the derivation of optimal sample allocations based on fix estimator accuracy while minimizing cost. Numerical experiments demonstrate that MFMC achieves statistical accuracy comparable to standard Monte Carlo while reducing computational cost by a factor of approximately 40. The method reliably captures plasma boundary dynamics and geometric features, highlighting the efficiency and scalability of multi-fidelity approaches for uncertainty quantification in complex fusion models.
 \end{abstract}
 
 \begin{keyword}
@@ -92,6 +92,7 @@ Multi-fidelity Monte Carlo Finite-Element \sep Parametric expectation \sep Spars
 \input{./Sections/MC}
 \input{./Sections/MFMC}
 \input{./Sections/Parameter_estimation}
+\input{./Sections/Model_selection}
 \input{./Sections/Numerical_result}
 \input{./Sections/Acknowledgment}
 \input{./Sections/Appendix}
