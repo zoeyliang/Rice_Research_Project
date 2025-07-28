@@ -1,17 +1,22 @@
-\section{Model selection}\label{sec:Model_Selection}
-%  \[
-% p_{k>m} = \mathbb{P}(\rho_{1,k}^* > \rho_{1,m}^*) \approx \Phi\left( \frac{\widehat\rho_{1,k} - \widehat\rho_{1,m}}{\sqrt{\sigma_k^2 + \sigma_m^2}} \right)
-% \]
-% \[
-% k \prec m \quad iff \quad p_{k>m} > \tau
-% \]
-Accurate correlation estimation enables robust model selection for multifidelity Monte Carlo estimation. When pilot sample size $\delta$ yields sufficiently small confidence intervals for $\widehat\rho_{1,k}$ such that intervals for different models are disjoint, these estimates reliably rank models by their true correlation strength $\rho_{1,k}$. This precise ranking is essential for identifying cost-efficient model combinations while satisfying the theoretical requirements of Theorem~\ref{thm:Sample_size_est}.
+\subsection{Model selection}\label{sec:Model_Selection}
 
 
-Given $K$ candidate models $\mathcal{S} = \{ u_{h,k} \}_{k=1}^K$, we seek an optimal subset $\mathcal{S}^* \subseteq \mathcal{S}$ that minimizes the total computational cost $\mathcal{W}^{\text{MF}}$ while satisfying two critical conditions \cite{PeWiGu:2016}. Firstly, the selected models must maintain the correlation monotonicity and cost-correlation ratio required by Theorem~\ref{thm:Sample_size_est}. Secondly, the subset must maximize the cost-efficiency metric $\xi(\boldsymbol{\rho},\mathcal{I}^*) = \sum_{k \in \mathcal{I}^*} \sqrt{C_k \Delta_k}$ that directly determines $\mathcal{W}^{\text{MF}}$. Here $\mathcal{I}^* \subseteq \{1,\ldots,K\}$ denotes the ordered indices of selected models in $\mathcal{S}^*$, always including the high-fidelity model ($1 \in \mathcal{I}^*$), with the size of $\mathcal{I}^*$ as $K^* = |\mathcal{I}^*| \leq K$.
+During parameter estimation in Algorithm~\ref{algo:enhanced_mfmc_selection}, we are given $K_c$ candidate models $\mathcal{S}_c = \{ u_{h,k} \}_{k=1}^{K_c}$ and seek an optimal subset $\mathcal{S} \subseteq \mathcal{S}_c$ that minimizes the total computational cost $\mathcal{W}^{\text{MF}}$ while satisfying the two conditions specified in Theorem~\ref{thm:Sample_size_est} \cite{PeWiGu:2016}. Model selection is based on the estimated correlation coefficients $\widehat{\rho}_{1,k}$ obtained from the pilot sampling. Accurate correlation estimation ensures that models are reliable, enabling robust model selection for multifidelity Monte Carlo estimation.  
+
+The first condition requires that the selected models preserve correlation monotonicity and satisfy the cost-correlation ratio required by Theorem~\ref{thm:Sample_size_est}. The second condition seeks to minimize the cost-efficiency metric $\xi(\boldsymbol{\rho},\mathcal{I}) = \frac{1}{C_1}(\sum_{k \in \mathcal{I}} \sqrt{C_k \Delta_k})^2$, where $\mathcal{I} \subseteq \{1, \ldots, K_c\}$ denotes the ordered index set of selected models, always including the high-fidelity model ($1 \in \mathcal{I}$), with cardinality $K = |\mathcal{I}| \leq K_c$.
+
+While exhaustive search over all $2^{K_c}$ subsets \cite{PeWiGu:2016} becomes computationally intractable for $K_c \geq 9$, particularly in adaptive settings requiring frequent reselection, we overcome this limitation by developing an efficient backtracking algorithm that incrementally constructs candidate subsets while pruning infeasible branches. The algorithm exploits three structural properties: First, model indices are pre-sorted in descending order of $|\widehat{\rho}_{1,k}|$  to enforce correlation monotonicity by construction. Second, the cost-correlation ratio condition in Theorem~\ref{thm:Sample_size_est} provides a pruning criterion: if $C_{k-1}/\widehat{\Delta}_{k-1} \leq C_k/\widehat{\Delta}_k$, further expansion of the subset is terminated. Third, the best efficiency achieved so far, $\xi_{\min}$, is used as an upper bound to prune branches where partial sums already exceed this threshold. Although the worst-case complexity remains $\mathcal{O}(2^{K_c})$, the algorithm typically achieves near-linear performance when correlations decays more rapidly than the cost, as the pruning conditions are frequently triggered.
+
+% Algorithm~\ref{algo:enhanced_mfmc_selection} returns the optimal index set $\mathcal{I}^*$, estimated correlations $\widehat {\boldsymbol{\rho}}$, model costs $\widehat{\boldsymbol{C}}$, minimal efficiency $\widehat\xi$, and corresponding control variate weights $\widehat{\boldsymbol{\alpha}}$.
 
 
-An exhaustive search \cite{PeWiGu:2016} over all $2^K$ subsets becomes computationally prohibitive for $K \geq 9$, particularly in dynamic estimation contexts requiring frequent reselection. We therefore develop an efficient backtracking algorithm that incrementally constructs candidate subsets while pruning infeasible branches. The algorithm exploits three key properties: First, indices of models are pre-sorted by decreasing $|\widehat\rho_{1,k}|$, enabling sequential evaluation that respects correlation monotonicity. Second, Theorem~\ref{thm:Sample_size_est}'s cost-correlation ratio provides an early termination criterion when $C_{i-1}/C_i \leq \widehat\Delta_{i-1}/\widehat\Delta_i$. Third, the current optimal $\xi_{\text{min}}$ serves as an upper bound that prunes branches where partial sums already exceed this value. While worst-case complexity remains $\mathcal{O}(2^K)$ as the exhaustive approach, typical performance ranges from linear to quadratic due to aggressive pruning, with significant speedups when correlation decays rapidly (since $\Delta_{k-1}/\Delta_{k}$ is large, condition 2 easy to violate). Algorithm~\ref{algo:enhanced_mfmc_selection} returns the optimal indices $\mathcal{I}^*$, correlation coefficients $\boldsymbol{\rho}$, costs $\boldsymbol{C}$, minimal efficiency $\xi_{\text{min}}$, and control variate weights $\boldsymbol{\alpha}$.
+% When pilot sample size $\delta$ yields sufficiently small confidence intervals, these estimates reliably rank models by their true correlation strength $\rho_{1,k}$. This precise ranking is essential for identifying cost-efficient model combinations while satisfying the theoretical requirements of Theorem~\ref{thm:Sample_size_est}.
+
+
+
+
+
+
 
  
 
@@ -72,27 +77,28 @@ An exhaustive search \cite{PeWiGu:2016} over all $2^K$ subsets becomes computati
 \SetKwInOut{Input}{Input}
 \SetKwInOut{Output}{Output}
 \Input{%
-  Correlation vector $\widehat{\boldsymbol{\rho}} = [\widehat{\rho}_{1,k}]_{k=1}^K$, cost vector $\boldsymbol{C} = [C_k]_{k=1}^K$, standard deviation vector $\widehat{\boldsymbol{\sigma}} = [\widehat{\sigma}_k]_{k=1}^K$.
+  Correlation vector $\widehat{\boldsymbol{\rho}} = [\widehat{\rho}_{1,k}]_{k=1}^{K_c}$, cost vector $\boldsymbol{C} = [C_k]_{k=1}^{K_c}$.
+  % standard deviation vector $\widehat{\boldsymbol{\sigma}} = [\widehat{\sigma}_k]_{k=1}^K$.
 }
 \Output{%
   Selected model index $\mathcal{I}$, minimal efficiency ratio $\widehat{\xi}_{\min}$.
 }
 \hrule
 
-\Fn{[$\mathcal{I}$,  $\xi_{\min}$] = $\textsc{ModelSelectionBacktrack}(\boldsymbol{\rho}, \boldsymbol{C},K)$}{
-  Sort models by non-increasing $|\rho_{1,k}|$ with permutation $r$ \;
-  Relabel $\boldsymbol{\rho} \gets \boldsymbol{\rho}[r]$, $\boldsymbol{C} \gets \boldsymbol{C}[r]$ \;
-  Initialize: $\text{idx}^{\text{cur}}$ $\gets [1]$, $\xi_{\min} \gets 1$, $\text{idx}^{\text{glb}}$ $\gets [1]$ \;
-  $[\text{idx}^{\text{glb}}, \xi_{\text{min}}] = \textsc{Backtrack}(\text{idx}^{\text{cur}}, \xi_{\min}, 2,\boldsymbol{\rho}, \boldsymbol{C},K)$ \;
-  $\mathcal{I}\gets r[\text{idx}^{\text{glb}}]$ \;
+\Fn{[$\mathcal{I}$,  $\xi_{\min}$] = $\textsc{ModelSelectionBacktrack}(\widehat{\boldsymbol{\rho}}, \boldsymbol{C},K)$}{
+  Sort models by non-increasing $|\widehat \rho_{1,k}|$ with permutation order $\boldsymbol{r}$. \;
+  Relabel $\widehat{\boldsymbol{\rho}} \gets \widehat{\boldsymbol{\rho}}[\boldsymbol{r}]$, $\boldsymbol{C} \gets \boldsymbol{C}[\boldsymbol{r}]$. \;
+  Initialize: $\text{idx}^{\text{cur}}$ $\gets [1]$, $\xi_{\min} \gets 1$, $\text{idx}^{\text{glb}}$ $\gets [1]$. \;
+  $\left[\text{idx}^{\text{glb}}, \xi_{\text{min}}\right] = \textsc{Backtrack}\left(\text{idx}^{\text{cur}}, \xi_{\min}, 2,\widehat{\boldsymbol{\rho}}, \boldsymbol{C},K\right)$. \;
+  $\mathcal{I}\gets \boldsymbol{r}\left[\text{idx}^{\text{glb}}\right]$. \;
   % \Return{idx$\_$for$\_$model, $\xi_{\min}$}
 }
 
 \vspace{3mm}
-\Fn{$[\text{idx}^{\text{glb}}, \xi_{\text{min}}] = \textsc{Backtrack}(\text{idx}^{\text{cur}}, \xi, k_{\text{next}}, \boldsymbol{\rho}, \boldsymbol{C},K)$}{
+\Fn{$\left[\text{idx}^{\text{glb}}, \xi_{\text{min}}\right] = \textsc{Backtrack}\left(\text{idx}^{\text{cur}}, \xi, k_{\text{next}}, \widehat{\boldsymbol{\rho}}, \boldsymbol{C},K\right)$}{
   \If{$\xi < \xi_{\min}$}{
-    $\xi_{\min} \gets \xi$ \;
-    $\text{idx}^{\text{glb}} \gets \text{idx}^{\text{cur}}$ \;
+    $\xi_{\min} \gets \xi$. \;
+    $\text{idx}^{\text{glb}} \gets \text{idx}^{\text{cur}}$. \;
   }
   
   \If{$k_{\text{next}} > K$}{ 
@@ -100,26 +106,26 @@ An exhaustive search \cite{PeWiGu:2016} over all $2^K$ subsets becomes computati
   }
   
   \For{$k \gets k_{\text{next}}$ \KwTo $K$}{ 
-    $\rho_{\text{prev}} \gets \boldsymbol{\rho}[\text{last}(\text{idx}^{\text{cur}})]$ \tcc*{$\text{last}(\text{idx}^{\text{cur}})$: Last entry of $\text{idx}^{\text{cur}}$ }
-    $C_{\text{prev}} \gets \boldsymbol{C}[\text{last}(\text{idx}^{\text{cur}})]$ \;
+    $\rho_{\text{prev}} \gets \widehat{\boldsymbol{\rho}}\left[\text{idx}^{\text{cur}}\left(\text{end}\right)\right]$.  \tcc*{$\text{idx}^{\text{cur}}(\text{end})$: Last entry of $\text{idx}^{\text{cur}}$ }
+    $C_{\text{prev}} \gets \boldsymbol{C}\left[\text{idx}^{\text{cur}}\left(\text{end}\right)\right]$. \;
     
     \If{$\frac{C_{\text{prev}}}{C_k} \leq \frac{\rho_{\text{prev}}^2 - \rho_k^2}{\rho_k^2}$}{ 
       \textbf{continue} \tcc*{Condition (ii) violation}
     }
     
     Compute $\xi$ via \eqref{eq:MFMC_sampling_cost_efficiency} for indices  
-      $[\text{idx}^{\text{cur}}, k]$ \;
+      $\left[\text{idx}^{\text{cur}}, k\right]$. \;
     
     \If{$\xi \geq \xi_{\min}$ \textbf{or} $\xi > 1$}{
       \textbf{continue} \tcc*{No efficiency gain}
     }
     
-    \textsc{Backtrack}($[\text{idx}^{\text{cur}}, k], \xi, k+1,\boldsymbol{\rho}, \boldsymbol{C},K)$ \;
+    \textsc{Backtrack}$\left([\text{idx}^{\text{cur}}, k], \xi, k+1,\widehat{\boldsymbol{\rho}}, \boldsymbol{C},K \right)$. \;
   }
 }
 
 \vspace{3mm} 
-$[\mathcal{I},  \widehat{\xi}_{\min}] \gets \textsc{ModelSelectionBacktrack}(\widehat{\boldsymbol{\rho}}, \boldsymbol{C},K)$ \;
+$\left[\mathcal{I},  \widehat{\xi}_{\min} \right] \gets \textsc{ModelSelectionBacktrack}\left(\widehat{\boldsymbol{\rho}}, \boldsymbol{C},K_c \right)$. \;
 % $\boldsymbol{\rho}^* \gets \boldsymbol{\rho}[\mathcal{I}]$, $\boldsymbol{C}^* \gets \boldsymbol{C}[\mathcal{I}]$, $\boldsymbol{\sigma}^* \gets \boldsymbol{\sigma}[\mathcal{I}]$, $\alpha_i^* \gets \dfrac{\rho_{1,i}^* \sigma_1^*}{\sigma_i^*}$ for $i = 2,\dots,|\mathcal{I}|$
 % $\mathcal{S}^* \gets \{u_{h,i}\}_{i \in \mathcal{I}}$ \;
 
@@ -137,19 +143,19 @@ $[\mathcal{I},  \widehat{\xi}_{\min}] \gets \textsc{ModelSelectionBacktrack}(\wi
 \DontPrintSemicolon
 
     
-   \KwIn{Selected model set $\mathcal{S}^* = \{u_{h,k}\}_{k=1}^{K^*}$, parameters $\rho_{1,k}$, $\alpha_k$ and $C_k$ for each $u_{h, k}$,  tolerance $\epsilon$. }\vspace{1ex}
+   \KwIn{Selected model set $\mathcal{S} = \{u_{h,k}\}_{k=1}^{K}$, parameters $\rho_{1,k}$, $\alpha_k$ and $C_k$ for each $u_{h, k}$,  tolerance $\epsilon$. }\vspace{1ex}
     
-    \KwOut{Sample sizes $N_k$ for $K^*$ models, multifidelity estimate $A^{\text{MF}}$.}\vspace{1ex}
+    \KwOut{Sample sizes $N_k$ for $K$ models, MFMC estimator $A^{\text{MF}}$.}\vspace{1ex}
     \hrule \vspace{1ex}
     
 
-    Compute the sample size $N_k$ for $1\leq k\leq K^*$ by \eqref{eq:MFMC_SampleSize} and generate i.i.d. $N_1$ and $N_k-N_{k-1}$ samples for $k=2,\ldots, K^*$.
+    Compute the sample size $N_k$ for $1\leq k\leq K$ by \eqref{eq:MFMC_SampleSize} and generate i.i.d. $N_1$ and $N_k-N_{k-1}$ samples for $k=2,\ldots, K$.
 
     Evaluate $u_{h, 1}$ to obtain $u_1^{(i)}$ for $i = 1,\ldots,N_1$ and compute $A_{1,N_1}^{\text{MC}}$ by \eqref{eq:MC_estimator}.
 
     Initialize $A^{\text{MF}} \gets A_{1,N_1}^{\text{MC}}$.
     
-    \For{$k = 2,\ldots,K^* $\,}{
+    \For{$k = 2,\ldots,K $\,}{
 
     Evaluate $u_{h, k}$ to obtain $ u_k^{(i)}$ for $i = 1,\ldots,N_{k-1}$ and compute $A_{k,N_{k-1}}^{\text{MC}}$ by \eqref{eq:MC_estimator}.
 
@@ -255,7 +261,7 @@ $[\mathcal{I},  \widehat{\xi}_{\min}] \gets \textsc{ModelSelectionBacktrack}(\wi
 
 
 
-\subsection{Cost of multi-fidelity Monte Carlo with stochastic collocation}
+\section{Cost of multi-fidelity Monte Carlo with stochastic collocation}
 \label{sec:Cost_MFMC_with_SC}
 To ensure that the discretization error meets the required tolerance $\theta \epsilon^2$ for MFMC, we consider a geometrically uniformly refined hierarchy of spatial discretizations $\{\mathcal{T}_\ell\}_{0\le \ell \le L_{\max}}$ with the corresponding spatial grid sizes $\{M_\ell\}_{0\le \ell \le L_{\max}}$ satisfying 
 
@@ -265,12 +271,11 @@ To ensure that the discretization error meets the required tolerance $\theta \ep
 M_\ell = s M_{\ell-1} \qquad \text{ for }\quad  s>1,
 \end{equation}
 %
-where $L_{\max}$  represents computationally feasible mesh refinement limit of spatial level. Given a target accuracy $\epsilon$, the required spatial resolution level $L \leq L_{\max}$ and grid size $M_L$ \eqref{eq:SLSGC_MLS_SpatialGridsNo} must satisfy the bias constraint in the nMSE splitting. Within this framework, we consider a set of $K = L+1$ computational models before model selection: the high-fidelity model $u_{L,1}$ at level $L$, and low-fidelity counterparts $\{u_{\ell(k),k}\}_{k=2}^K$ constructed via sparse grid stochastic collocation on coarser grids $\mathcal{T}_{\ell(k)}$ with $\ell(k) = L + 1 - k$ (thus $\ell(k) < L$). Through optimal model selection, we identify a subset $\{u_{\ell(k),k}\}_{k \in \mathcal{I}^*}$ of the low-fidelity models. The following theorem establishes the fundamental asymptotic computational cost complexity for the multi-fidelity approach.
-
+where $L_{\max}$  represents computationally feasible mesh refinement limit of spatial level. Given a target accuracy $\epsilon$, the required spatial resolution level $L \leq L_{\max}$ and grid size $M_L$ \eqref{eq:SLSGC_MLS_SpatialGridsNo} must satisfy the bias constraint in the nMSE splitting. Within this framework, we consider a set of $K_c = L+1$ computational models before model selection: the high-fidelity model $u_{L,1}$ at level $L$, and low-fidelity counterparts $\{u_{\ell(k),k}\}_{k=2}^{K_c}$ constructed via sparse grid stochastic collocation on coarser grids $\mathcal{T}_{\ell(k)}$ with $\ell(k) = L + 1 - k$ (thus $\ell(k) < L$). Through optimal model selection, we identify a subset $\{u_{\ell(k),k}\}_{k \in \mathcal{I}}$ of the low-fidelity models. The following theorem establishes the fundamental asymptotic computational cost complexity for the multi-fidelity sampling with the stochastic collocation approach.
 
 %
 \begin{theorem}[Asymptotic Cost for MFMC-SC Estimator]\label{thm:Sample_cost_est}
-Consider a hierarchy of models $\{u_{\ell(k),k}\}_{k=1}^{K}$ where $u_{L,1}$ is the high-fidelity model at spatial discretization level $L$ with $M_L$ degrees of freedom, and low-fidelity models $\{u_{\ell(k),k}\}_{k=2}^K$ are constructed via sparse grid stochastic collocation on coarser grids $\mathcal{T}_{\ell(k)}$ with $\ell(k) = L + 1 - k$. Let $\mathcal{I}^* = \{i_k \mid k = 1, \dots, K^*\}$ index optimally ordered models after model selection with correlations $\rho_{1,i_k}$ to $u_{L,1}$ and costs $C_{i_k}$. For the family of high-fidelity models $\{u_{L,1}\}_{L\le L_{\max}}$ with $M_L$ degrees of freedom, assume  there exist positive constants $\alpha, \beta, \gamma$ such that
+Consider a hierarchy of models $\{u_{\ell(k),k}\}_{k=1}^{K_c}$, where $u_{L,1}$ denotes the high-fidelity model on the finest mesh $\mathcal{T}_L$ with $M_L$ degrees of freedom, and the low-fidelity models $\{u_{\ell(k),k}\}_{k=2}^{K_c}$ are constructed via sparse grid stochastic collocation on coarser meshes $\mathcal{T}_{\ell(k)}$ with $\ell(k) = L + 1 - k$. Let $\mathcal{I} = \{i_k \mid k = 1, \dots, K\}$ denote the index set of selected models, ordered by decreasing correlation $\rho_{1,i_k}$ and associated costs $C_{i_k}$. For the family of high-fidelity models $\{u_{L,1}\}_{L\le L_{\max}}$ with $M_L$ degrees of freedom, assume  there exist positive constants $\alpha, \beta, \gamma$ such that
 %
 \begin{alignat*}{8}
     \text{(i)}\quad & \left\Vert \mathbb{E}[u] - \mathbb{E}[u_{L,1}] \right\Vert_Z \simeq M_L^{-\alpha}, \qquad
@@ -278,7 +283,7 @@ Consider a hierarchy of models $\{u_{\ell(k),k}\}_{k=1}^{K}$ where $u_{L,1}$ is 
     \text{(iii)}\quad & C_1 \simeq M_L^{\gamma},
 \end{alignat*}
 %
-For the low-fidelity models, assume there exist positive constants $\beta_1, \gamma_1$ such that for each $k=2,\dots,K^*$
+For each low-fidelity model $u_{\ell(i_k),i_k}$ with $k = 2, \dots, K$, assume there exist positive constants $\beta_1, \gamma_1$ such that the correlation decay and cost growth follow
 %
 \begin{alignat*}{8}
     % &(i)\;\; |\rho_{1,1}|>\ldots>|\rho_{1,K}|,& \quad \quad
@@ -290,16 +295,16 @@ For the low-fidelity models, assume there exist positive constants $\beta_1, \ga
 &(v)\quad C_{i_k} \simeq M_{\ell(i_k)}^{\gamma_1},
 \end{alignat*}
 %
-with $\rho_{1,i_{K^*+1}}^2 := 0$. Then for any $\epsilon \in (0,e^{-1})$, there exist $L \leq L_{\max}$ and sample sizes $\{N_{i_k}\}_{i_k\in \mathcal{I}^*}$ such that the multifidelity estimator $A^{\mathrm{MF}}$ achieves nMSE  with
+with $\rho_{1,i_{K^*+1}}^2 := 0$. Then, for any tolerance $\epsilon \in (0, e^{-1})$, there exists a finest mesh level $L \le L_{\max}$ and sample allocation $\{N_{i_k}\}_{i_k \in \mathcal{I}^*}$ such that the multifidelity estimator $A^{\mathrm{MF}}$ achieves nMSE  with
 %
 \[
 \frac{\left\Vert \mathbb{E}[u] - A^{\mathrm{MF}} \right\Vert_{L^2(\boldsymbol{W},Z)}}{\left\Vert \mathbb{E}[u] \right\Vert_{L^2(\boldsymbol{W},Z)}} < \epsilon,
 \]
 %
-with computational cost and the term $\Phi(\epsilon)$ depends on the low-fidelity scaling regime is bounded by
+with total computational cost bounded by
 %
 \begin{equation}\label{eq:lfm_scaling}
-\mathcal{W}^{\mathrm{MF}} \lesssim \epsilon^{-2} \left( \epsilon^{-\frac{\gamma-\beta}{2\alpha}} + \Phi(\epsilon) \right)^2,\qquad 
+\mathcal{W}^{\mathrm{MF}} \lesssim \epsilon^{-2} \left( c_1 \epsilon^{-\frac{\gamma-\beta}{2\alpha}} + c_2 \Phi(\epsilon) \right)^2,\qquad 
 \Phi(\epsilon) \lesssim \begin{cases} 
 1 & \beta_1 > \gamma_1, \\
 |\log \epsilon| & \beta_1 = \gamma_1, \\
@@ -307,13 +312,12 @@ with computational cost and the term $\Phi(\epsilon)$ depends on the low-fidelit
 \end{cases}
 \end{equation}
 %
-Moreover, when the constant factor $c_1$ for the high-fidelity term satisfies $c_1 \gg c_2$ (where $c_2$ is the aggregate constant for low-fidelity terms), indicating that the high-fidelity cost dominates the sum of all low-fidelity costs, the cost simplifies to
+where the term $\Phi(\epsilon)$ depends on the low-fidelity models, $c_1$ and $c_2$ are the constants that reflect the per-sample cost for the high- and low-fidelity terms. In the regime where the high-fidelity contribution dominates, the total cost reduces to
 %
 \[
-\mathcal{W}^{\mathrm{MF}} \simeq \epsilon^{-2 - \frac{\gamma-\beta}{\alpha}}.
+\mathcal{W}^{\mathrm{MF}} \lesssim \epsilon^{-2 - \frac{\gamma-\beta}{\alpha}}.
 \]
 %
-This dominance occurs independently of the asymptotic regime when $c_1$ is sufficiently larger than $c_2$.
 \end{theorem}
 
 

@@ -28,7 +28,7 @@ Note that both MFMC and MLMC share the goal of variance reduction, but differ in
 
 % Thus by introducing a control variate $\alpha (u_{h,2}-\mu_2)$, we can reduce the variance. Note that both $u_{h}^{(i)}$ and $u_{h,2}^{(i)}$ can be correlated or linearly independent (uncorrelated). To make the variance as small as possible, we want $\rho$ to be as large as possible, so it's better to make the two quantities correlated. If $u_{h,2}$ is a low fidelity model compared to $u_{h}$, this indicates that $u_{h,2}$ should reuse the samples of  $u_{h}$. 
 
-
+\subsection{Multi-fidelity Monte Carlo revisit}
 We now briefly review the core principles underlying multi-fidelity Monte Carlo, drawing on the framework in \cite{PeWiGu:2016}.  The MFMC framework combines a high-fidelity model $u_{h,1} = u_h$ with a series of low-fidelity models $u_{h,k}: \Omega \rightarrow U$ for $k=2,\ldots,K$.  The high-fidelity model yields accurate but computationally expensive evaluations, whereas the low-fidelity models offer cheaper approximations with reduced accuracy. MFMC optimally allocates computational resources across the fidelity levels to reduce the overall estimator variance, reducing the reliance on costly high-fidelity samples while preserving estimator accuracy and robustness.
 
 
@@ -91,7 +91,7 @@ Combining \eqref{eq:Var_Yk} and \eqref{eq:Cov_Yk}, the total variance of the MFM
 The normalized mean square error of the multi-fidelity Monte Carlo estimator, $\mathcal{E}_{A^{\text{MF}}}^2$, quantifies its accuracy and is decomposed into two components -- the bias error $\mathcal{E}_{\text{Bias}}^2$ and the statistical error $\mathcal{E}_{\text{Stat}}^2$, the decomposition is written as 
 %
 \[
-\mathcal{E}_{A^{\text{MF}}}^2= \frac{\left\Vert\mathbb{E}[u]-\mathbb{E}[A^{\text{MF}}] \right\Vert_{U}^2+\mathbb E\left[\left\Vert\mathbb{E}[A^{\text{MF}}]-A^{\text{MF}} \right\Vert_{U}^2\right]}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2} =\frac{\left\Vert\mathbb{E}[u]-\mathbb{E}[A^{\text{MF}}] \right\Vert_{U}^2}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}+ \frac{\mathbb{V}\left[A^{\text{MF}}\right]}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}=\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2,
+\mathcal{E}_{A^{\text{MF}}}^2= \frac{\left\Vert\mathbb{E}[u]-\mathbb{E}\left[A^{\text{MF}}\right] \right\Vert_{U}^2+\mathbb E\left[\left\Vert\mathbb{E}\left[A^{\text{MF}}\right]-A^{\text{MF}} \right\Vert_{U}^2\right]}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2} =\frac{\left\Vert\mathbb{E}[u]-\mathbb{E}\left[A^{\text{MF}}\right] \right\Vert_{U}^2}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}+ \frac{\mathbb{V}\left[A^{\text{MF}}\right]}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}=\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2,
 \]
 %
 where the variance term $\mathbb{V}[A^{\text{MF}}]$  can be explicitly expressed using \eqref{eq:MFMC_variance}. A splitting ratio $\theta$ is introduced as before to balance the contributions between these two components. The spatial resolution required to achieve the biased tolerance $\theta \epsilon^2$ is determined by estimating the number of spatial grid points $M_L$ at refinement level $L$, given by
@@ -119,7 +119,7 @@ where $C_k$ is the cost of generating a single sample of model $u_{h,k}$, and $N
     \end{array}
 \end{equation}
 %
-The solution to this problem, which yields explicit expressions for the optimal real-valued sample sizes and weights, is presented in Theorem~\ref{thm:Sample_size_est}. The proof of Theorem~\ref{thm:Sample_size_est} is provided in the appendix.
+Since the finite variance implicitly indicates $N_1 > 0$, the problem remains well-posed. The solution to this problem, which yields explicit expressions for the optimal real-valued sample sizes and weights, is presented in Theorem~\ref{thm:Sample_size_est}. The proof of Theorem~\ref{thm:Sample_size_est} is provided in the appendix.
 
 
 
@@ -127,7 +127,7 @@ The solution to this problem, which yields explicit expressions for the optimal 
 %
 \begin{theorem}[Optimal MFMC Sample Allocation]
 \label{thm:Sample_size_est}
-Consider an ensemble of $K$ models $\{u_{h,k}\}_{k=1}^K$ ordered by decreasing fidelity, where each model $u_{h,k}$ is characterized by the standard deviation $\sigma_k$ of its output, the correlation coefficient $\rho_{1,k}$ with the highest-fidelity model $u_{h,1}$, and the computational cost per sample evaluation $C_k$. Define $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k = 1, \dots, K$, with the boundary convention $\rho_{1,K+1} = 0$. Assume the following conditions hold
+Consider an ensemble of $K$ models $\{u_{h,k}\}_{k=1}^K$ each characterized by the standard deviation $\sigma_k$ of its output, the correlation coefficient $\rho_{1,k}$ with the highest-fidelity model $u_{h,1}$, and the computational cost per sample evaluation $C_k$. Define $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k = 1, \dots, K$, with the boundary convention $\rho_{1,K+1} = 0$. Assume the following conditions hold
 %
 \begin{alignat*}{3}
 &(i)\;\; \textit{Correlation monotonicity}: \quad && |\rho_{1,1}| > \cdots > |\rho_{1,K}|, \\ 
@@ -160,13 +160,13 @@ with total computational cost
 %
 \end{theorem}
 
-In practical implementation, the correlation coefficients $\rho_{1,k}$ and computational costs $C_k$ are typically unknown a priori and must be estimated via pilot sampling. Additionally, the theoretically optimal sample sizes $N_k^* \in \mathbb{R}$ require integer rounding for implementation. Departing from the conditional rounding strategy in \cite{GrGuJuWa:2023, PeWiGu:2016} (floor function when $N_k^* \ge 1$, ceiling otherwise), we adopt a uniform rounding scheme: all sample sizes are rounded up using the ceiling function $\lceil N_k^* \rceil$, with the feasibility condition $\sum_{k=1}^K C_k N_k^* \geq \sum_{k=1}^K C_k$ to exclude degenerate cases where $N_k^* < 1$ for all models. This approach guarantees $\mathbb{V}[A^{\mathrm{MF}}] \leq \epsilon_{\mathrm{tar}}^2$ since increased sample sizes reduce estimator variance in \eqref{eq:MFMC_variance_optimal}. The computational cost after rounding satisfies
+In practical implementation, the correlation coefficients $\rho_{1,k}$ and computational costs $C_k$ are typically unknown a priori and must be estimated via pilot sampling. Additionally, the theoretically optimal sample sizes $N_k^* \in \mathbb{R}$ require integer rounding for implementation. Departing from the conditional rounding strategy in \cite{GrGuJuWa:2023, PeWiGu:2016} (floor function when $N_k^* \ge 1$, ceiling otherwise), we adopt a uniform rounding scheme: all sample sizes are rounded up using the ceiling function $\lceil N_k^* \rceil$. This approach guarantees $\mathbb{V}[A^{\mathrm{MF}}] \leq \epsilon_{\mathrm{tar}}^2$ since increased sample sizes reduce estimator variance in \eqref{eq:MFMC_variance_optimal}. The computational cost after rounding satisfies
 %
 \begin{equation}\label{eq:sampling_cost_bound}
     \sum_{k=1}^K C_k N_k^*\le \sum_{k=1}^K C_k \left\lceil N_k^*\right\rceil<\sum_{k=1}^K C_k N_k^* + \sum_{k=1}^K C_k,
 \end{equation}
 %
-where the additive overhead $\sum_{k=1}^K C_k$ arises from the bound $N_k^*\le \lceil N_k^*\rceil< N_k^*+1$. The asymptotic behavior of this overhead is governed by sample size ordering: Condition (ii) of Theorem \ref{thm:Sample_size_est} implies strict monotonicity $N_1^* < \cdots < N_K^*$ in optimal sample sizes. When $\epsilon_{\mathrm{tar}}$ is sufficiently small to ensure $N_1^* \geq 1$, we obtain $\sum_{k=1}^K C_k \leq N_1^* \sum_{k=1}^K C_k \leq \sum_{k=1}^K C_k N_k^*$. This implies the additive rounding overhead is asymptotically dominated by the theoretical cost $\sum_{k=1}^K C_k N_k^*$. Consequently, the integer-rounded computational cost preserves the asymptotic scaling of the theoretical cost \eqref{eq:MFMC_sampling_cost}.
+where the additive overhead $\sum_{k=1}^K C_k$ arises from the bound $N_k^*\le \lceil N_k^*\rceil< N_k^*+1$. Under Theorem~\ref{thm:Sample_size_est}'s cost-correlation ratio assumption, optimal sample sizes exhibit strict monotonicity $N_1^* < \cdots < N_K^*$. We impose the feasibility condition $\sum_{k=1}^K C_k N_k^* \geq \sum_{k=1}^K C_k$ to exclude degenerate cases where $N_k^* < 1$ for all $k$ models; in such cases, the additive rounding overhead is asymptotically dominated by $\sum_{k=1}^K C_k N_k^*$. Consequently, integer-rounded cost preserve the asymptotic scaling of \eqref{eq:MFMC_sampling_cost}.
 
 % define $B_k := C_k(\rho_{1,k}^2 - \rho_{1,k+1}^2)$ for $k=1,\dots,K$ with $\rho_{1,K+1} = 0$. Condition (ii) of Theorem~\ref{thm:Sample_size_est} implies
 % % Substituting into the sampling cost expression,  \eqref{eq:MFMC_sampling_cost} becomes

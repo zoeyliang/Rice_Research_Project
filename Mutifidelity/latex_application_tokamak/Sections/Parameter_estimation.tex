@@ -1,53 +1,75 @@
-\section{Pilot sample size for parameter estimation}\label{sec:Parameter_Estimation}
-Accurate estimation of correlation coefficients constitutes a pivotal challenge in multi-fidelity Monte Carlo methods, with profound implications for estimator efficiency. While variance estimation for MFMC weights and sample sizes yields unbiased estimators converging at $\mathcal{O}(1/\sqrt{Q})$ for pilot sample size $Q$,  the nonlinear ratio estimator for correlation estimation
-\[
-\widehat{\rho}_{1,k} = \frac{\sum_{i=1}^Q\left\langle u_{1}^{(i)} - A_{1,Q}^{\text{MC}}, u_{k}^{(i)} - A_{k,Q}^{\text{MC}} \right\rangle_Z}{\sqrt{\sum_{i=1}^Q \left\|u_{1}^{(i)} - A_{1,Q}^{\text{MC}}\right\|_Z^2} \sqrt{\sum_{i=1}^Q \left\|u_{k}^{(i)} - A_{k,Q}^{\text{MC}}\right\|_Z^2}},
-\]
-where  $\widehat \cdot$ represent the sample estimate and $u_k^{(i)} := u_{h,k}(\cdot, \boldsymbol{\omega}^{(i)})$, is biased and exhibits pathological properties under bivariate normality: finite-sample bias decaying asymptotically as $\mathcal{O}(1/Q)$, variance proportional to $(1-\rho_{1,k}^2)^2/Q$ asymptotically, and severe distributional skewness near $|\rho_{1,k}| \approx 1$ \cite{Fi:1915,Ha:2007,Ri:1932}. These characteristics require substantially larger pilot samples than required for variance estimation, particularly in high-correlation regimes essential for effective multifidelity approximation.
+\subsection{Pilot sample size for parameter estimation}\label{sec:Parameter_Estimation}
 
-
-Inadequate pilot sampling triggers dual failure modes that cascade through the MFMC framework. First, biased correlation estimates distort model selection, either excluding high-correlation models that enable significant cost reduction or incorporating weakly correlated surrogates that consume computational resources without proportional benefit. This induces suboptimal sample allocations that directly undermine theoretical efficiency. Second, variance in correlation estimates propagates nonlinearly through the efficiency ratio $\xi$, generating heavy-tailed distributions when the true correlation coefficients approach $\pm 1$. These distributional pathologies violate the variance guarantee $\mathbb{V}[A^{\mathrm{MF}}] \leq \epsilon_{\mathrm{tar}}^2$ with high probability due to extreme deviations in $\xi$. Crucially, these errors compound geometrically when multiple models exhibit similar correlation levels, as inaccuracies propagate through the weight allocation and amplify collective inefficiencies.
-
-
-The core vulnerability stems from the nonlinear mapping $\xi(\boldsymbol{\rho})$, where errors $\Delta \boldsymbol{\rho}$ induce disproportionate perturbations $\Delta\xi = \xi(\widehat {\boldsymbol{\rho}}) - \xi(\boldsymbol{\rho})$ via its rational functional form. The gradient $\nabla_{\boldsymbol{\rho}} \xi$ quantifies this sensitivity, with components
+Accurate estimation of correlation coefficients is a central challenge in multi-fidelity Monte Carlo, as the efficiency of the estimator is highly sensitive to these values. While variance estimation converges at the canonical Monte Carlo rate $\mathcal{O}(1/\sqrt{Q})$ with unbiased estimators, where $Q$ is the number of pilot samples, correlation estimation is significantly more delicate. The sample Pearson correlation coefficient,
 %
 \[
-\frac{\partial \xi}{\partial \rho_{1,k}} = \frac{2S}{C_1}\rho_{1,k}\left(\sqrt{\frac{C_k}{\Delta_k }} - \sqrt{\frac{C_{k-1}}{\Delta_{k-1} }}\right), \quad S = \sum_{k=1}^K\sqrt{C_k\Delta_k }
+\widehat{\rho}_{1,k} = \frac{\sum_{i=1}^Q\left\langle u_{1}^{(i)} - A_{1,Q}^{\text{MC}},\; u_{k}^{(i)} - A_{k,Q}^{\text{MC}} \right\rangle_U}{\sqrt{\sum_{i=1}^Q \left\|u_{1}^{(i)} - A_{1,Q}^{\text{MC}}\right\|_U^2} \sqrt{\sum_{i=1}^Q \left\|u_{k}^{(i)} - A_{k,Q}^{\text{MC}}\right\|_U^2}},
 \]
 %
-exhibit divergent magnitude $\|\nabla_{\boldsymbol{\rho}} \xi\|$ when $\Delta_k \to 0$, transforming small $\Delta \boldsymbol{\rho}$ into extreme $\Delta\xi$ values. Consequently, the sampling distribution of $\widehat{\xi}$ develops heavy tails.
-
-% characterized by moment growth \JLcolor{$\mathbb{E}[|\widehat{\xi} - \xi|^p]^{1/p} \propto p \cdot (1-\boldsymbol{\rho}^2)^{-1}$ ($p>2$), invalidating variance reduction guarantees precisely where MFMC promises maximal gains.}
+where $u_k^{(i)} := u_{h,k}(\cdot, \boldsymbol{\omega}^{(i)})$ denotes the $i$-th realization of the $k$-th model, is a non-linear ratio estimator that is statistically biased. Even under the idealized assumption of bivariate normality, it exhibits an asymptotic bias of $\frac{\rho_{1,k}^3 - \rho_{1,k}}{2Q}$ and variance decaying as $\frac{(1 - \rho_{1,k}^2)^2}{Q}$ \cite{Fi:1915, Ha:2007, Ri:1932}, with pronounced skewness as $|\rho_{1,k}| \to 1$. These pathologies worsen in the high-correlation regime most beneficial for variance reduction, requiring substantially larger pilot samples to ensure reliable estimates. As a result, correlation estimation, rather than variance estimation, often becomes the bottleneck in MFMC parameter estimation.
 
 
-To mitigate these effects, we establish a pilot sampling framework anchored in dual criteria: (1) statistically confidence intervals for $\rho_{1,k}$ via Fisher transformation \cite{BiHi:2017,BoWr:1998, FiHaPe:1957,Fi:1915, Fi:1921} or Bootstrap \cite{BeDeToMeBaRo:2007,Ef:1979,EfTi:1993} to control estimation bias, and (2) bounded error propagation in $\xi$ enforced through gradient sensitivity analysis. Under bivariate normality of $u_{h,1}(\cdot, \boldsymbol{\omega})$ and $u_{h,k}(\cdot, \boldsymbol{\omega})$, the Fisher $z$-transformation $\widehat z_k = \tanh^{-1}(\widehat \rho_{1,k})$ yields variance-stabilized estimators with $\sigma_{\widehat z_k} = 1/\sqrt{Q-3}$ \cite{BiHi:2017,BoWr:1998, FiHaPe:1957,Fi:1915, Fi:1921}. The $(1-\alpha)$ confidence interval for $\rho_{1,k}$ is:
+
+
+Insufficient pilot sampling introduces two sources of error that degrade MFMC performance. First, biased correlation estimates compromise model selection, potentially excluding low-cost, high-correlation surrogates or overestimating the utility of weak models. This leads to suboptimal sample allocations that deviate from the theoretical optimum, reducing estimator efficiency. Second, the variability in correlation estimates propagates non-linearly through the efficiency ratio $\xi$. The perturbation $\Delta\xi = \xi(\widehat{\boldsymbol{\rho}}) - \xi(\boldsymbol{\rho})$ is controlled by the gradient $\nabla_{\boldsymbol{\rho}} \xi$, whose components
+%
+\[
+\frac{\partial \xi}{\partial \rho_{1,k}} = \frac{2\rho_{1,k}}{C_1}\left(\sqrt{\frac{C_k}{\Delta_k }} - \sqrt{\frac{C_{k-1}}{\Delta_{k-1} }}\right)\cdot \sum_{k=1}^K\sqrt{C_k\Delta_k },
+\]
+%
+exhibit large magnitude when any $\Delta_k \to 0$. In such cases, small deviations $\Delta \boldsymbol{\rho}$ can induce disproportionately large changes in $\xi$. As a result, the distribution of $\widehat{\xi}$ becomes heavy-tailed, especially when correlations approach $\pm 1$, leading to the violations of the variance guarantee $\mathbb{V}[A^{\mathrm{MF}}] \leq \epsilon_{\mathrm{tar}}^2$. These errors can compound across models, particularly when several models exhibit similar correlations, resulting in inefficiencies for sampling and accuracy for the estimator.
+
+
+
+
+To mitigate these effects, we establish a pilot sampling framework anchored in three criteria: (i) constraint of error propagation in the efficiency ratio $\xi$ through gradient-based sensitivity analysis; and (ii) stability of the selected model set under sampling variability, which will be addressed in Section~\ref{sec:Model_Selection}; (iii) construction of statistically confidence intervals for each correlation coefficient $\rho_{1,k}$ for validation.
+
+
+We begin by constructing confidence intervals for $\rho_{1,k}$. When the model outputs $u_{h,1}(\cdot, \boldsymbol{\omega})$ and $u_{h,k}(\cdot, \boldsymbol{\omega})$ are bivariate normal, the Fisher $z$-transformation $\widehat z_k = \tanh^{-1}(\widehat \rho_{1,k})$ yields a variance-stabilized estimator with standard deviation $\sigma_{\widehat z_k} = 1/\sqrt{Q - 3}$ \cite{BiHi:2017,BoWr:1998, FiHaPe:1957,Fi:1915, Fi:1921}. The resulting $(1 - \alpha)$ confidence interval for $\rho_{1,k}$ is given by
 %
 \begin{align}
-    \label{eq:Confidence_Interval_rho}
+    \label{eq:Confidence_Interval_fisher}
     \text{CI}_{\rho_{1,k}}^{\text{fisher}} &= \text{tanh}\left(\widehat z_k \pm  z_{\alpha/2}\sigma_{\widehat z_k}\right)
     =\left[1-\frac{2}{R_k e^{-2z_{\alpha/2}\sigma_{\widehat z_k}}+1}, 1-\frac{2}{R_k e^{2z_{\alpha/2}\sigma_{\widehat z_k}}+1}\right] := [a_k,b_k].
     % = \left[\frac{e^{2(z_k - 1.96\sigma_{z_k})}-1}{e^{2(z_k - 1.96\sigma_{z_k})}+1},\; \frac{e^{2(z_k + 1.96\sigma_{z_k})}-1}{e^{2(z_k + 1.96\sigma_{z_k})}+1}\right].
 \end{align}
 %
-where the z-score $z_{\alpha/2}$ is the $\alpha/2$-th quantile for the normal distribution and $R_k = (1+\widehat\rho_{1,k})/(1-\widehat\rho_{1,k})$.
-The interval length $t_k=b_k - a_k$ satisfies $ \mathbb{P}(|\rho_{1,k}-\widehat \rho_{1,k}|\le t_k/2)\ge 1-\alpha$. When bivariate normality assumptions are violated, we use bootstrap methods to construct distribution-free confidence intervals through repeated sampling with replacement using the following procedure
+where $z_{\alpha/2}$ is the standard normal quantile, $R_k = (1+\widehat\rho_{1,k})/(1-\widehat\rho_{1,k})$, and the interval width $t_k = b_k - a_k$ satisfies $\mathbb{P}(|\rho_{1,k} - \widehat{\rho}_{1,k}| \leq t_k/2) \geq 1 - \alpha$. This method provides analytically tractable bounds under Gaussian assumptions, with variance stabilization ensuring well-behaved coverage even for moderate sample sizes.
+
+\noindent \textbf{Nonparametric confidence intervals via BCa bootstrap.}
+When joint normality is violated, we estimate confidence intervals for correlation coefficients using the bias-corrected and accelerated (BCa) bootstrap method~\cite{Ef:1987}, which avoids parametric assumptions and improves finite-sample accuracy by correcting both median bias and skewness in the bootstrap distribution. Given pilot data of size $Q$, for each $k$-th low fidelity model, the BCa procedure executes as follows:
 %
 \begin{enumerate}
-    \item Generate $B$ bootstrap resamples by drawing $Q$ samples with replacement from pilot data
-    \item Compute $\widehat{\rho}_{1,k}^{(b)}$ for each resample $b = 1,\dots,B$
-    \item Construct the $(1-\alpha)$ confidence interval via the percentile method:
-    \[
-    \text{CI}_{\rho_{1,k}}^{\text{boot}} = \left[ \widehat{\rho}_{1,k}^{(\alpha/2)}, \widehat{\rho}_{1,k}^{(1-\alpha/2)} \right]
-    \]
-    where $\widehat{\rho}_{1,k}^{(\gamma)}$ denotes the $\gamma$-quantile of the bootstrap distribution
+    \item Generate $B$ independent bootstrap samples by sampling $Q$ observations with replacement from the original dataset.
+    
+    \item For each bootstrap resample, compute the correlation coefficient $\widehat{\rho}_{1,k}^{(b)}$.
+    
+    \item Calculate the bias-correction parameter $\widehat{z}_0 = \Phi^{-1}\left( B^{-1} \sum_{b=1}^B \mathbb{I}(\widehat{\rho}_{1,k}^{(b)} < \widehat{\rho}_{1,k}) \right)$ where $\Phi^{-1}$ is the standard normal quantile function, quantifying median bias via the proportion of bootstrap estimates below the original statistic.
+    
+    \item Compute the acceleration factor $\widehat{a} = \frac{1}{6} \frac{\sum_{j=1}^Q (U_\bullet - U_j)^3}{\left[ \sum_{j=1}^Q (U_\bullet - U_j)^2 \right]^{3/2}}$ where $U_j$ is the jackknife estimate of $\rho_{1,k}$ with observation $j$ removed, and $U_\bullet$ their mean. This captures the correlation coefficient's influence function skewness.
+    
+    \item Construct the $(1-\alpha)$ BCa confidence interval as
+    %
+    \begin{equation}\label{eq:Confidence_Interval_bootstrap}
+        \text{CI}_{\rho_{1,k}}^{\text{BCa}} = \left[ \widehat{\rho}_{1,k}^{(\alpha_1)}, \widehat{\rho}_{1,k}^{(\alpha_2)} \right],
+    \end{equation}
+    %
+    where $\widehat{\rho}_{1,k}^{(\gamma)}$ denotes the $\gamma$-quantile of the bootstrap distribution, with adjusted quantiles 
+    %
+    \begin{equation*}
+        \alpha_1 = \Phi\left( \widehat{z}_0 + \frac{\widehat{z}_0 + z_{\alpha/2}}{1 - \widehat{a}(\widehat{z}_0 + z_{\alpha/2})} \right),\qquad
+        \alpha_2 = \Phi\left( \widehat{z}_0 + \frac{\widehat{z}_0 + z_{1-\alpha/2}}{1 - \widehat{a}(\widehat{z}_0 + z_{1-\alpha/2})} \right).
+    \end{equation*}
+    %
+    For a 95\% confidence interval, we use $\alpha = 0.05$, so that $z_{\alpha/2} \approx 1.96$.
 \end{enumerate}
 %
-This bootstrap approach provides three key advantages in our framework: (1) it makes no parametric assumptions about the joint distribution of model outputs, accommodating complex dependencies and heavy-tailed behaviors; (2) it automatically captures estimation bias through the empirical distribution of resampled statistics; and (3) it maintains validity even when Fisher transformation assumptions are violated. The bootstrap interval length $t_k^{\text{boot}}$ directly substitutes for $t_k$ in our error bound $\frac{|\Delta \xi|}{\xi} \leq \frac{E\sqrt{K-1}}{2} t_k^{\text{boot}}$, ensuring robustness to distributional misspecification.
-
-Computationally, bootstrap resampling requires no additional model evaluations when pilot samples are stored. The dominant cost arises from computing correlation coefficients for each resample, primarily inner products for sample means and variances for $\widehat{\rho}_{1,k}^{(b)}$.
+The BCa method provides two critical advantages: (i) complete elimination of parametric distributional assumptions, accommodating complex dependence structures; and (ii) dual correction for sampling bias via $\widehat{z}_0$ and distributional asymmetry via $\widehat{a}$, ensuring coverage accuracy even under substantial non-Gaussianity. The jackknife-based acceleration factor specifically accounts for the correlation coefficient's sensitivity to outliers, while the bias-correction adapts to finite-sample median shifts.
 
 
-Linking statistical precision to computational efficiency, we bound relative efficiency errors via Cauchy-Schwarz
+From a computational standpoint, bootstrap resampling incurs no additional model evaluations if the pilot samples are retained in memory. The primary cost lies in recomputing correlation coefficients across resamples, which involves inner product evaluations and variance computations for each $\widehat{\rho}_{1,k}^{(b)}$. However, this overhead is modest compared to full model evaluations, making the bootstrap method computationally practical for confidence interval estimation.
+
+To quantitatively link statistical precision to computational efficiency, we bound the relative error in the estimated efficiency ratio using the Cauchy–Schwarz inequality
 %
 \begin{equation}\label{eq:delta_xi_bound}
     \frac{\left|\Delta \xi\right|}{\xi}\le \underbrace{\frac{1}{\xi}\sqrt{\sum_{k=2}^K \left(\frac{\partial \xi}{\partial \rho_{1,k}}\right)^2}}_{E(\boldsymbol{\rho})} \cdot \sqrt{\sum_{k=2}^K\left(\Delta\rho_{1,k}\right)^2}
@@ -55,29 +77,113 @@ Linking statistical precision to computational efficiency, we bound relative eff
     \le \frac{E}{2} \sqrt{\sum_{k=2}^K t_k^2}\le \frac{E\sqrt{K-1}}{2}t_K,
 \end{equation}
 %
-with probability $(1-\alpha)^K$  for independent estimators.  Setting $t_k \leq \delta$ controls the efficiency error via $E\sqrt{K-1}\,\delta/2$, while solving $t_k = \delta$ yields the minimum sample size
+with probability at least $(1 - \alpha)^K$ assuming independent estimators and using either Fisher or bootstrap-based interval widths $t_k$. This inequality defines a worst-case bound on the efficiency perturbation $\Delta \xi$ in terms of the sensitivity factor $E(\boldsymbol{\rho})$ and the correlation uncertainty $t_k$. 
+% Enforcing a uniform bound $t_k \leq \delta$ ensures $\frac{|\Delta \xi|}{\xi} \leq E \sqrt{K - 1} \delta / 2$, yielding a principled criterion for sample size selection. 
+Especially for bivariate normal distribution, inverting the Fisher-based confidence width $t_k$ yields a closed-form lower bound on the required sample size
 %
 \begin{equation*}\label{eq:Pilot_sample_size_estimate}
-Q \geq 3 + \left( \frac{2 z_{\alpha/2}}{\log m} \right)^2, \quad m = \frac{(R_k^2 + 1) \delta + \sqrt{(R_k^2 - 1)^2 \delta^2 + 16 R_k^2}}{2 R_k (2 - \delta)}.
+Q \geq 3 + \left( \frac{2 z_{\alpha/2}}{\log m} \right)^2, \quad m = \frac{(R_k^2 + 1)t_k + \sqrt{(R_k^2 - 1)^2 t_k^2 + 16 R_k^2}}{2 R_k (2 - t_k)}.
 \end{equation*}
 %
-% Since $\widehat \rho_{1,k} \in [-1,1]$, it follows that $t_k \in (0, 2)$. $t_k$ increases as $|\widehat \rho_{1,k}|$ approach 0 and decreases as $|\widehat \rho_{1,k}|$ approach to 1. 
-This adapts sampling to correlation structures and model costs, preventing undersampling-induced pathologies while avoiding computational waste.
 
-We propose a dynamic sampling strategy (also known as sequential analysis \cite{La:2001,Wa:1947}) using Welford's algorithm for incremental statistics and sequential confidence interval assessment, shown in Algorithm~\ref{algo:Parameter_Estimation}. A minimum of  $Q_{\min}=30$ to satisfy asymptotic requirements of Fisher-z transformation or Bootstrap, the algorithm expands the pilot sample until $\max_k t_k \leq \delta$ while monitoring gradient sensitivity $E(\boldsymbol{\rho})$. The algorithm adaptively increases $Q$ until either the Fisher or bootstrap-derived $t_k$ satisfies $\max_k t_k \leq \delta$, with the choice between methods determined by diagnostic checks for bivariate normality. This framework integrates with backtracking model selection (Algorithm~\ref{algo:enhanced_mfmc_selection}) to jointly optimize statistical precision and computational efficiency while maintaining robustness to distributional assumptions.
+
+
+We implement this strategy using a dynamic sampling framework, also known as sequential analysis \cite{La:2001,Wa:1947}, as outlined in Algorithm~\ref{algo:Parameter_Estimation}, to prevent unnecessary sampling. Before running the algorithm, diagnostic checks for bivariate normality are performed to determine whether confidence intervals should be constructed using the Fisher $z$-transformation or bootstrap resampling. Within the algorithm, a minimum of $Q_{\min} = 30$ pilot samples is enforced to ensure the validity of the asymptotic approximations required by both methods. The sample size is then incrementally increased until the maximal confidence width satisfies $\max_k t_k \leq \delta$, while simultaneously monitoring the sensitivity factor $E(\boldsymbol{\rho})$ to avoid unstable perturbations in the efficiency ratio. At each iteration, Welford’s algorithm is used to efficiently update sample means and variances without storing the full history of evaluations. For the bootstrap method, however, sample realizations must be retained to enable resampling. The resulting framework integrates with the enhanced backtracking model selection strategy (Algorithm~\ref{algo:enhanced_mfmc_selection}), enabling robust and efficient MFMC parameter estimation.
+
+
+%
+\normalem
+\begin{algorithm}[!ht]
+\label{algo:Parameter_Estimation}
+\DontPrintSemicolon
+\SetAlgoVlined
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+    
+\KwIn{Relative error $\vartheta$ in $\xi$, number of models $K_c$, initial sample size $Q_0$, cost vector $\boldsymbol{C} = (C_1, \dots, C_{K_c})$, stability threshold $\tau=3$, number of bootstrap samples $B$ (default: 1000).}
+\KwOut{Final sample size $Q$, estimated parameters $\widehat{\boldsymbol{\sigma}},\widehat{\boldsymbol{\alpha}}, \widehat{\boldsymbol{\rho}}$, efficiency $\widehat{\xi}$, model index set $\mathcal{I}$.}
+\hrule
+
+Initialization:
+
+\hspace{3mm}\textbullet~ $dQ \gets Q_0$, $p \gets 0$, $\text{converged} \gets \texttt{False}$, $\text{stable}\_\text{count} \gets 0$, $\mathcal{I}^{prev}\gets \emptyset$. %\tcp*{}
+    
+\hspace{3mm}\textbullet~  Welford's initialization: $m_k^{(0)} \gets 0$, $v_k^{(0)} \gets 0$ for $k=1,\dots,K_c$,  $r_k^{(0)} \gets 0$, for $k=2,\dots,K_c$. %\tcp*{Welford's algorithm}
+
+
+
+\While{$\neg \text{converged}$ \& $\text{stable}\_\text{count}< \tau$}{
+    
+    \For{$k=2,\ldots, K_c$}{
+    
+        \For{$i = 1,\cdots, dQ $}
+    {
+    $Q \gets  p+i$.
+
+    Draw $dQ$ new samples $\{\boldsymbol{\omega}^{(i)}\}_{i=1}^{dQ}$, compute sample realization $u_{1}^{(Q)}$ and $u_{k}^{(Q)}$.\\
+
+    Update mean $m_1^{(Q)}$, $m_k^{(Q)}$, proxies $v_1^{(Q)}$, $v_k^{(Q)}$ and $r_{k}^{(Q)}$ via Welford's algorithm.
+
+
+    }
+    
+    Compute correlations: $\widehat\rho_{1,k}^{(Q)}\gets \frac{r_k^{(Q)}}{\sqrt{v_1^{(Q)}v_k^{(Q)}}}$ for $k=2,\ldots, K_c$. 
+
+    
+    
+    % \eIf{bivariate normality holds}{
+        
+    %         $\widehat{z}_k \gets \tanh^{-1}\left(\widehat{\rho}_{1,k}^{(Q)}\right)$, $\sigma_{\widehat{z}_k} \gets 1/\sqrt{Q - 3}$. \\
+    %         Compute confidence interval $\text{CI}_{\rho_{1,k}}^{\text{fisher}}$ and its width $t_k$ via Fisher z-transform in \eqref{eq:Confidence_Interval_fisher}.
+        
+    % }{
+        
+    %         Generate $B$ bootstrap replicates of $\widehat{\rho}_{1,k}^{(Q)}$.  \\
+    %         Compute  confidence interval $\text{CI}_{\rho_{1,k}}^{\text{boot}}$ and its width $t_k$ via bootstrap in \eqref{eq:Confidence_Interval_bootstrap}.
+        
+    % }
+    }
+
+    $\widehat{\boldsymbol{\rho}}^{(Q)} \gets (1,\widehat{\rho}_{1,2}^{(Q)}, \dots, \widehat{\rho}_{1,K_c}^{(Q)})$.
+
+    % $\delta \gets \frac{2\vartheta}{E\sqrt{K-1}}$
+    % [$\text{index},\xi^{(p)}$] = Multi-fidelity Model Selection ($\boldsymbol{\rho}^{(p)},\boldsymbol{C}$).
+
+    % $Q \geq \max\{30, Q_{\max \{\text{idx}^{current}\}} \}$ \text{as in } \eqref{eq:Pilot_sample_size_estimate} and
+    $\left[\mathcal{I}^{cur},\widehat{\xi}^{(Q)}\right]$ $\gets$ \textsc{ModelSelectionBacktrack} $\left(\widehat{\boldsymbol{\rho}}^{(Q)},\boldsymbol{C}\right)$.\\
+
+    \eIf{$\frac{\widehat \xi^{(Q)}- \widehat \xi^{(p)}}{\widehat \xi^{(Q)}}\leq \vartheta$, $\mathcal{I}^{prev}=\mathcal{I}^{cur}$ }{ %$\max_k t_k \leq \delta$
+            $\text{converged} \gets \texttt{True}$.
+
+            $\text{stable}\_\text{count} \gets  \text{stable}\_\text{count}+1$.
+    }
+    {
+            $\text{stable}\_\text{count} \gets  0$.
+    
+        $p \gets  p+dQ$. %\tcc*{Increase sample size.}
+        
+        $\widehat{\xi}^{(p)} \gets  \widehat{\xi}^{(Q)}$.
+    }
+    
+
+    $\mathcal{I}^{prev} \gets \mathcal{I}^{cur}$.
+    }
+    
+$\widehat{\sigma}_1 \gets \sqrt{v_1^{(Q)}}$, $\widehat{\sigma}_k \gets \sqrt{v_k^{(Q)}}$, $\widehat{\alpha}_k \gets \widehat{\rho}_{1,k}^{(Q)} \widehat{\sigma}_1^{(Q)} / \widehat{\sigma}_k^{(Q)}$, for $k \in \mathcal{I}^{cur}$.
+
+Return $\widehat{\boldsymbol{\sigma}} \gets [\widehat{\sigma}_1,\ldots,\widehat{\sigma}_{K}]$, $\widehat{\boldsymbol{\alpha}} \gets [1,\widehat{\sigma}_2\ldots,\widehat{\sigma}_{K}]$, $\widehat{\boldsymbol{\rho}} \gets \widehat{\boldsymbol{\rho}}^{(Q)}$, $\widehat{\xi} \gets \widehat{\xi}^{(Q)}$, $\mathcal{I} \gets \mathcal{I}^{cur}$.
+\caption{Dynamic Parameter Estimation}
+\end{algorithm}
+\ULforem
+%
+
+
+
+
 
 
 % $\mathbb{E}[|\widehat{\xi} - \xi|^p]^{1/p} \propto p \cdot (1-\rho^2)^{-1}$（$p>2$）
 % Second, variance in correlation estimates introduces non-Gaussian tails in the sampling distribution of the cost efficiency $\xi$, leading to high-probability violations of the theoretical variance reduction bound. These effects compound when multiple correlated models are active, as errors propagate geometrically through the weight allocation system.
-
-
-
-
-
-
-
-
-
 
 % Using these two estimates, we determine the optimal choice of $Q$ by ensuring that the mean square error does not exceed a prescribed threshold $\delta$, we allocate a fraction $\theta_1$ to bias and $1-\theta_1$ to variance. Using the error splitting in \eqref{eq:MSE_rho}, we obtain the required pilot sample size
 % applying Chebyshev’s inequality $P(|\mathbb{E}(\rho_{1,k}^{(Q)})-\rho_{1,k}^{(Q)}|\ge \nu)\le \text{Var}(\rho_{1,k}^{(Q)})/\nu^2$ with $\nu = (1-\theta_1)\delta_1$ gives
@@ -155,143 +261,6 @@ We propose a dynamic sampling strategy (also known as sequential analysis \cite{
 
 
 
-%
-\normalem
-\begin{algorithm}[!ht]
-\label{algo:Parameter_Estimation}
-\DontPrintSemicolon
-\DontPrintSemicolon
 
-    
-\KwIn{Max CI length $\delta$, tolerance $\vartheta$, number of models $K$, initial sample size $Q_0$, cost vector $\boldsymbol{C} = (C_1, \dots, C_K)$, stability threshold $\tau=3$, bootstrap sample count $B$ (default: 1000).}
-\KwOut{Final sample size $Q$, estimated parameters $\widehat{\boldsymbol{\sigma}},\widehat{\boldsymbol{\alpha}}, \widehat{\boldsymbol{\rho}}$, efficiency $\widehat{\xi}$, stable index set $\mathcal{I}^{cur}$.}
-\hrule
-
-Initialization:
-\begin{itemize}%[leftmargin=5pt]
-    \item  $dQ \gets Q_0$, $p \gets 0$, $\text{converged} \gets \text{False}$, $\text{stable}\_\text{count} \gets 0$, $\mathcal{I}^{prev}\gets \emptyset$. %\tcp*{}
-    
-    \item Initialize Welford states: $m_k^{(0)} \gets 0$, $v_k^{(0)} \gets 0$ for $k=1,\dots,K$,  $r_k^{(0)} \gets 0$, for $k=2,\dots,K$. %\tcp*{Welford's algorithm}
-\end{itemize}
-
-
-\While{$\neg \text{converged}$ \& $\text{stable}\_\text{count}< \tau$}{
-    
-    \For{$k=2,\ldots, K$}{
-    
-        \For{$i = 1,\cdots, dQ $}
-    {
-    $Q=p+i$.
-
-    Draw $dQ$ new samples $\{\boldsymbol{\omega}^{(i)}\}_{i=1}^{dQ}$. Compute sample realization $u_{1}^{(Q)}$ and $u_{k}^{(Q)}$.\\
-
-    Update mean $m_1^{(Q)}$, $m_k^{(Q)}$ and proxy of variance $v_1^{(Q)}$, $v_k^{(Q)}$ and covariance $\text{Cov}_{1,k}^{(Q)}$ via Welford's algorithm.
-
-    % Sort $\left\|u_{h,1}^{(j)}\right\|_U$ and $\left\|u_{h,k}^{(j)}\right\|_U$ into ordinal data for Spearman's correlation coefficient.
-    }
-    
-    Compute correlations: $\widehat\rho_{1,k}^{(Q)}\gets r_k^{(Q)}/\sqrt{v_1^{(Q)}v_k^{(Q)}}$ for $k=2,\ldots, K$. $\widehat{\boldsymbol{\rho}}^{(Q)} \gets (1,\widehat{\rho}_{1,2}^{(Q)}, \dots, \widehat{\rho}_{1,K}^{(Q)})$.
-
-    
-    % Estimate Spearman's correlation coefficient $\widehat r_{1,k}$.
-    \eIf{bivariate normality holds}{
-        
-            $\widehat{z}_k \gets \tanh^{-1}(\widehat{\rho}_{1,k}^{(Q)})$, $\sigma_{\widehat{z}_k} \gets 1/\sqrt{Q - 3}$. \\
-            Compute $\text{CI}_{\rho_{1,k}}^{\text{fisher}}$ and $t_k$ via Fisher z-transform in \eqref{eq:Confidence_Interval_rho}.
-        
-    }{
-        
-            Generate $B$ bootstrap replicates of $\widehat{\rho}_{1,k}^{(Q)}$.  \\
-            Compute $\text{CI}_{\rho_{1,k}}^{\text{boot}}$ and $t_k$ via bootstrap.
-        
-    }
-
-    
-    % \If{Bivariate normal}
-    % {
-    % Compute pilot sample size $Q_k^{(j)}$ using \eqref{eq:Pilot_sample_size_estimate}.
-    % }
-    % \Else {
-    % Bootstrap construct confidence intervals.
-    % }
-    }
-    % [$\text{index},\xi^{(p)}$] = Multi-fidelity Model Selection ($\boldsymbol{\rho}^{(p)},\boldsymbol{C}$).
-
-    % $Q \geq \max\{30, Q_{\max \{\text{idx}^{current}\}} \}$ \text{as in } \eqref{eq:Pilot_sample_size_estimate} and
-    [$\mathcal{I}^{cur},\widehat{\xi}^{(Q)}$] $\gets$ \textsc{ModelSelectionBacktrack} ($\widehat{\boldsymbol{\rho}}^{(Q)},\boldsymbol{C}$).\\
-
-    \eIf{$\max_k t_k \leq \delta$, $\mathcal{I}^{prev}=\mathcal{I}^{cur}$ }{
-            $\text{converged} \gets \text{True}$.
-
-            $\text{stable}\_\text{count} = \text{stable}\_\text{count}+1$.
-    }
-    {
-            $\text{stable}\_\text{count} = 0$.
-    
-        $p=p+dQ$. \tcp*{Adaptive sample size increase}
-        
-        $\widehat{\xi}^{(p)} = \widehat{\xi}^{(Q)}$.
-    }
-    
-    % \eIf{bivariate normality holds}{
-    %     \If{$\max_k t_k \leq \delta$, $\text{idx}^{prev}=\text{idx}^{current}$ }{
-    %         $\text{converged} \gets \text{True}$.
-
-    %         $\text{stable}\_\text{count} = \text{stable}\_\text{count}+1$.
-    %     }
-    % }{
-    %     \If{$\max_k t_k \leq \delta$ and $\text{idx}^{prev}=\text{idx}^{current}$}{
-    %         $\text{converged} \gets \text{True}$.
-
-    %         $\text{stable}\_\text{count} = \text{stable}\_\text{count}+1$.
-    %     }
-    % }
-    
-    % \If{$\neg \text{converged}$}{
-    %     $\text{stable}\_\text{count} = 0$.
-    
-    %     $p=p+dQ$. \tcp*{Adaptive sample size increase}
-        
-    %     $\xi^{(p)} = \xi^{(Q)}$.
-
-    % }
-
-    $\mathcal{I}^{prev} \gets \mathcal{I}^{cur}$.
-    }
-    % \If{ If bivariate: $\max_k\left|\left(Q_k^{(j)}-Q_k^{(p)}\right)/Q_k^{(j)}\right| \leq \vartheta$ as in \eqref{eq:delta_xi_bound} and $j\ge \max_k\left\{30,Q_k^{(j)}\right\}$, Else: Confidence interval length $<\delta$}
-    % \text{AddSample = False}
-    % }
-    % \Else {
-    % \text{AddSample = True}
-
-    % $\xi^{(p)} = \xi^{(j)}$.
-
-    % $Q_k^{(p)} = Q_k^{(j)}$.
-    
-    %  $p=p+dQ$}
-
-    
-    % $\left|\frac{\xi^{(j)}-\xi^{(p)}}{\xi^{(j)}}\right|<\delta$ and
-    % $\&$ $\left|\frac{\sigma_{k}^{(j)}-\sigma_{k}^{(j-1)}}{\sigma_{k}^{(j)}}\right|<\delta$ $\&$ $\left|\frac{\widehat \sigma_{k}^{(j)}-\widehat \sigma_{k}^{(j-1)}}{\widehat \sigma_{k}^{(j)}}\right|<\delta$ for all $k=2,\ldots, K$}
-    
-    % \If{}
-    % {
-    
-    % }
-    % \Else {
-    % \text{AddSample = True}
-    % }
-    
-    
-    % \If{$j<Q_t$}
-    % {
-    % AddSample = True
-    % }
-    
-Return $\widehat{\sigma}_1 \gets \sqrt{v_1^{(Q)}}$, $\widehat{\sigma}_k \gets \sqrt{v_k^{(Q)}}$, $\widehat{\alpha}_k \gets \widehat{\rho}_{1,k}^{(Q)} \widehat{\sigma}_1^{(Q)} / \widehat{\sigma}_k^{(Q)}$, $\widehat{\boldsymbol{\rho}}^{(Q)}$, $\widehat{\xi}^{(Q)}$ for $k \in \mathcal{I}^{cur}$.
-\caption{Dynamic Parameter Estimation}
-\end{algorithm}
-\ULforem
-%
 
 

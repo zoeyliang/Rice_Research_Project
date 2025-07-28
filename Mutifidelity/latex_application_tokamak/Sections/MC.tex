@@ -9,7 +9,7 @@ A standard approach to approximate the expectation in \eqref{eq:QoI} is the Mont
     A^{\text{MC}}_{N} := \frac{1}{N}\sum_{i=1}^{N} u_{h}\left(\cdot, \boldsymbol{\omega}^{(i)}\right).
 \end{equation}
 %
-This estimator is unbiased, satisfying $\mathbb{E}[A^{\text{MC}}_{N}] = \mathbb{E}[u_{h}]$, and has variance $\mathbb{V}[A^{\text{MC}}_{N}] = \mathbb{V}[u_{h}]/{N}$, where the variance of the random field is defined as $\mathbb{V}[u] := \mathbb{E}[\left\Vert u - \mathbb{E}(u)\right\Vert_U^2]$. By the central limit theorem, the MC estimator $A^{\text{MC}}_{N}$ converges in distribution to $\mathbb{E}[u]$ as $N$ approaches infinity. 
+This estimator is unbiased, satisfying $\mathbb{E}[A^{\text{MC}}_{N}] = \mathbb{E}[u_{h}]$, and has variance $\mathbb{V}[A^{\text{MC}}_{N}] = \mathbb{V}[u_{h}]/{N}$, where the variance of the random field is defined as $\mathbb{V}[u] := \mathbb{E}[\left\Vert u - \mathbb{E}[u]\right\Vert_U^2]$. By the central limit theorem, the MC estimator $A^{\text{MC}}_{N}$ converges in distribution to $\mathbb{E}[u]$ as $N$ approaches infinity. 
 
 To quantify the total approximation error of the estimator, we consider the  {\it normalized mean squared error (nMSE)}, defined as
 %
@@ -29,7 +29,7 @@ Suppose the sample-wise discretization error satisfies
 \left\|u\left(\cdot, \boldsymbol\omega^{(i)}\right)-u_h\left(\cdot,\boldsymbol\omega^{(i)}\right)\right\|_U\leq C_m\left(\boldsymbol\omega^{(i)}\right)M^{-\alpha}\,,
 \end{equation*}
 %
-where $C_m(\boldsymbol\omega^{(i)})$ is a constant depending only on the geometry of the spatial domain and the particular realization $\boldsymbol\omega^{(i)}$, $\alpha>0$ is the convergence rate of spatial discretization, and $M$ denotes the number of spatial degrees of freedom. For simplicity and analytical tractability, we assume this constant is uniformly bounded across all realizations, i.e. $C_m(\boldsymbol\omega^{(i)})\le C_m$ for some $C_m>0$ independent of the sample realization $\boldsymbol\omega^{(i)}$.
+where $C_m(\boldsymbol\omega^{(i)})$ is a constant depending only on the geometry of the spatial domain and the particular realization $\boldsymbol\omega^{(i)}$, $\alpha>0$ is the convergence rate of spatial discretization, and $M$ denotes the number of spatial degrees of freedom. For simplicity and analytical tractability, we assume this constant is uniformly bounded across all realizations, i.e. $C_m(\boldsymbol\omega^{(i)})\le C_m$ for some $C_m=\sup_{\boldsymbol{\omega} \in \Omega} C_m(\boldsymbol{\omega})>0$ independent of the sample realization $\boldsymbol\omega^{(i)}$ \cite{BaNoTe:2007,BaScZo:2011}.
 
 
 Given a user-specified threshold $\epsilon^2$  for the nMSE, we introduce a {\it splitting ratio} $\theta \in (0,1)$ to allocate the total error budget between bias and statistical components
