@@ -278,7 +278,7 @@ where $L_{\max}$  represents computationally feasible mesh refinement limit of s
 Consider a hierarchy of models $\{u_{\ell(k),k}\}_{k=1}^{K_c}$, where $u_{L,1}$ denotes the high-fidelity model on the finest mesh $\mathcal{T}_L$ with $M_L$ degrees of freedom, and the low-fidelity models $\{u_{\ell(k),k}\}_{k=2}^{K_c}$ are constructed via sparse grid stochastic collocation on coarser meshes $\mathcal{T}_{\ell(k)}$ with $\ell(k) = L + 1 - k$. Let $\mathcal{I} = \{i_k \mid k = 1, \dots, K\}$ denote the index set of selected models, ordered by decreasing correlation $\rho_{1,i_k}$ and associated costs $C_{i_k}$. For the family of high-fidelity models $\{u_{L,1}\}_{L\le L_{\max}}$ with $M_L$ degrees of freedom, assume  there exist positive constants $\alpha, \beta, \gamma$ such that
 %
 \begin{alignat*}{8}
-    \text{(i)}\quad & \left\Vert \mathbb{E}[u] - \mathbb{E}[u_{L,1}] \right\Vert_Z \simeq M_L^{-\alpha}, \qquad
+    \text{(i)}\quad & \left\Vert \mathbb{E}[u] - \mathbb{E}[u_{L,1}] \right\Vert_U \simeq M_L^{-\alpha}, \qquad
     \text{(ii)}\quad & 1 - \rho_{1,i_2}^2 \simeq M_L^{-\beta}, \qquad
     \text{(iii)}\quad & C_1 \simeq M_L^{\gamma},
 \end{alignat*}
@@ -298,7 +298,7 @@ For each low-fidelity model $u_{\ell(i_k),i_k}$ with $k = 2, \dots, K$, assume t
 with $\rho_{1,i_{K^*+1}}^2 := 0$. Then, for any tolerance $\epsilon \in (0, e^{-1})$, there exists a finest mesh level $L \le L_{\max}$ and sample allocation $\{N_{i_k}\}_{i_k \in \mathcal{I}^*}$ such that the multifidelity estimator $A^{\mathrm{MF}}$ achieves nMSE  with
 %
 \[
-\frac{\left\Vert \mathbb{E}[u] - A^{\mathrm{MF}} \right\Vert_{L^2(\boldsymbol{W},Z)}}{\left\Vert \mathbb{E}[u] \right\Vert_{L^2(\boldsymbol{W},Z)}} < \epsilon,
+\frac{\left\Vert \mathbb{E}[u] - A^{\mathrm{MF}} \right\Vert_{L^2(\boldsymbol{W},U)}}{\left\Vert \mathbb{E}[u] \right\Vert_{L^2(\boldsymbol{W},U)}} < \epsilon,
 \]
 %
 with total computational cost bounded by
