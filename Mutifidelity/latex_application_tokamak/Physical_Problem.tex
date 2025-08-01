@@ -35,10 +35,11 @@ the solution $u_h \in   L_{\mathbb{P}}^2(W, \cU)$ of a discretization of the dif
 % ========================================
 \subsection{The Grad-Shafranov free boundary problem with uncertainty}\label{sec:Grad-Shafranov}
 % ========================================
-The specific problem we consider is the so-called Grad-Shafranov free boundary problem, which arises as a model in nuclear fusion
-%The pursuit of controlled nuclear fusion as a clean, abundant energy source has spurred intensive research into magnetic confinement. 
-We begin with a description of the deterministic version of this problem
-We consider fusion in an ITER-class tokamak -- a toroidal device that confines high-temperature plasma using magnetic fields. A deuterium–tritium gas mixture is injected into the chamber and heated above 100 million degrees Celsius, forming a fully ionized plasma in which fusion occurs as thermal energy overcomes Coulomb repulsion. To prevent energy loss and damage, contact between plasma and vessel walls must be avoided. Since the plasma consists of charged particles, its motion can be controlled by magnetic fields. Confinement is achieved by balancing the plasma’s internal pressure against magnetic pressure from external coils and self-induced plasma currents. The resulting equilibrium, governed by Maxwell’s equations and force balance, is described by the Grad–Shafranov equation \cite{GrRu:1958, LuSc:1957, Shafranov:1958}. Assuming axisymmetry (i.e., no dependence on the toroidal angle $\varphi$), the three-dimensional problem reduces to a two-dimensional problem in the $(r, z)$ plane, where the poloidal flux function $u(r,z)$ satisfies
+The specific problem we consider is the so-called Grad-Shafranov free boundary problem, which arises as a model in nuclear fusion, and which was also considered
+in, e.g., \cite{HCElman_JLiang_TSanchez-Vizuet_2022a}.
+We begin with a description of the deterministic version of this problem. Additional details, incl.\ illustrations of the geometry, can be found, e.g., in \cite{HCElman_JLiang_TSanchez-Vizuet_2022a}.
+We consider fusion in an ITER-class tokamak -- a toroidal device that confines high-temperature plasma using magnetic fields. 
+A deuterium–tritium gas mixture is injected into the chamber and heated above 100 million degrees Celsius, forming a fully ionized plasma in which fusion occurs as thermal energy overcomes Coulomb repulsion. To prevent energy loss and damage, contact between plasma and vessel walls must be avoided. Since the plasma consists of charged particles, its motion can be controlled by magnetic fields. Confinement is achieved by balancing the plasma’s internal pressure against magnetic pressure from external coils and self-induced plasma currents. The resulting equilibrium, governed by Maxwell’s equations and force balance, is described by the Grad–Shafranov equation \cite{GrRu:1958, LuSc:1957, Shafranov:1958}. Assuming axisymmetry (i.e., no dependence on the toroidal angle $\varphi$), the three-dimensional problem reduces to a two-dimensional problem in the $(r, z)$ plane, where the poloidal flux function $u(r,z)$ satisfies
 %
 \begin{subequations}\label{eq:FreeBoundary}
 \begin{equation}\label{eq:FreeBoundary_GS}
@@ -49,7 +50,10 @@ I_k/S_k & \text{ in } \Omega_{C_k} ,\\
 \end{array}\right.
 \end{equation}
 %
-where $\nabla$ and $\nabla \cdot$ denote gradient and divergence operator in Cartesian coordinates; the magnetic permeability $\mu$ is constant (equal to $\mu_0$) in vacuum regions and may vary within ferromagnetic materials as a function $\mu = \mu(|\nabla u|^2/r^2)$; the domain $\Omega_p$ represents the plasma region, while $\Omega_{C_k}$ corresponds to the region occupied by the $k$-th poloidal field coil $k$ carrying current $I_k$ distributed over a cross-sectional area $S_k$. The source term in $\Omega_p$ models the toroidal plasma current density, which depends nonlinearly on $u$ in terms of the hydrostatic pressure $p(u)$ and toroidal magnetic field $g(u)$. Following the formulation in \cite{LuBr:1982}, we define 
+where $\nabla$ and $\nabla \cdot$ denote gradient and divergence operator in Cartesian coordinates.
+In \eqref{eq:FreeBoundary}, the magnetic permeability $\mu$ is constant (equal to $\mu_0$) in vacuum regions and may vary within ferromagnetic materials 
+as a function $\mu = \mu(|\nabla u|^2/r^2)$ \MH{what does this mean? What is the description of $\mu$ in the domains $\Omega$?}
+Moreover,  the domain $\Omega_p$ represents the plasma region, while $\Omega_{C_k}$ corresponds to the region occupied by the $k$-th poloidal field coil $k$ carrying current $I_k$ distributed over a cross-sectional area $S_k$. The source term in $\Omega_p$ models the toroidal plasma current density, which depends nonlinearly on $u$ in terms of the hydrostatic pressure $p(u)$ and toroidal magnetic field $g(u)$. Following the formulation in \cite{LuBr:1982}, we define 
 %
 \begin{equation}\label{eq:source}
 \frac{d}{d u}p( u) = j_0\frac{\beta}{r_0}\left(1-u_N^{\alpha_1}\right)^{\alpha_2},  \qquad \qquad
@@ -62,7 +66,8 @@ where $u_N \in [0,1]$ is the normalized poloidal flux, scaled between its values
 
 Let $\Omega \subset \mathbb{R}^2$ be a bounded Lipschitz domain enclosing the confinement region $\Omega_p$, the external coils $\Omega_{c_i}$, and surrounding structural components.  
 Following \cite{Gr:1999}, the solution space $\cU$ for \eqref{eq:FreeBoundary} is defined as
-%
+
+\MH{The $\cU$ below is not a Hilbert space because $C^0(\overline{\Omega})$ is not a Hilbert space!}
 \begin{equation}\label{eq:Soln_space}
     \cU:=\left\{u:\Omega\rightarrow \mathbb{R} \,\Bigg| \,\int_\Omega u^2rdrdz<\infty; \,  \int_\Omega\frac{|\nabla u|^2}{r}drdz<\infty; \, u(0,z)=0 \right\}\cap C^0(\overline{\Omega}),
 \end{equation}

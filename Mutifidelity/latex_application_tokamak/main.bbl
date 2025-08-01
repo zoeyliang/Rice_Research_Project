@@ -84,6 +84,14 @@ H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
 \newblock \href {https://doi.org/10.1016/j.jcp.2021.110699}
   {\path{doi:10.1016/j.jcp.2021.110699}}.
 
+\bibitem{HCElman_JLiang_TSanchez-Vizuet_2022a}
+H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
+\newblock Surrogate approximation of the {G}rad-{S}hafranov free boundary
+  problem via stochastic collocation on sparse grids.
+\newblock {\em J. Comput. Phys.}, 448:Paper No. 110699, 20, 2022.
+\newblock \href {https://doi.org/10.1016/j.jcp.2021.110699}
+  {\path{doi:10.1016/j.jcp.2021.110699}}.
+
 \bibitem{ElLiSa:2023}
 H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
 \newblock Multilevel {M}onte {C}arlo methods for the {G}rad-{S}hafranov free
