@@ -5,7 +5,7 @@
 \section{Monte Carlo estimator}\label{sec:MC}
 % ====================================================
 
-A standard approach to approximate the expectation in \eqref{eq:QoI} is the Monte Carlo method; see \cite{ElLiSa:2023,Gi:2008,Gi:2015,PeWiGu:2016}. Let $u_h (\cdot, \boldsymbol{\omega})$ denote a discrete approximation of the random field $u(\cdot, \boldsymbol{\omega})$, obtained by spatial discretization with mesh parameter $h$. The Monte Carlo Finite-Element estimator $A^{\text{MC}}_{N}$ is defined as the sample mean over $N$ independent and identically distributed (i.i.d.) realizations 
+A standard approach to approximate the expectation in \eqref{eq:expectation_of_u} is the Monte Carlo method; see \cite{ElLiSa:2023,Gi:2008,Gi:2015,PeWiGu:2016}. Let $u_h (\cdot, \boldsymbol{\omega})$ denote a discrete approximation of the random field $u(\cdot, \boldsymbol{\omega})$, obtained by spatial discretization with mesh parameter $h$. The Monte Carlo Finite-Element estimator $A^{\text{MC}}_{N}$ is defined as the sample mean over $N$ independent and identically distributed (i.i.d.) realizations 
 % $\boldsymbol{\omega}^{(1)},\ldots,\boldsymbol{\omega}^{(N)}$
 %
 \begin{equation}\label{eq:MC_estimator}
