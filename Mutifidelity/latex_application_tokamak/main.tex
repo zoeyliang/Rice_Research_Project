@@ -1,4 +1,5 @@
 \documentclass[final,3p,times,11pt]{elsarticle}
+
 \usepackage[USenglish]{babel}
 \usepackage{amsmath,amssymb,amsthm, mathrsfs,multirow}
 \usepackage{mathtools}
@@ -48,12 +49,13 @@
 \title{Multi-fidelity Monte Carlo for uncertainty quantification in the free boundary Grad-Shafranov equation}
 
 
-\author[umdcs]{Matthias Heinkenschloss}
-\ead{heinken@rice.edu}
-\address[umdcs]{Department of Computational Applied Mathematics \& Operations Research, Rice University.}
-\author[umdm]{Jiaxing Liang}
+\author[umds]{Jiaxing Liang}
 \ead{jl508@rice.edu}
-\address[umdm]{Department of Computational Applied Mathematics \& Operations Research, Rice University.}
+\address[umds]{Department of Computational Applied Mathematics \& Operations Research, Rice University.}
+\author[umdcm]{Matthias Heinkenschloss}
+\ead{heinken@rice.edu}
+\address[umdcm]{Department of Computational Applied Mathematics \& Operations Research and The Ken Kennedy Institute, Rice  University.}
+
 \begin{abstract}
 We investigate uncertainty propagation in the Grad-Shafranov free boundary problem for tokamak plasma equilibria, using Monte Carlo, multilevel Monte Carlo, and multi-fidelity Monte Carlo (MFMC) methods to quantify parametric uncertainties on plasma boundary variability. For the MFMC estimator, we develop an optimization framework that yields closed-form optimal sample allocations that achieve the prescribed statistical accuracy at minimal computational cost. Furthermore, we introduce an adaptive parameter estimation strategy that dynamically estimates the pilot sample size by controlling confidence interval length through sensitivity analysis of MFMC efficiency metrics. Numerical experiments demonstrate that our MFMC approach maintains statistical accuracy comparable to standard Monte Carlo while reducing computational cost by approximately a factor of 40. The method reliably captures key plasma boundary dynamics -- including separatrix behavior and geometric descriptors -- under uncertainty, establishing multi-fidelity methods as an efficient computational paradigm for uncertainty quantification in magnetic confinement fusion.  
 \end{abstract}
@@ -65,20 +67,20 @@ Multi-fidelity Monte Carlo Finite-Element \sep Parameter Estimation \sep Paramet
 \end{keyword}
 \end{frontmatter}
 
-\input{./Sections/Introduction} 
-\input{./Sections/Physical_Problem} 
-\input{./Sections/Sparse_Grid_Stochastic_Collocation}
-\input{./Sections/MC}
-\input{./Sections/MFMC}
-\input{./Sections/Parameter_estimation}
-\input{./Sections/Model_selection}
-\input{./Sections/Numerical_result}
-\input{./Sections/Acknowledgment}
-\input{./Sections/Appendix}
+\input{./Introduction} 
+\input{./Physical_Problem} 
+\input{./Sparse_Grid_Stochastic_Collocation}
+\input{./MC}
+\input{./MFMC}
+\input{./Parameter_estimation}
+\input{./Model_selection}
+\input{./Numerical_result}
+\input{./Acknowledgment}
+\input{./Appendix}
 
 
 
-\bibliographystyle{abbrv}
+\bibliographystyle{abbrvurl}
 % \bibliographystyle{alphaurl}
 \bibliography{references_liang}
 \end{document}
