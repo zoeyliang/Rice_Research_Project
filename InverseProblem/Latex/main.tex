@@ -1,0 +1,98 @@
+\documentclass[final,3p,times,11pt]{elsarticle}
+\usepackage[USenglish]{babel}
+\usepackage{amsmath,amssymb,amsthm, mathrsfs,multirow}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{stmaryrd}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{cancel}
+\usepackage{ulem}
+\usepackage{tabularx}
+\usepackage{comment}
+%\usepackage{subcaption}
+%\usepackage[show]{ed}
+%\usepackage{showkeys}
+%\usepackage{showlabels}
+%\usepackage[notcite,notref]{showkeys}
+%\usepackage{refcheck}
+% \usepackage[ruled,vlined]{algorithm2e}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\definecolor{Myblue}{rgb}{.2 0.4 1}
+
+\usepackage{hyperref}
+\hypersetup{
+    %bookmarks=true,         % show bookmarks bar?
+    colorlinks = true,       % false: boxed links; true: colored links
+}
+
+
+
+% ==============   Macros  ====================
+\newcommand{\mynabla}{\widetilde{\nabla}} 
+\newcommand{\jump}[1]{[\![#1]\!]}
+\newcommand{\HEcolor}[1]{{\textcolor{blue}{#1}}}
+\newcommand{\TSVcolor}[1]{{\textcolor{orange}{#1}}}
+\newcommand{\JLcolor}[1]{{\textcolor{violet}{#1}}} %violet
+\newcommand{\Grids}{\boldsymbol{\chi}}
+
+\newtheorem{theorem}{Theorem}%[section]
+\newtheorem{lemma}{Lemma}%[section]
+\newtheorem{VariationalForm}[theorem]{Variational Formulation}
+% =============================================
+
+\journal{}
+\makeatletter
+\def\ps@pprintTitle{%
+ \let\@oddhead\@empty
+ \let\@evenhead\@empty
+ \def\@oddfoot{}%
+ \let\@evenfoot\@oddfoot}
+\makeatother
+
+
+
+
+\begin{document}
+\begin{frontmatter}
+\title{Infinite dimensional Bayesian inverse problem for the free boundary Grad-Shafranov equation}
+
+
+\author[umdcs]{Matthias Heinkenschloss}
+\ead{heinken@rice.edu}
+\address[umdcs]{Department of Computational Applied Mathematics \& Operations Research, Rice University.}
+\author[umdm]{Jiaxing Liang}
+\ead{jl508@rice.edu}
+\address[umdm]{Department of Computational Applied Mathematics \& Operations Research, Rice University.}
+% \author[UA]{Tonatiuh S\'anchez-Vizuet}
+% \ead{tonatiuh@arizona.edu}
+% \address[UA]{Department of Mathematics, The University of Arizona.}
+\begin{abstract}
+We investigate Bayesian inference for our free boundary Grad-Shafranov equation.
+\end{abstract}
+
+\begin{keyword}
+Inverse problem \sep Uncertainty Quantification \sep Free Boundary Grad-Shafranov Problem.
+%
+\MSC[2020] 
+\end{keyword}
+\end{frontmatter}
+
+\input{./Sections/Introduction} 
+\input{./Sections/Bayesian_framework} 
+% \input{./Sections/Sparse_Grid_Stochastic_Collocation}
+% \input{./Sections/MC}
+% \input{./Sections/MFMC}
+% \input{./Sections/Parameter_estimation}
+% \input{./Sections/Model_selection}
+% \input{./Sections/Numerical_result}
+% \input{./Sections/Acknowledgment}
+% \input{./Sections/Appendix}
+
+
+
+\bibliographystyle{abbrv}
+% \bibliographystyle{alphaurl}
+\bibliography{references_liang}
+\end{document}
+
+

@@ -1,0 +1,36 @@
+% ====================================================
+\section{Introduction}\label{sec:MC}
+% ====================================================
+
+
+
+% Furthermore, accurate derivatives are
+% vital for inverse free-boundary equilibrium problems, which aim at finding the values of
+% control parameters that ensure that the plasma attains a certain desired state, i.e. shape
+% or position. Inverse free-boundary equilibrium problems are formulated as constrained
+% optimization problems and only accurately computed derivatives can guarantee that the
+% optimization algorithms find indeed the optimum.
+
+% CEDRES++ can solve inverse free-boundary equilibrium problems. The inverse problem in the static mode aims at finding poloidal field coil currents that ensure
+% a desired shape and position of the plasma. We use standard algorithms
+% for constrained optimization to solve the inverse problems. Therefore it will be straightforward to add in the near future further constraints, such as constraints on the flux consumption or the currents in the coils.
+
+We want to find the currents that give a certain desired shape of the plasma, we consider an optimal control problem. The currents $I_i$ are the control variables and the magnetic flux map $\psi$ describing the equilibrium is the controlled variable. The cost function and regularization term to deal with the ill-posedness that penalize the deviation from a desired plasma shape and position \cite{CEDRES}, are
+\begin{align}
+    &\min_{\psi,I_{1,1},\ldots, I_{L,N_L}} \frac{1}{2}\sum_{i=1}^{N_d}\left(\psi (r_i,z_i) - \psi(r_{d},z_d)\right)^2 + \sum_{i=1}^L\sum_{j=1}^{N_i}\frac{w_{i,j}}{2}I_{i,j}^2,\\
+    & \text{s.t.}  -\nabla\,\cdot\,\left(\frac{1}{\mu r}\nabla u\right) = \left\{ \begin{array}{ll}
+r\frac{d}{d u} p(u) + \frac{1}{2\,\mu r} \frac{d}{d u} g^2(u) & \text{ in } \Omega_p(u), \\
+I_k/S_k & \text{ in } \Omega_{C_k}, \\
+0 & \text{ elsewhere, } 
+\end{array}\right.\\
+& \psi(0,z) = 0,\quad \lim_{\|(r,z)\|\rightarrow \infty}\psi(r,z) = 0.
+\end{align}
+%
+where $w_{i,j}\ge 0$ are the regularization weights.
+
+We are interested in the inverse problems for inferring the external coil currents with randomness coming from the measurements of the poloidal field. The inverse problem is ill-posed. We seek a statistical description of all possible currents that conform to some prior knowledge and at the same time are consistent with the observations. These currents are distributed according to the posterior measure. We cast the problem in the Bayesian framework for statistical inference and yield a probabilistic solution to the inverse problem that quantifies most kinds of uncertainties about the parameter.
+
+previous studies \cite{LiLuWa:2021}.
+
+
+The paper is structured as follows. In Section \ref{sec:BSI}, we introduce the Bayesian framework of the Grad-Shafranov equation.

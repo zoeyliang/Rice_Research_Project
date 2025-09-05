@@ -1,0 +1,105 @@
+% ====================================================
+\section{Bayesian statistical inversion}\label{sec:BSI}
+% ====================================================
+
+The forward model with the actual noisy observation data satisfy the stochastic relationship 
+%
+\begin{equation}\label{eq:forward_model_1}
+    \psi = G(\boldsymbol{I}) + \boldsymbol{\eta},
+\end{equation}
+%
+where $\boldsymbol{I}$ is the set of currents, $G$ is the parameter-to-observe mapping from the current to the noise-free observables. $G$ is nonlinear and serves as a black box. The additive noise vector $\boldsymbol{\eta}$ captures the measurement uncertainties of the observation $\psi$, and each component is independent identically distributed Gaussian random variable with zero mean and variance $\sigma^2$, so $\boldsymbol{\eta}$ is normally distributed as $\mathcal{N}(0,\boldsymbol{\Sigma}_I)$ with bounded covariance matrix $\boldsymbol{\Sigma}_I$ of diagnostic measurement, and $\psi = [\psi_1,\ldots, \psi_M]^T$. We assume diagnostics are independent of each other, the covariance matrix is a diagonal matrix.
+
+
+The Bayes’ theorem, which plays a key role in the Bayesian inference, is
+%
+\begin{equation}\label{eq:Bayes}
+    \pi(\boldsymbol{I}|\psi) = \frac{ \pi(\psi|\boldsymbol{I})\pi \left(\boldsymbol{I}\right)}{\pi (\psi)}\propto \pi(\psi|\boldsymbol{I})\pi \left(\boldsymbol{I}\right),
+\end{equation}
+where $\pi(\psi|\boldsymbol{I})$ is the likelihood density, it represents the underlying physical knowledge of the forward model; $\pi \left(\boldsymbol{I}\right)$ is the prior density that describes the input $\boldsymbol{I}$ before any measurements, $\pi (\psi)$ is the marginal likelihood, where $\pi(\psi) = \int \pi(\psi|\boldsymbol{I})\pi(\boldsymbol{I}) d\boldsymbol{I}$ also known as the normalization constant.  $\pi(\boldsymbol{I}|\psi)$ is the posterior probability density function of $\boldsymbol{I}$ given that $\psi$ is known.  Our goal is to sample from the conditional distribution $\pi(\boldsymbol{I}|\psi)$.
+
+In practice, the measure plasma field $\psi$ contains measurement errors. Solving the forward model with an current set $\boldsymbol{I}$ makes $\psi$ containing a modeling and numerical error. In this paper, we assume that the combined errors from the measurement, modeling, and numerics satisfy a Gaussian distribution. Therefore, the likelihood function takes the form
+%
+\begin{equation}\label{eq:likelihood_density}
+      \pi(\psi|\boldsymbol{I}) = \frac{1}{(2\pi)^{\frac M 2} |\boldsymbol{\Sigma}_I|^{\frac 1 2}}e^{-\frac{1}{2}(G\left(\boldsymbol{I}) - \psi\right)^T \boldsymbol{\Sigma}_I^{-1}(G\left(\boldsymbol{I}) - \psi\right)}\propto e^{-\Phi(\boldsymbol{I})}.
+\end{equation}
+%
+where data-misfit function $\Phi(\boldsymbol{I})$ is
+%
+\[
+\Phi(\boldsymbol{I}) = \frac{1}{2}\left\Vert \boldsymbol{\Sigma}_I^{-\frac{1}{2}}(G(\boldsymbol{I}) - \psi)\right\Vert^2.
+\]
+%
+
+\subsection{Prior}
+The prior term is selected in the Gaussian form. The prior probability can be expressed as
+\begin{equation}\label{eq:prior_density}
+    \pi(\boldsymbol{I}) = 
+\end{equation}
+
+
+\subsection{Maximum posterior probability}
+
+To sample the posterior distributions, standard MCMC methods is considered. These approaches often require a large amount of samples for convergence.
+
+\subsection{Surrogate-based methods}
+An evaluation of the likelihood function requires an evaluation of the high-fidelity model $G$. To alleviate the large computational cost incurred from expensive forward model to approximate the posterior distribution, we consider to construct an accurate but inexpensive approximation or surrogate model for the forward model, and use it to sample. Let $\widehat G$ be the approximation of $G$ for the forward model using surrogate function, the corresponding surrogate posterior is
+%
+\[
+\widehat \pi(\boldsymbol{I}|\psi) = \frac{ \widehat\pi(\psi|\boldsymbol{I})\pi \left(\boldsymbol{I}\right)}{\widehat\pi (\psi)},
+\]
+where $\pi \left(\boldsymbol{I}\right)$ is the prior density and $\widehat\pi(\psi|\boldsymbol{I})$ is the surrogate likelihood that defined as
+%
+\[
+ \widehat\pi(\psi|\boldsymbol{I}) = \frac{1}{(2\pi)^{\frac{M}{2}} \sigma^2}e^{-\frac{\|\widehat G(\boldsymbol{I}) - \psi\|_\mathcal{U}^2}{2\sigma^2}}.
+\]
+%
+
+
+\subsection{Markov Chain Monte Carlo sampling from the posterior distribution}
+Markov Chain Monte Carlo (MCMC) methods are a popular strategy to sample the posterior distribution $\pi(\boldsymbol{I}|\psi)$ in \eqref{eq:Bayes} by constructing transition kernel for the Markov chain. One classic example of an MCMC method is the Metropolis-Hastings (M-H) algorithm, which is an iterative scheme that draws candidate sample with a probability that depends on the ratio of the posterior (hence circumvents the need to compute the evidence $\pi(\psi)$) at the current candidate sample and the posterior at the sample of the previous iteration. Its key idea is proposals and rejection. The M-H algorithm requires many iterations to produce an acceptable effective sample size. Each iteration means a likelihood evaluation, which indicates a high-fidelity model evaluation. An alternative strategy is to consider the `preconditioned' MCMC (two-stage MCMC) \cite{EfHoLu:2006}. For the two-stage MCMC, use coarse-scale (low fidelity) model in the first stage to increase the acceptance rate of candidates for the second step, and the high-fidelity model is used to either accept or reject the sample. The coarse-scale test filters the unacceptable proposals and avoids the expensive fine-scale tests for those proposals. The filtering process essentially modifies the proposal distribution $q$ by incorporating the coarse-scale information of the problem.
+
+
+\begin{algorithm}[!ht]
+\DontPrintSemicolon
+
+    \KwIn{Sample size $m$.}
+    \KwOut{$\boldsymbol{I}_i$ for $i=1,\ldots,m$.}
+
+    Choose a starting point $\boldsymbol{I}_0$.
+    
+    \For{$i=1\ldots, m$}{
+    Draw a trial sample $\boldsymbol{I}^{\text{low}} $ from distribution $q(\boldsymbol{I}^{\text{low}}|\boldsymbol{I}_{i-1})$.
+
+    Compute acceptance probability
+    \[
+    \alpha^{\text{low}}(\boldsymbol{I}_{i-1},\boldsymbol{I}^{\text{low}} ) = \min \left\{1,\frac{q(\boldsymbol{I}_{i-1}|\boldsymbol{I}^{\text{low}} )\pi^{\text{low}}(\boldsymbol{I}^{\text{low}}|\psi )}{q(\boldsymbol{I}^{\text{low}} |\boldsymbol{I}_{i-1})\pi^{\text{low}}(\boldsymbol{I}_{i-1}|\psi)}\right\},
+    \]
+    Set the sample $\boldsymbol{I}^{\text{high}}$ to
+    \[
+    \boldsymbol{I}^{\text{high}}=\left\{ \begin{array}{ll}
+    \boldsymbol{I}^{\text{low}}  & \text{ with probability } \alpha ^{\text{low}}(\boldsymbol{I}_{i-1},\boldsymbol{I}^{\text{low}} ), \\
+    \boldsymbol{I}_{i-1} & \text{ with probability } 1-\alpha^{\text{low}} (\boldsymbol{I}_{i-1},\boldsymbol{I}^{\text{low}} ).
+    \end{array}\right.
+    \]
+
+    Compute the acceptance probability
+    \[
+    \alpha^{\text{high}}(\boldsymbol{I}_{i-1},\boldsymbol{I}^{\text{high}}) = \min \left\{1,\frac{\pi^{\text{high}}(\boldsymbol{I}^{\text{high}}|\psi)\pi^{\text{low}}(\boldsymbol{I}_{i-1}|\psi )}{\pi^{\text{high}}(\boldsymbol{I}_{i-1}|\psi)\pi^{\text{low}}(\boldsymbol{I}^{\text{high}}|\psi )}\right\},
+    \]
+
+    Set the sample $\boldsymbol{I}_{i}$ to
+    \[
+    \boldsymbol{I}_{i}=\left\{ \begin{array}{ll}
+    \boldsymbol{I}^{\text{high}} & \text{ with probability } \alpha ^{\text{high}}(\boldsymbol{I}_{i-1},\boldsymbol{I}^{\text{high}} ), \\
+    \boldsymbol{I}_{i-1} & \text{ with probability } 1-\alpha^{\text{high}} (\boldsymbol{I}_{i-1},\boldsymbol{I}^{\text{high}} ).
+    \end{array}\right.
+    \]
+    }
+    
+\caption{Two-stage MCMC}\label{algo:MCMC}
+\end{algorithm}
+
+
+
+\cite{PeWiGu:2018}
