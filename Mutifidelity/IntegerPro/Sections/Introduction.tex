@@ -1,0 +1,27 @@
+% ====================================================
+\section{Introduction}\label{sec:Intro}
+% ====================================================
+We investigate a mixed-integer programming formulation for Multi-fidelity Monte Carlo (MFMC) sampling to estimate sample sizes, and compare the results with those obtained by rounding the solutions of the corresponding real-valued optimization problem. The original optimization problem for multi-fidelity Monte Carlo (MFMC) is given by
+%
+\begin{equation}\label{eq:Optimization_pb}
+    \begin{array}{ll}
+    \min \limits_{\begin{array}{c}\scriptstyle N_1,\ldots, N_K\in \mathbb{R} \\[-4pt]
+\scriptstyle \alpha_2,\ldots,\alpha_K\in \mathbb{R}
+\end{array}} &\mathbb{V}\left[A^{\text{MF}}\right],\\
+       \;\,\text{subject to} &\displaystyle\sum\limits_{k=1}^K C_kN_k=p,\\[2pt]
+       &\displaystyle -N_1\le 0,\quad \displaystyle N_{k-1}-N_k\le 0, \;\; k=2\ldots,K.
+    \end{array}
+\end{equation}
+%
+We first solve \eqref{eq:Optimization_pb} to obtain a real-valued sample size estimate. The resulting solution is then rounded: if the real-valued estimate is greater than or equal to one, it is rounded down; otherwise, it is rounded up. This procedure yields an implementable integer-valued sample size. Alternatively, one may formulate the integer optimization problem directly as
+%
+\begin{equation}\label{eq:Optimization_pb_integer}
+    \begin{array}{ll}
+    \min \limits_{\begin{array}{c}\scriptstyle N_1,\ldots, N_K\in \mathbb{N} \\[-4pt]
+\scriptstyle \alpha_2,\ldots,\alpha_K\in \mathbb{R}
+\end{array}} &\mathbb{V}\left[A^{\text{MF}}\right],\\
+       \;\,\text{subject to} &\displaystyle\sum\limits_{k=1}^K C_kN_k=p,\\[2pt]
+       &\displaystyle -N_1\le 0,\quad \displaystyle N_{k-1}-N_k\le 0, \;\; k=2\ldots,K.
+    \end{array}
+\end{equation}
+%

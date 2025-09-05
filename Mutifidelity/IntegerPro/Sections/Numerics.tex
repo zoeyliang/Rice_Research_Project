@@ -1,0 +1,80 @@
+% ====================================================
+\section{Numerical results}\label{sec:Num_Result}
+% ====================================================
+
+
+%
+\begin{table}[ht]
+\centering
+\scalebox{0.8}{
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Model index &1 &2 &3 &4 &5 \\
+\hline
+Correlation coeff $\rho$ &1     &9.9977e-01   &9.9925e-01  &9.9728e-01   &9.8390e-01\\
+\hline
+Standard deviation $\sigma_k$ &1.0840e-02    &1.0838e-02   &1.1001e-02  &1.1549e-02   &9.5720e-03\\
+\hline
+Cost &73&7.0318e-03 &1.4018e-03 &5.0613e-04 &2.6803e-04\\
+\hline
+\end{tabular}
+}
+\caption{Parameters from plasma problem.}
+\label{Tab:Parameters}
+\end{table}
+%
+
+
+
+%
+\begin{table}[ht]
+\centering
+\scalebox{0.6}{
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+Total cost $P$ &73.05 &73.051 &73.052 &73.053 &73.054 &73.055 &73.056\\
+\hline
+Sample size (real valued) &[1,   134,   588   2540,  21100] &[1,   135,   588,   2541,  21101]&same &same &[1,   135,   588,   2541,  21102] &same &same\\
+\hline
+Sample size (integer program) &[1, 2, 3, 11, 97]&[1, 2, 3, 12, 99]&-&-&-&-&-\\
+\hline
+CPU time for integer program [s] & 0.27 &0.32 &$>$ 1000 &$>$ 1000 &$>$ 1000 &$>$ 1000 &$>$ 1000\\
+\hline
+\end{tabular}
+}
+\caption{Sample size for real-valued optimization and integer optimization.}
+\label{Tab:Sample_Size}
+\end{table}
+%
+For Table \ref{Tab:Sample_Size}, MINATOUR MINLP branch and bound and Python are used to solve the problem, we select a very small total cost $P$ to guarantee at least one sample for high fidelity model, only P=73.05 and P=73.051 converged in this case. For any larger $P$, the solver finds it difficult to converge. A difficulty encountered is that the runtime scales exponentially as P increases due to the combinatorial nature. Certain cases are likely to be unsolvable in a reasonable amount of time with the solver. In addition, the solver struggles to find feasible integer solutions, which is needed to cut off branches. Back-of-the-napkin calculations give a lower bound of at least millions of possible branches for some of the tested cases, so it could take a long time, possibly more than a day, to solve some of the tested cases if a feasible integer solution is hard to find. 
+
+A possible solution for making this problem more scalable is to apply the following recent paper to reduce the problem to running a mixed integer fractional linear program branch and cut routine \cite{ChYaMo:2024}. By applying a linearization technique, a further reduction would make the problem solvable as a mixed integer linear program branch and cut routine \cite{ChCo:1962} (also see \cite{YuFe:2014} for a more general method). It is unknown how this would perform yet, but one of the two papers needed show an order of magnitude improvement vs solving the problem type using a method based on improving directions (there is no comparison against solvers such as MINOTAUR), and the other paper allows common LP methods to be used, so hopefully combining both would hopefully result in an order of magnitude improvement versus solving a MINLP. Other potential solutions are to apply cutting planes to solve the problem, reformulate the objective to be piecewise linear, create bounds on the variables by solving some additional optimization problems to speed up the solution of the main optimization problem, and apply additional reformulations to reduce the optimization time.
+
+Other potential solutions are to apply cutting planes to solve the problem, reformulate the objective to be piecewise linear, create bounds on the variables by solving some additional optimization problems to speed up the solution of the main optimization problem, and apply additional reformulations to reduce the optimization time.
+
+The biggest takeaway from this comparison is that the real valued solutions are very different than the integer valued solutions, and solving the corresponding integer nonlinear programming problem is hard.
+
+An additional test was performed for the integer nonlinear programming problem. No comparsion with the real valued solution was performed in this case yet. $C_1$, $C_2$, $C_3$, $C_4$, and $C_5$ were set to one. The total cost P is specified in the table.
+
+\begin{table}[ht]
+\centering
+\scalebox{0.7}{
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+Total cost $P$ &123 &124 &125 &126 &127 &128 &129\\
+\hline
+Sample size (integer program) &[2, 3, 6, 16, 96]&[2, 3, 6, 16, 97]&[2, 3, 6, 16, 98]&[2, 3, 6, 16, 99]&-&-&-\\
+\hline
+CPU time for integer program [s] & 0.23 &0.16 & 0.10 & 0.14 &$>$ 1000 &$>$ 1000 &$>$ 1000\\
+\hline
+\end{tabular}
+}
+\caption{Sample size for a second integer optimization problem.}
+\label{Tab:Sample_Size2}
+\end{table}
+The same properties of the integer programming solution are observed as in the first case.
+
+% ====================================================
+\section{Conclusion}
+% ====================================================
+The integer-valued solution from the real-valued optimization problem \eqref{eq:Optimization_pb} is different from the integer-valued optimization problem \eqref{eq:Optimization_pb_integer}. The CPU time of solving \eqref{eq:Optimization_pb_integer} is dramatic high compared to solving \eqref{eq:Optimization_pb}.
