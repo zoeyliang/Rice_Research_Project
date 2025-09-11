@@ -1,0 +1,22 @@
+\begin{thebibliography}{1}
+
+\bibitem{ChYaMo:2024}
+Y.~Chaiblaine and M.~Moula\"i.
+\newblock An exact method for solving the integer sum of linear ratios problem.
+\newblock {\em Optimization}, 73(2):461--479, 2024.
+
+\bibitem{ChCo:1962}
+A.~Charnes and W.~W. Cooper.
+\newblock Programming with linear fractional functionals.
+\newblock {\em Naval Res. Logist. Quart.}, 9:181--186, 1962.
+
+\bibitem{YuFe:2014}
+D.~Yue and F.~You.
+\newblock Reformulation-linearization method for global optimization of mixed
+  integer linear fractional programming problems with application on
+  sustainable batch scheduling.
+\newblock In J.~J. Klemeš, P.~S. Varbanov, and P.~Y. Liew, editors, {\em 24th
+  European Symposium on Computer Aided Process Engineering}, volume~33 of {\em
+  Computer Aided Chemical Engineering}, pages 949--954. Elsevier, 2014.
+
+\end{thebibliography}
