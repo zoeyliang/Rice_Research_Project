@@ -23,7 +23,9 @@ To quantify the total approximation error of the estimator, we consider the  {\i
 The nMSE decomposes into two contributions: a {\it bias error} from spatial discretization, and a {\it statistical error} due to finite sampling
 %
 \[
-\mathcal{E}_{A^{\text{MC}}_{N}}^2 = \frac{\left\Vert\mathbb{E}[u]-\mathbb{E}[u_{h}] \right\Vert_{U}^2+\mathbb E\left[\left\Vert \mathbb{E}[u_{h}] -A^{\text{MC}}_{N} \right\Vert_{U}^2\right]}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2} = \frac{\left\Vert\mathbb{E}[u]-\mathbb{E}[u_{h}] \right\Vert_{U}^2}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}+\frac{\mathbb{V}\left[u_{h}\right]}{N\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}=\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2.
+\mathcal{E}_{A^{\text{MC}}_{N}}^2 = \frac{\left\Vert\mathbb{E}[u]-\mathbb{E}[u_{h}] \right\Vert_{U}^2+\mathbb E\left[\left\Vert \mathbb{E}[u_{h}] -A^{\text{MC}}_{N} \right\Vert_{U}^2\right]}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2} 
+= \frac{\left\Vert\mathbb{E}[u]-\mathbb{E}[u_{h}] \right\Vert_{U}^2}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}+\frac{\mathbb{V}\left[u_{h}\right]}{N\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}
+=\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2.
 \]
 %
 Suppose the sample-wise discretization error satisfies
