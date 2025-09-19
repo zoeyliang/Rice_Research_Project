@@ -32,10 +32,11 @@ Note that both MFMC and MLMC share the goal of variance reduction, but differ in
 We now briefly review the core principles underlying multi-fidelity Monte Carlo, drawing on the framework in \cite{PeWiGu:2016}.  The MFMC framework combines a high-fidelity model $u_{h,1} = u_h$ with a series of low-fidelity models $u_{h,k}: \Omega \rightarrow U$ for $k=2,\ldots,K$.  The high-fidelity model yields accurate but computationally expensive evaluations, whereas the low-fidelity models offer cheaper approximations with reduced accuracy. MFMC optimally allocates computational resources across the fidelity levels to reduce the overall estimator variance, reducing the reliance on costly high-fidelity samples while preserving estimator accuracy and robustness.
 
 
-For convenience, we may use $u$ and $u_{h,k}$ to refer to the exact $u(\cdot,\boldsymbol \omega)$ and discrete $u_{h,k}(\cdot,\boldsymbol \omega)$ solutions with random variable $\boldsymbol \omega$ in the later context. For each pair of $u_{h,k}(\cdot,\boldsymbol \omega)$ and $u_{h,j}(\cdot,\boldsymbol \omega)$, we define the variance and the Pearson correlation coefficient as
+For convenience, we may use $u$ and $u_{h,k}$ to refer to the exact $u(\omega)$ and discrete $u_{h,k}(\omega)$ solutions with random variable $\omega$ in the later context. For each pair of $u_{h,k}(\omega)$ and $u_{h,j}(\omega)$, we define the variance and the Pearson correlation coefficient as
 %
 \begin{equation*}
-    \sigma_k^2 = \mathbb{V}\left[u_{h,k}(\cdot,\boldsymbol \omega)\right],\qquad \rho_{k,j} = \frac{\text{Cov}\left[ u_{h,k}(\cdot,\boldsymbol \omega), u_{h,j}(\cdot,\boldsymbol \omega)\right]}{\sigma_k\sigma_j}, \quad k,j=1,\dots, K,
+    \sigma_k^2 = \mathbb{V}\left[u_{h,k}(\omega)\right],\qquad \rho_{k,j} 
+                       = \frac{\text{Cov}\left[ u_{h,k}(\omega), u_{h,j}(\omega)\right]}{\sigma_k\sigma_j}, \quad k,j=1,\dots, K,
 \end{equation*}
 %
 where the covariance is $\text{Cov}[u_{h,k}, u_{h,j}] := \mathbb{E}[\langle u_{h,k} - \mathbb{E}[u_{h,k}], u_{h,j} - \mathbb{E}[u_{h,j}]\rangle_U]$ and, by definition, $\rho_{k,k}=1$. The multi-fidelity Monte Carlo finite element estimator $A^{\text{MF}}$ augments a high-fidelity Monte Carlo estimate with control variate corrections from low-fidelity models
@@ -98,10 +99,10 @@ where the variance term $\mathbb{V}[A^{\text{MF}}]$  can be explicitly expressed
 %
 \begin{equation}
     \label{eq:SLSGC_MLS_SpatialGridsNo}
-    M_L = M_0s^{-L} \ge \left(\frac{\theta\epsilon}{C_m}\right)^{-\frac 1 {\alpha}} \qquad \text{ and } \qquad     L = \left\lceil \frac{1}{\alpha}\log_s \left(\frac{C_m M_0^\alpha}{\theta\epsilon}\right) \right\rceil,
+    M_L = M_0s^{-L} \ge \left(\frac{\theta\epsilon}{c_u}\right)^{-\frac 1 {\alpha}} \qquad \text{ and } \qquad     L = \left\lceil \frac{1}{\alpha}\log_s \left(\frac{c_u M_0^\alpha}{\theta\epsilon}\right) \right\rceil,
 \end{equation}
 %
-where $M_0$ is the number of grid points at the coarsest level, $s>1$ is the spatial refinement factor, $\alpha$ represents the convergence rate of the spatial discretization, and $C_m$ is a constant characterizing the discretization scheme. To determine the optimal sample sizes $N_k$ and control variate weights $\alpha_k$ in the MFMC estimator \eqref{eq:MFMC_estimator_independent}, we express the total computational cost for the MFMC estimator
+where $M_0$ is the number of grid points at the coarsest level, $s>1$ is the spatial refinement factor, $\alpha$ represents the convergence rate of the spatial discretization, and $c_u$ is a constant characterizing the discretization scheme. To determine the optimal sample sizes $N_k$ and control variate weights $\alpha_k$ in the MFMC estimator \eqref{eq:MFMC_estimator_independent}, we express the total computational cost for the MFMC estimator
 %
 \[
 \mathcal{W}^{\text{MF}} = \sum_{k=1}^K C_kN_k,
