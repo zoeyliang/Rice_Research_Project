@@ -2,29 +2,32 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ====================================================
-\section{Monte Carlo estimator}\label{sec:MC}
+\section{Monte Carlo Method}\label{sec:MC}
 % ====================================================
 
-A standard approach to approximate the expectation in \eqref{eq:expectation_of_u} is the Monte Carlo method; see \cite{ElLiSa:2023,Gi:2008,Gi:2015,PeWiGu:2016}. Let $u_h (\cdot, \boldsymbol{\omega})$ denote a discrete approximation of the random field $u(\cdot, \boldsymbol{\omega})$, obtained by spatial discretization with mesh parameter $h$. The Monte Carlo Finite-Element estimator $A^{\text{MC}}_{N}$ is defined as the sample mean over $N$ independent and identically distributed (i.i.d.) realizations 
+A standard approach to approximate the expectation in \eqref{eq:expectation_of_u} is the Monte Carlo method; 
+see, e.g.,  \cite{MBGiles_2015a,MDGunzburger_CGWebster_GZhang_2014a}.
+
+Let $u_h (\cdot, \boldsymbol{\omega})$ denote a discrete approximation of the random field $u(\cdot, \boldsymbol{\omega})$, obtained by spatial discretization with mesh parameter $h$. The Monte Carlo Finite-Element estimator $A^{\text{MC}}_{N}$ is defined as the sample mean over $N$ independent and identically distributed (i.i.d.) realizations 
 % $\boldsymbol{\omega}^{(1)},\ldots,\boldsymbol{\omega}^{(N)}$
 %
 \begin{equation}\label{eq:MC_estimator}
     A^{\text{MC}}_{N} := \frac{1}{N}\sum_{i=1}^{N} u_{h}\left(\cdot, \boldsymbol{\omega}^{(i)}\right).
 \end{equation}
 %
-This estimator is unbiased, satisfying $\mathbb{E}[A^{\text{MC}}_{N}] = \mathbb{E}[u_{h}]$, and has variance $\mathbb{V}[A^{\text{MC}}_{N}] = \mathbb{V}[u_{h}]/{N}$, where the variance of the random field is defined as $\mathbb{V}[u] := \mathbb{E}[\left\Vert u - \mathbb{E}[u]\right\Vert_U^2]$. By the central limit theorem, the MC estimator $A^{\text{MC}}_{N}$ converges in distribution to $\mathbb{E}[u]$ as $N$ approaches infinity. 
+This estimator is unbiased, satisfying $\mathbb{E}[A^{\text{MC}}_{N}] = \mathbb{E}[u_{h}]$, and has variance $\mathbb{V}[A^{\text{MC}}_{N}] = \mathbb{V}[u_{h}]/{N}$, where the variance of the random field is defined as $\mathbb{V}[u] := \mathbb{E}[ \big\|  u - \mathbb{E}[u] \big\| _U^2]$. By the central limit theorem, the MC estimator $A^{\text{MC}}_{N}$ converges in distribution to $\mathbb{E}[u]$ as $N$ approaches infinity. 
 
 To quantify the total approximation error of the estimator, we consider the  {\it normalized mean squared error (nMSE)}, defined as
 %
  \[
-\mathcal{E}_{A^{\text{MC}}_{N}}^2:=\frac{\mathbb E\left[\left\Vert\mathbb{E}[u]-A^{\text{MC}}_{N} \right\Vert_{U}^2\right]}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}.
+\mathcal{E}_{A^{\text{MC}}_{N}}^2:= \mathbb E\left[ \big\| \mathbb{E}[u]-A^{\text{MC}}_{N}  \big\| _{U}^2\right] /  \big\| \mathbb{E}[u]  \big\| _{U}^2.
 \] 
 %
 The nMSE decomposes into two contributions: a {\it bias error} from spatial discretization, and a {\it statistical error} due to finite sampling
 %
 \[
-\mathcal{E}_{A^{\text{MC}}_{N}}^2 = \frac{\left\Vert\mathbb{E}[u]-\mathbb{E}[u_{h}] \right\Vert_{U}^2+\mathbb E\left[\left\Vert \mathbb{E}[u_{h}] -A^{\text{MC}}_{N} \right\Vert_{U}^2\right]}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2} 
-= \frac{\left\Vert\mathbb{E}[u]-\mathbb{E}[u_{h}] \right\Vert_{U}^2}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}+\frac{\mathbb{V}\left[u_{h}\right]}{N\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}
+\mathcal{E}_{A^{\text{MC}}_{N}}^2 = \frac{ \big\| \mathbb{E}[u]-\mathbb{E}[u_{h}]  \big\| _{U}^2+\mathbb E\left[ \big\|  \mathbb{E}[u_{h}] -A^{\text{MC}}_{N}  \big\| _{U}^2\right]}{ \big\| \mathbb{E}[u]  \big\| _{U}^2} 
+= \frac{ \big\| \mathbb{E}[u]-\mathbb{E}[u_{h}]  \big\| _{U}^2}{ \big\| \mathbb{E}[u]  \big\| _{U}^2}+\frac{\mathbb{V}\left[u_{h}\right]}{N \big\| \mathbb{E}[u]  \big\| _{U}^2}
 =\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2.
 \]
 %
@@ -41,7 +44,7 @@ Given a user-specified threshold $\epsilon^2$  for the nMSE, we introduce a {\it
 %
 \begin{equation} \label{eq:error-budget}
 %\textcolor{red}{\|u-u_h\|_{L^2(\boldsymbol W,U)}\le C_mM^{-\alpha}\le \theta_1\epsilon},\qquad\text{ and }\qquad \|u_h-\widehat u_{h}\|_{L^2(\boldsymbol W,U)} \le C_{p} P^{-\nu}\le \theta_2\epsilon\,.  
-\mathcal{E}_{\text{Bias}}^2=\|u-u_h\|_{L^2(\boldsymbol \Omega,U)}\le C_mM^{-\alpha}= \theta\epsilon^2, \quad\quad \mathcal{E}_{\text{Stat}}^2 = \frac{\sigma_1^2}{N\left\Vert\mathbb{E}(u) \right\Vert_{U}^2}=(1-\theta)\epsilon^2,
+\mathcal{E}_{\text{Bias}}^2=\|u-u_h\|_{L^2(\boldsymbol \Omega,U)}\le C_mM^{-\alpha}= \theta\epsilon^2, \quad\quad \mathcal{E}_{\text{Stat}}^2 = \frac{\sigma_1^2}{N \big\| \mathbb{E}(u)  \big\| _{U}^2}=(1-\theta)\epsilon^2,
 \end{equation}
 where $C_m$ is independent of the sample and $\sigma_1^2 = \mathbb{V}\left( u_{h}\right)$. To meet these error constraints, the number of spatial nodes $M$ and sample size $N$ must obey
 %
@@ -50,7 +53,7 @@ where $C_m$ is independent of the sample and $\sigma_1^2 = \mathbb{V}\left( u_{h
 M\ge \left(\frac{\theta\epsilon^2}{C_m}\right)^{-\frac 1 {\alpha}},\quad\quad  N \ge  \frac{\sigma_1^2}{\epsilon_{\text{tar}}^2},
 \end{equation}
 %
-where $\epsilon_{\text{tar}}^2 = \epsilon^2(1-\theta)\left\Vert\mathbb{E}(u) \right\Vert_{U}^2$.
+where $\epsilon_{\text{tar}}^2 = \epsilon^2(1-\theta) \big\| \mathbb{E}(u)  \big\| _{U}^2$.
 Assuming each evaluation of $u_{h}$ incurs an average cost of $C$, the total cost to compute $A^{\text{MC}}_{N}$ is
 %
 \[

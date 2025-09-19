@@ -151,6 +151,14 @@ M.~B. Giles.
 \newblock \href {https://doi.org/10.1017/S096249291500001X}
   {\path{doi:10.1017/S096249291500001X}}.
 
+\bibitem{MBGiles_2015a}
+M.~B. Giles.
+\newblock Multilevel {M}onte {C}arlo methods.
+\newblock {\em Acta Numerica}, 24:259--328, 2015.
+\newblock URL: \url{http://dx.doi.org/10.1017/S096249291500001X}, \href
+  {https://doi.org/10.1017/S096249291500001X}
+  {\path{doi:10.1017/S096249291500001X}}.
+
 \bibitem{GoGeElJa:2020}
 A.~A. Gorodetsky, G.~Geraci, M.~S. Eldred, and J.~D. Jakeman.
 \newblock A generalized approximate control variate framework for multifidelity
@@ -179,6 +187,15 @@ A.~Gruber, M.~Gunzburger, L.~Ju, and Z.~Wang.
 \newblock {\em Journal of Scientific Computing}, 94(1):Paper No. 2, 18, 2023.
 \newblock \href {https://doi.org/10.1007/s10915-022-02051-y}
   {\path{doi:10.1007/s10915-022-02051-y}}.
+
+\bibitem{MDGunzburger_CGWebster_GZhang_2014a}
+M.~D. Gunzburger, C.~G. Webster, and G.~Zhang.
+\newblock Stochastic finite element methods for partial differential equations
+  with random input data.
+\newblock {\em Acta Numerica}, 23:521--650, 5 2014.
+\newblock URL: \url{http://journals.cambridge.org/article_S0962492914000075},
+  \href {https://doi.org/10.1017/S0962492914000075}
+  {\path{doi:10.1017/S0962492914000075}}.
 
 \bibitem{Ha:2007}
 A.~Hald.
