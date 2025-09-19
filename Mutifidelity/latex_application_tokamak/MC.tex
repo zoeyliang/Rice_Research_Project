@@ -5,28 +5,32 @@
 \section{Monte Carlo Method}\label{sec:MC}
 % ====================================================
 
-A standard approach to approximate the expectation in \eqref{eq:expectation_of_u} is the Monte Carlo method; 
+A standard approach to approximate the expectation in \eqref{eq:expectation_of_u} is the Monte Carlo (MC) method; 
 see, e.g.,  \cite{MBGiles_2015a,MDGunzburger_CGWebster_GZhang_2014a}.
-
-Let $u_h (\cdot, \boldsymbol{\omega})$ denote a discrete approximation of the random field $u(\cdot, \boldsymbol{\omega})$, obtained by spatial discretization with mesh parameter $h$. The Monte Carlo Finite-Element estimator $A^{\text{MC}}_{N}$ is defined as the sample mean over $N$ independent and identically distributed (i.i.d.) realizations 
-% $\boldsymbol{\omega}^{(1)},\ldots,\boldsymbol{\omega}^{(N)}$
-%
+Because $u$ cannot be evaluated, but only a approximation $u_h \in   L_{\mathbb{P}}^2(W, \cU)$ can be 
+computed, we estimate $\mathbb{E}[u_{h}]$, 
+The MC estimator $A^{\text{MC}}_{N}$ of $\mathbb{E}[u_{h}]$ 
+is the sample mean over $N$ independent and identically distributed (i.i.d.) realizations 
 \begin{equation}\label{eq:MC_estimator}
-    A^{\text{MC}}_{N} := \frac{1}{N}\sum_{i=1}^{N} u_{h}\left(\cdot, \boldsymbol{\omega}^{(i)}\right).
+    A^{\text{MC}}_{N} := \frac{1}{N}\sum_{i=1}^{N} u_{h}\big(\omega^{(i)} \big).
 \end{equation}
 %
-This estimator is unbiased, satisfying $\mathbb{E}[A^{\text{MC}}_{N}] = \mathbb{E}[u_{h}]$, and has variance $\mathbb{V}[A^{\text{MC}}_{N}] = \mathbb{V}[u_{h}]/{N}$, where the variance of the random field is defined as $\mathbb{V}[u] := \mathbb{E}[ \big\|  u - \mathbb{E}[u] \big\| _U^2]$. By the central limit theorem, the MC estimator $A^{\text{MC}}_{N}$ converges in distribution to $\mathbb{E}[u]$ as $N$ approaches infinity. 
+This estimator is unbiased,  $\mathbb{E}[A^{\text{MC}}_{N}] = \mathbb{E}[u_{h}]$, 
+and has variance $\mathbb{V}[A^{\text{MC}}_{N}] = N^{-1} \mathbb{V}[u_{h}]$, 
+where the variance is defined as in \eqref{eq:variance_of_u}.
+By the central limit theorem, the MC estimator $A^{\text{MC}}_{N}$ converges in distribution to $\mathbb{E}[u_h]$ as $N$ approaches infinity. 
 
 To quantify the total approximation error of the estimator, we consider the  {\it normalized mean squared error (nMSE)}, defined as
 %
  \[
-\mathcal{E}_{A^{\text{MC}}_{N}}^2:= \mathbb E\left[ \big\| \mathbb{E}[u]-A^{\text{MC}}_{N}  \big\| _{U}^2\right] /  \big\| \mathbb{E}[u]  \big\| _{U}^2.
+\mathcal{E}_{A^{\text{MC}}_{N}}^2:= \mathbb E\left[ \big\| \mathbb{E}[u]-A^{\text{MC}}_{N}  \big\| _{U}^2\right]  \big/ \, \big\| \mathbb{E}[u]  \big\| _{U}^2.
 \] 
 %
 The nMSE decomposes into two contributions: a {\it bias error} from spatial discretization, and a {\it statistical error} due to finite sampling
 %
 \[
-\mathcal{E}_{A^{\text{MC}}_{N}}^2 = \frac{ \big\| \mathbb{E}[u]-\mathbb{E}[u_{h}]  \big\| _{U}^2+\mathbb E\left[ \big\|  \mathbb{E}[u_{h}] -A^{\text{MC}}_{N}  \big\| _{U}^2\right]}{ \big\| \mathbb{E}[u]  \big\| _{U}^2} 
+\mathcal{E}_{A^{\text{MC}}_{N}}^2 
+= \frac{ \big\| \mathbb{E}[u]-\mathbb{E}[u_{h}]  \big\| _{U}^2+\mathbb E\left[ \big\|  \mathbb{E}[u_{h}] -A^{\text{MC}}_{N}  \big\| _{U}^2\right]}{ \big\| \mathbb{E}[u]  \big\| _{U}^2} 
 = \frac{ \big\| \mathbb{E}[u]-\mathbb{E}[u_{h}]  \big\| _{U}^2}{ \big\| \mathbb{E}[u]  \big\| _{U}^2}+\frac{\mathbb{V}\left[u_{h}\right]}{N \big\| \mathbb{E}[u]  \big\| _{U}^2}
 =\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2.
 \]
@@ -34,10 +38,11 @@ The nMSE decomposes into two contributions: a {\it bias error} from spatial disc
 Suppose the sample-wise discretization error satisfies
 %
 \begin{equation*} \label{eq:Assumption_uhA}
-\left\|u\left(\cdot, \boldsymbol\omega^{(i)}\right)-u_h\left(\cdot,\boldsymbol\omega^{(i)}\right)\right\|_U\leq C_m\left(\boldsymbol\omega^{(i)}\right)M^{-\alpha}\,,
+       \left\|u\left(\omega^{(i)}\right)-u_h\left(\omega^{(i)}\right)\right\|_U
+       \leq C_m\left(\omega^{(i)}\right)M^{-\alpha}\,,
 \end{equation*}
 %
-where $C_m(\boldsymbol\omega^{(i)})$ is a constant depending only on the geometry of the spatial domain and the particular realization $\boldsymbol\omega^{(i)}$, $\alpha>0$ is the convergence rate of spatial discretization, and $M$ denotes the number of spatial degrees of freedom. For simplicity and analytical tractability, we assume this constant is uniformly bounded across all realizations, i.e. $C_m(\boldsymbol\omega^{(i)})\le C_m$ for some $C_m=\sup_{\boldsymbol{\omega} \in \Omega} C_m(\boldsymbol{\omega})>0$ independent of the sample realization $\boldsymbol\omega^{(i)}$ \cite{BaNoTe:2007,BaScZo:2011}.
+where $C_m(\omega^{(i)})$ is a constant depending only on the geometry of the spatial domain and the particular realization $\omega^{(i)}$, $\alpha>0$ is the convergence rate of spatial discretization, and $M$ denotes the number of spatial degrees of freedom. For simplicity and analytical tractability, we assume this constant is uniformly bounded across all realizations, i.e. $C_m(\omega^{(i)})\le C_m$ for some $C_m=\sup_{\omega \in \Omega} C_m(\omega)>0$ independent of the sample realization $\omega^{(i)}$ \cite{BaNoTe:2007,BaScZo:2011}.
 
 
 Given a user-specified threshold $\epsilon^2$  for the nMSE, we introduce a {\it splitting ratio} $\theta \in (0,1)$ to allocate the total error budget between bias and statistical components

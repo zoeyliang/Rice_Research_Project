@@ -24,9 +24,9 @@ Given a function $u \in   L_{\mathbb{P}}^2(W, \cU)$, the objective of this paper
       \mathbb{E}[ u ] = \int_W u(\omega)  \textup{d}\mathbb{P}(\omega)
  \end{equation}
  as well as the expectation of derived quantities from $u$. We define
-\[
-           \mathbb{V}[u] = \mathbb{E}\big[  \| u - \mathbb{E}[u]  \|_U^2 \big].
- \]
+ \begin{equation}   \label{eq:variance_of_u}
+           \mathbb{V}[u] = \mathbb{E}\big[  \big\| u - \mathbb{E}[u]  \big\|_U^2 \big].
+  \end{equation}
 
 In our applications, the evaluation of $u(\omega) $ given a sample $\omega \in W$ requires the solution of a partial differential equation (PDE)
 In practice, this solution is not available, but an approximation computed as the solution of a discretization of the PDE is used. 
@@ -83,11 +83,9 @@ equipped with the inner product and norm
 \end{equation}
 %
 
-In practice, the equilibrium configuration is sensitive to uncertainties from measurement error 
-\MH{what are those measurements?  We don't use any in this paper},
-modeling assumptions, and operational variability, which propagate through the system and impact both the solution $u$ and 
-derived quantities such as the plasma boundary and $x$-point locations. In this work, we focus on uncertainties in the coil current intensities
-\MH{$I_k$ in \eqref{eq:FreeBoundary_GS}.}
+In practice, the equilibrium configuration is sensitive to operational variability, which propagates through the system and 
+impacts both the solution $u$ and derived quantities such as the plasma boundary and $x$-point locations. 
+In this work, we focus on uncertainties in the coil currents $I_k$ in \eqref{eq:FreeBoundary_GS}.
 We model the uncertainty using a $d$-dimensional random vector $\omega= (\omega_1, \ldots, \omega_d)$, 
 where each $\omega_k$ is an independent random variable uniformly distributed around the baseline value 
 $\widetilde{\omega}_k$ for some relative perturbation magnitude $\tau > 0$. The corresponding joint density is
