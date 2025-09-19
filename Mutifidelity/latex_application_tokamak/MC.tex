@@ -7,7 +7,12 @@
 
 A standard approach to approximate the expectation in \eqref{eq:expectation_of_u} is the Monte Carlo (MC) method; 
 see, e.g.,  \cite{MBGiles_2015a,MDGunzburger_CGWebster_GZhang_2014a}.
-Because $u$ cannot be evaluated, but only a approximation $u_h \in   L_{\mathbb{P}}^2(W, \cU)$ can be 
+Because multilevel Monte Carlo (MLMC) methods \cite{MBGiles_2015a,SHeinrich_2001a} and 
+multi-fidelity Monte Carlo (MFMC) methods  \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a, BPeherstorfer_KWillcox_MDGunzburger_2018a} 
+build on MC, we provide a brief review.
+
+
+Because $u$ cannot be evaluated, but only an approximation $u_h \in   L_{\mathbb{P}}^2(W, \cU)$ can be 
 computed, we first estimate $\mathbb{E}[u_h ]$, 
 The MC estimator $A^{\text{MC}}_{N}$ of $\mathbb{E}[u_h ]$ 
 is the sample mean over $N$ independent and identically distributed (i.i.d.) realizations 
@@ -52,21 +57,23 @@ Then we pick a mesh size $h$ such that
 \begin{subequations} \label{eq:error-budget}
 \begin{equation}
      \mathcal{E}_{\text{Bias}}^2
-     = \frac{ \big\| \mathbb{E}[u]-\mathbb{E}[u_h ]  \big\| _{U}^2 }{ \big\| \mathbb{E}[u]  \big\| _{U}^2}
-     \le  \frac{ \|u-u_h\|_{L^2(W,\cU)}^2 }{ \big\| \mathbb{E}[u]  \big\| _{U}^2}
+     =  \big\| \mathbb{E}[u]-\mathbb{E}[u_h ]  \big\| _{U}^2   \big/ \,   \big\| \mathbb{E}[u]  \big\| _{U}^2
+     \le  \|u-u_h\|_{L^2(W,\cU)}^2    \big/ \,   \big\| \mathbb{E}[u]  \big\| _{U}^2
      \le c_u^2  h^{2\alpha} \le \theta\epsilon^2.
 \end{equation}
-and a sample size $N$
+and a sample size $N$ such that
 \begin{equation} 
-        \mathcal{E}_{\text{Stat}}^2 = \frac{\mathbb{V}( u_h )}{N \, \big\| \mathbb{E}(u)  \big\| _{U}^2} \le (1-\theta)\epsilon^2,
+        \mathcal{E}_{\text{Stat}}^2 
+           = \mathbb{V}( u_h )   \big/ \,  \big( N \, \big\| \mathbb{E}(u)  \big\| _{U}^2 \big)
+          \le (1-\theta)\epsilon^2,
 \end{equation}
 \end{subequations}
 To meet these error constraints, the mesh size  $h$ and sample size $N$ must obey
 \begin{equation}  \label{eq:SLSGC_SL_SpatialGridsNo_n_SparseGridsNo}
-       h \le \Big( \frac{\sqrt{\theta}\epsilon}{c_u} \Big)^{1/\alpha}, \quad\quad  
-       N \ge  \frac{ \mathbb{V}( u_h ) }{  \epsilon^2(1-\theta) \, \big\| \mathbb{E}(u)  \big\| _{U}^2},
+       h \le \Big( \sqrt{\theta}\epsilon / c_u \Big)^{1/\alpha}, \quad\quad  
+       N \ge   \mathbb{V}( u_h )  \Big/ \Big( \epsilon^2(1-\theta) \, \big\| \mathbb{E}(u)  \big\| _{U}^2 \Big).
 \end{equation}
-In practice, $N$ is chosejn to the smallest integer satisfying \eqref{eq:SLSGC_SL_SpatialGridsNo_n_SparseGridsNo}.
+In practice, $N$ is chosen to the smallest integer satisfying \eqref{eq:SLSGC_SL_SpatialGridsNo_n_SparseGridsNo}.
 Assuming each evaluation of $u_h$ incurs an average cost of $C$, the total cost to compute $A^{\text{MC}}_{N}$ is
 \[
        \mathcal{W}^\text{MC}  =  \frac{ C\, \mathbb{V}( u_h ) }{  \epsilon^2(1-\theta) \, \big\| \mathbb{E}(u)  \big\| _{U}^2}.

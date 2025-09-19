@@ -24,14 +24,6 @@ L.~Artsimovich, G.~Bobrovskii, and E.~Gorbunov.
 \newblock \href {https://doi.org/10.1007/s10596-024-10329-3}
   {\path{doi:10.1007/s10596-024-10329-3}}.
 
-\bibitem{BaNoTe:2007}
-I.~Babu\v{s}ka, F.~Nobile, and R.~Tempone.
-\newblock A stochastic collocation method for elliptic partial differential
-  equations with random input data.
-\newblock {\em SIAM Journal on Numerical Analysis}, 45(3):1005--1034, 2007.
-\newblock \href {https://doi.org/10.1137/050645142}
-  {\path{doi:10.1137/050645142}}.
-
 \bibitem{BaScZo:2011}
 A.~Barth, C.~Schwab, and N.~Zollinger.
 \newblock Multi-level {M}onte {C}arlo finite element method for elliptic {PDE}s
@@ -155,7 +147,7 @@ M.~B. Giles.
 M.~B. Giles.
 \newblock Multilevel {M}onte {C}arlo methods.
 \newblock {\em Acta Numerica}, 24:259--328, 2015.
-\newblock URL: \url{http://dx.doi.org/10.1017/S096249291500001X}, \href
+\newblock URL: \url{http://doi.org/10.1017/S096249291500001X}, \href
   {https://doi.org/10.1017/S096249291500001X}
   {\path{doi:10.1017/S096249291500001X}}.
 
@@ -203,6 +195,16 @@ A.~Hald.
   to {F}isher, 1713--1935}.
 \newblock Sources and Studies in the History of Mathematics and Physical
   Sciences. Springer, New York, 2007.
+
+\bibitem{SHeinrich_2001a}
+S.~Heinrich.
+\newblock Multilevel {M}onte {C}arlo methods.
+\newblock In S.~Margenov, J.~Wa{\'s}niewski, and P.~Yalamov, editors, {\em
+  Large-Scale Scientific Computing}, volume 2179 of {\em Lecture Notes in
+  Computer Science}, pages 58--67. Springer Berlin Heidelberg, 2001.
+\newblock URL: \url{http://doi.org/10.1007/3-540-45346-6\_5}, \href
+  {https://doi.org/10.1007/3-540-45346-6\_5}
+  {\path{doi:10.1007/3-540-45346-6\_5}}.
 
 \bibitem{Heumann:feeqsm}
 H.~Heumann.
@@ -287,6 +289,22 @@ B.~Peherstorfer, K.~Willcox, and M.~Gunzburger.
 \newblock {\em SIAM Journal on Scientific Computing}, 38(5):A3163--A3194, 2016.
 \newblock \href {https://doi.org/10.1137/15M1046472}
   {\path{doi:10.1137/15M1046472}}.
+
+\bibitem{BPeherstorfer_KWillcox_MDGunzburger_2016a}
+B.~Peherstorfer, K.~Willcox, and M.~D. Gunzburger.
+\newblock Optimal model management for multifidelity {M}onte {C}arlo
+  estimation.
+\newblock {\em SIAM J. Sci. Comput.}, 38(5):A3163--A3194, 2016.
+\newblock \href {https://doi.org/10.1137/15M1046472}
+  {\path{doi:10.1137/15M1046472}}.
+
+\bibitem{BPeherstorfer_KWillcox_MDGunzburger_2018a}
+B.~Peherstorfer, K.~Willcox, and M.~D. Gunzburger.
+\newblock Survey of multifidelity methods in uncertainty propagation,
+  inference, and optimization.
+\newblock {\em SIAM Rev.}, 60(3):550--591, 2018.
+\newblock \href {https://doi.org/10.1137/16M1082469}
+  {\path{doi:10.1137/16M1082469}}.
 
 \bibitem{Ri:1932}
 P.~R. Rider.
