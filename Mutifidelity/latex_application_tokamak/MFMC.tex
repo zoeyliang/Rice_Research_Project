@@ -1,15 +1,23 @@
+%!TEX root = main.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 % ====================================================
 \section{Multi-fidelity Monte Carlo}\label{sec:MFMC}
 % ====================================================
 %
-The standard Monte Carlo finite element estimator is often computationally prohibitive due to the large number of high-fidelity samples required to achieve a prescribed accuracy. To mitigate this cost, multilevel Monte Carlo (MLMC) methods \cite{Gi:2008,Gi:2015} and multi-fidelity Monte Carlo (MFMC) approaches \cite{PeWiGu:2016} have been developed. MFMC,  in particular, considers surrogate models of varying fidelities through the framework of {\it approximate control variate Monte Carlo} \cite{GoGeElJa:2020}, which exploits statistical 
-correlations between models of varying fidelity to construct a recursive, variance-reducing estimator. When the low-fidelity models are strongly correlated with the high-fidelity counterpart, MFMC yields substantial variance reduction. Moreover, if the expected value of the low-fidelity model can be estimated at relatively low cost, the control variate correction becomes both efficient and effective. This strategy preserves estimator unbiasedness while significantly improving computational efficiency through sample reuse and optimal weighting across model hierarchies. 
+Multilevel Monte Carlo (MLMC) methods \cite{MBGiles_2015a,SHeinrich_2001a} and 
+multi-fidelity Monte Carlo (MFMC) methods  \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a, BPeherstorfer_KWillcox_MDGunzburger_2018b} 
+build in control variate techniques to reduce the statistical error below $(1-\theta)\epsilon^2$  
+at a computational cost less than \eqref{eq:MC-work}.
 
+Both MFMC and MLMC share the goal of variance reduction, but differ in structure and sampling.
+In MLMC, corrections between fine discretization levels are accumulated to the coarse, 
+with independent samples and decreasing sample counts at higher resolutions. 
+MFMC, by contrast, adds corrections of low-fidelity models to the high-fidelity model and incorporates increasing numbers of inexpensive, low-fidelity samples. 
+A key distinction is that MFMC reuses samples across fidelity levels, which avoids the cost of generating independent samples at each level and further improves efficiency. Overall, MFMC offers a flexible and scalable alternative to standard MC and MLMC, particularly suited for problems where high-fidelity models are accurate but computationally intensive.
 
-
-Note that both MFMC and MLMC share the goal of variance reduction, but differ in structure and sampling \cite{ArGuMoWi:2025,PeGuWi:2018}. In MLMC, corrections between fine discretization levels are accumulated to the coarse, with independent samples and decreasing sample counts at higher resolutions. MFMC, by contrast, adds corrections of low-fidelity models to the high-fidelity model and incorporates increasing numbers of inexpensive, low-fidelity samples. A key distinction is MFMC’s reuse of samples across fidelity levels, which avoids the cost of generating independent samples at each level and further improves efficiency. Overall, MFMC offers a flexible and scalable alternative to standard MC and MLMC, particularly suited for problems where high-fidelity models are accurate but computationally intensive.
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Multi-fidelity Monte Carlo revisit}
 We now briefly review the core principles underlying multi-fidelity Monte Carlo, drawing on the framework in \cite{PeWiGu:2016}.  The MFMC framework combines a high-fidelity model $u_{h,1} = u_h$ with a series of low-fidelity models $u_{h,k}: \Omega \rightarrow U$ for $k=2,\ldots,K$.  The high-fidelity model yields accurate but computationally expensive evaluations, whereas the low-fidelity models offer cheaper approximations with reduced accuracy. MFMC optimally allocates computational resources across the fidelity levels to reduce the overall estimator variance, reducing the reliance on costly high-fidelity samples while preserving estimator accuracy and robustness.
 

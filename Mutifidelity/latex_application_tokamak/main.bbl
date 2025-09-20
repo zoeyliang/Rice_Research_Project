@@ -17,11 +17,12 @@ V.~Amoskov, A.~Belov, V.~Belyakov, Y.~Gribov, A.~Kavin, V.~Kukhtin, E.~Lamzin,
   {https://doi.org/10.1080/10519990903043623}
   {\path{doi:10.1080/10519990903043623}}.
 
-\bibitem{ArGuMoWi:2025}
-L.~Artsimovich, G.~Bobrovskii, and E.~Gorbunov.
+\bibitem{NAretz_MGunzburger_MMorlighem_KWillcox_2025a}
+N.~Aretz, M.~Gunzburger, M.~Morlighem, and K.~Willcox.
 \newblock Multifidelity uncertainty quantification for ice sheet simulations.
-\newblock {\em Computational Geosciences}, 29(5), 01 2025.
-\newblock \href {https://doi.org/10.1007/s10596-024-10329-3}
+\newblock {\em Comput. Geosci.}, 29(5), 2025.
+\newblock URL: \url{http://doi.org/10.1007/s10596-024-10329-3}, \href
+  {https://doi.org/10.1007/s10596-024-10329-3}
   {\path{doi:10.1007/s10596-024-10329-3}}.
 
 \bibitem{BaScZo:2011}
@@ -151,7 +152,7 @@ M.~B. Giles.
   {https://doi.org/10.1017/S096249291500001X}
   {\path{doi:10.1017/S096249291500001X}}.
 
-\bibitem{GoGeElJa:2020}
+\bibitem{AAGorodetsky_GGeraci_MSEldred_JDJakeman_2020a}
 A.~A. Gorodetsky, G.~Geraci, M.~S. Eldred, and J.~D. Jakeman.
 \newblock A generalized approximate control variate framework for multifidelity
   uncertainty quantification.
@@ -296,6 +297,13 @@ B.~Peherstorfer, K.~Willcox, and M.~D. Gunzburger.
 \newblock {\em SIAM J. Sci. Comput.}, 38(5):A3163--A3194, 2016.
 \newblock \href {https://doi.org/10.1137/15M1046472}
   {\path{doi:10.1137/15M1046472}}.
+
+\bibitem{BPeherstorfer_KWillcox_MDGunzburger_2018b}
+B.~Peherstorfer, K.~Willcox, and M.~D. Gunzburger.
+\newblock Convergence analysis of multifidelity {M}onte {C}arlo estimation.
+\newblock {\em Numer. Math.}, 139(3):683--707, 2018.
+\newblock \href {https://doi.org/10.1007/s00211-018-0945-7}
+  {\path{doi:10.1007/s00211-018-0945-7}}.
 
 \bibitem{BPeherstorfer_KWillcox_MDGunzburger_2018a}
 B.~Peherstorfer, K.~Willcox, and M.~D. Gunzburger.

@@ -75,7 +75,7 @@ To meet these error constraints \eqref{eq:error-budget}, the mesh size  $h$ and 
 \end{equation}
 In practice, $N$ is chosen to the smallest integer satisfying \eqref{eq:SLSGC_SL_SpatialGridsNo_n_SparseGridsNo}.
 Assuming each evaluation of $u_h$ incurs an average cost of $C$, the total cost to compute $A^{\text{MC}}_{N}$ is
-\[
+\begin{equation} \label{eq:MC-work}
        \mathcal{W}^\text{MC}  =  \frac{ C\, \mathbb{V}( u_h ) }{  \epsilon^2(1-\theta) \, \big\| \mathbb{E}(u)  \big\| _{U}^2}.
-\]
+\end{equation}
 
