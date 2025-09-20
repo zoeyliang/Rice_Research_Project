@@ -185,8 +185,7 @@ M.~D. Gunzburger, C.~G. Webster, and G.~Zhang.
 \newblock Stochastic finite element methods for partial differential equations
   with random input data.
 \newblock {\em Acta Numerica}, 23:521--650, 5 2014.
-\newblock URL: \url{http://journals.cambridge.org/article_S0962492914000075},
-  \href {https://doi.org/10.1017/S0962492914000075}
+\newblock \href {https://doi.org/10.1017/S0962492914000075}
   {\path{doi:10.1017/S0962492914000075}}.
 
 \bibitem{Ha:2007}

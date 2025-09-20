@@ -9,7 +9,7 @@ A standard approach to approximate the expectation in \eqref{eq:expectation_of_u
 see, e.g.,  \cite{MBGiles_2015a,MDGunzburger_CGWebster_GZhang_2014a}.
 Because multilevel Monte Carlo (MLMC) methods \cite{MBGiles_2015a,SHeinrich_2001a} and 
 multi-fidelity Monte Carlo (MFMC) methods  \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a, BPeherstorfer_KWillcox_MDGunzburger_2018a} 
-build on MC, we provide a brief review.
+build on MC, we provide a brief review of MC.
 
 
 Because $u$ cannot be evaluated, but only an approximation $u_h \in   L_{\mathbb{P}}^2(W, \cU)$ can be 
@@ -68,9 +68,9 @@ and a sample size $N$ such that
           \le (1-\theta)\epsilon^2,
 \end{equation}
 \end{subequations}
-To meet these error constraints, the mesh size  $h$ and sample size $N$ must obey
+To meet these error constraints \eqref{eq:error-budget}, the mesh size  $h$ and sample size $N$ must obey
 \begin{equation}  \label{eq:SLSGC_SL_SpatialGridsNo_n_SparseGridsNo}
-       h \le \Big( \sqrt{\theta}\epsilon / c_u \Big)^{1/\alpha}, \quad\quad  
+       h \le \Big( \sqrt{\theta}\epsilon / c_u \Big)^{1/\alpha} \quad \text{and} \quad  
        N \ge   \mathbb{V}( u_h )  \Big/ \Big( \epsilon^2(1-\theta) \, \big\| \mathbb{E}(u)  \big\| _{U}^2 \Big).
 \end{equation}
 In practice, $N$ is chosen to the smallest integer satisfying \eqref{eq:SLSGC_SL_SpatialGridsNo_n_SparseGridsNo}.

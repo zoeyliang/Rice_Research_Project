@@ -10,24 +10,6 @@ correlations between models of varying fidelity to construct a recursive, varian
 Note that both MFMC and MLMC share the goal of variance reduction, but differ in structure and sampling \cite{ArGuMoWi:2025,PeGuWi:2018}. In MLMC, corrections between fine discretization levels are accumulated to the coarse, with independent samples and decreasing sample counts at higher resolutions. MFMC, by contrast, adds corrections of low-fidelity models to the high-fidelity model and incorporates increasing numbers of inexpensive, low-fidelity samples. A key distinction is MFMC’s reuse of samples across fidelity levels, which avoids the cost of generating independent samples at each level and further improves efficiency. Overall, MFMC offers a flexible and scalable alternative to standard MC and MLMC, particularly suited for problems where high-fidelity models are accurate but computationally intensive.
 
 
-% The control variate approach  reduces the variance of MC estimator by considering a  new random variable $u_{h,2}\left(\cdot, \boldsymbol{\omega}\right)$ such that it correlates with $u_{h}\left(\cdot, \boldsymbol{\omega}\right)$ but cheaper than $u_{h}\left(\cdot, \boldsymbol{\omega}\right)$ to evaluate, and whose expectation is either known or can be approximated with relatively small cost. Then we construct a new random variable
-% %
-% \[
-% u^*=u_{h}\left(\cdot, \boldsymbol{\omega}\right) + \alpha\left (u_{h,2}\left(\cdot, \boldsymbol{\omega}\right)  - \mu_2\right)
-% \]
-% %
-% If either $u_{h,2}\left(\cdot, \boldsymbol{\omega}\right)$ is poorly correlated with $u_{h}\left(\cdot, \boldsymbol{\omega}\right)$ or the cost of estimating $\mu_2$ is large, the cost improvement of control variate is not obvious compared to the standard MC. The two-model control variate estimator using Monte Carlo sampling is
-% %
-% \begin{equation*}
-% A^{\text{TF}}  =  \frac{1}{N_1}\sum_{i=1}^{N_1} u_{h}\left(\cdot, \boldsymbol{\omega}^{(i)}\right) + \alpha\left (\frac{1}{N_1}\sum_{i=1}^{N_1} u_{h,2}\left(\cdot, \boldsymbol{\omega}^{(i)}\right)  - \mu_2\right),
-% \end{equation*}
-% %
-% where $u_{h,2}$ denotes a low-fidelity model and $\mu_2 = \mathbb{E}(u_{h,2})$ is its exact control variate mean and we can show that $\mathbb{E}(A^{\text{TF}}) = \mathbb{E}(u_h)$. The variance of this estimator is minimized by choosing $\alpha = -\frac{\text{Cov}(u_h, u_{h,2})}{\sigma_{u_{h,2}}^2}  = -\rho \sigma_{u_h}/\sigma_{u_{h,2}}$, where $\rho$ is the Pearson correlation coefficient between $u_h$ and $u_{h,2}$. In practice, this is achieved by evaluating both models using the same random samples $\boldsymbol{\omega}^{(i)}$, which maximizes correlation through sample reuse. With this choice, the variance becomes $\mathbb{V}(A^{\text{TF}}) = (1-\rho^2)\mathbb{V}(u_h)$. The {\it approximate control variate Monte Carlo} \cite{GoGeElJa:2020} handles the issue when the statistic of the lower fidelity model is unknown and the cost of the lower fidelity model is non trivial. The effectiveness of the control variate approach therefore depends on selecting a low-fidelity model that is strongly correlated with the high-fidelity model. It is clear that if $u_{h}$ and $u_{h,2}$ are highly correlated, then $\mathbb{V}(A^{\text{TF}})$ is much smaller than $\mathbb{V}(u_h)$ and MC simulation of $\mathbb{E}(A^{\text{TF}})$ converges much faster than that of $\mathbb{E}(u_h)$.
-
-
-
-% Thus by introducing a control variate $\alpha (u_{h,2}-\mu_2)$, we can reduce the variance. Note that both $u_{h}^{(i)}$ and $u_{h,2}^{(i)}$ can be correlated or linearly independent (uncorrelated). To make the variance as small as possible, we want $\rho$ to be as large as possible, so it's better to make the two quantities correlated. If $u_{h,2}$ is a low fidelity model compared to $u_{h}$, this indicates that $u_{h,2}$ should reuse the samples of  $u_{h}$. 
-
 \subsection{Multi-fidelity Monte Carlo revisit}
 We now briefly review the core principles underlying multi-fidelity Monte Carlo, drawing on the framework in \cite{PeWiGu:2016}.  The MFMC framework combines a high-fidelity model $u_{h,1} = u_h$ with a series of low-fidelity models $u_{h,k}: \Omega \rightarrow U$ for $k=2,\ldots,K$.  The high-fidelity model yields accurate but computationally expensive evaluations, whereas the low-fidelity models offer cheaper approximations with reduced accuracy. MFMC optimally allocates computational resources across the fidelity levels to reduce the overall estimator variance, reducing the reliance on costly high-fidelity samples while preserving estimator accuracy and robustness.
 
