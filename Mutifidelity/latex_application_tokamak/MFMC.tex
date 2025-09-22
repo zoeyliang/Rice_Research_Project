@@ -6,57 +6,96 @@
 \section{Multi-fidelity Monte Carlo}\label{sec:MFMC}
 % ====================================================
 %
-Multilevel Monte Carlo (MLMC) methods \cite{MBGiles_2015a,SHeinrich_2001a} and 
-multi-fidelity Monte Carlo (MFMC) methods  \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a, BPeherstorfer_KWillcox_MDGunzburger_2018b} 
-build in control variate techniques to reduce the statistical error below $(1-\theta)\epsilon^2$  
+MLMC methods \cite{MBGiles_2015a,SHeinrich_2001a} and 
+MFMC methods  \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a, BPeherstorfer_KWillcox_MDGunzburger_2018b} 
+build on control variate techniques to reduce the statistical error below $(1-\theta)\epsilon^2$  
 at a computational cost less than \eqref{eq:MC-work}.
-
-Both MFMC and MLMC share the goal of variance reduction, but differ in structure and sampling.
-In MLMC, corrections between fine discretization levels are accumulated to the coarse, 
-with independent samples and decreasing sample counts at higher resolutions. 
+While both MFMC and MLMC share the goal of variance reduction, they differ in structure and sampling.
+In MLMC, corrections consisting of differences between successive levels are added to the coarse level, 
+each difference between successive levels is computed with independent samples,
+and a decreasing number of samples is used, the higher the level (i.e., fidelity) of the models.
 MFMC, by contrast, adds corrections of low-fidelity models to the high-fidelity model and incorporates increasing numbers of inexpensive, low-fidelity samples. 
-A key distinction is that MFMC reuses samples across fidelity levels, which avoids the cost of generating independent samples at each level and further improves efficiency. Overall, MFMC offers a flexible and scalable alternative to standard MC and MLMC, particularly suited for problems where high-fidelity models are accurate but computationally intensive.
+A key distinction is that MFMC reuses samples across fidelity levels. 
+
+Next we briefly review the core principles underlying multi-fidelity Monte Carlo, drawing on \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a}.  
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Multi-fidelity Monte Carlo revisit}
-We now briefly review the core principles underlying multi-fidelity Monte Carlo, drawing on the framework in \cite{PeWiGu:2016}.  The MFMC framework combines a high-fidelity model $u_{h,1} = u_h$ with a series of low-fidelity models $u_{h,k}: \Omega \rightarrow U$ for $k=2,\ldots,K$.  The high-fidelity model yields accurate but computationally expensive evaluations, whereas the low-fidelity models offer cheaper approximations with reduced accuracy. MFMC optimally allocates computational resources across the fidelity levels to reduce the overall estimator variance, reducing the reliance on costly high-fidelity samples while preserving estimator accuracy and robustness.
+\subsection{Multi-fidelity Monte Carlo revisited}
+The MFMC framework combines a high-fidelity model $u_{h,1} = u_h \in L_{\mathbb{P}}^2(W, \cU)$ 
+with a series of lower-fidelity models $u_{h,k} \in L_{\mathbb{P}}^2(W, \cU)$, $k =1,\dots, K$.
+Here, as we will make precise below,
+fidelity is not related to an almost everywhere pointwise error $\| u_{h,1}(\omega) - u_{h,k}(\omega) \|_U$,
+but is related to the correlation between the $k$-th model $u_{h,k}$ and the high-fidelity model $u_{h,1}$.
+We assume that as $k$ increases, the fidelity of the $k$-th model decreases and also
+that the computational cost of evaluating the $k$-th model at a sample decreases.
 
 
-For convenience, we may use $u$ and $u_{h,k}$ to refer to the exact $u(\omega)$ and discrete $u_{h,k}(\omega)$ solutions with random variable $\omega$ in the later context. For each pair of $u_{h,k}(\omega)$ and $u_{h,j}(\omega)$, we define the variance and the Pearson correlation coefficient as
-%
+
+For each  $u_{h,k}(\omega)$  and each pair of $u_{h,k}(\omega)$ and $u_{h,j}(\omega)$, 
+we define the variance and the Pearson correlation coefficient as
 \begin{equation*}
     \sigma_k^2 = \mathbb{V}\left[u_{h,k}(\omega)\right],\qquad \rho_{k,j} 
                        = \frac{\text{Cov}\left[ u_{h,k}(\omega), u_{h,j}(\omega)\right]}{\sigma_k\sigma_j}, \quad k,j=1,\dots, K,
 \end{equation*}
-%
-where the covariance is $\text{Cov}[u_{h,k}, u_{h,j}] := \mathbb{E}[\langle u_{h,k} - \mathbb{E}[u_{h,k}], u_{h,j} - \mathbb{E}[u_{h,j}]\rangle_U]$ and, by definition, $\rho_{k,k}=1$. The multi-fidelity Monte Carlo finite element estimator $A^{\text{MF}}$ augments a high-fidelity Monte Carlo estimate with control variate corrections from low-fidelity models
-%
+where the covariance is 
+$\text{Cov}[u_{h,k}, u_{h,j}] := \mathbb{E}[\langle u_{h,k} - \mathbb{E}[u_{h,k}], u_{h,j} - \mathbb{E}[u_{h,j}]\rangle_U]$.
+By definition, $\rho_{k,k}=1$. 
+
+Given $N_1 < N_2 < \ldots < N_K$ and i.i.d.\ samples $\omega^{(1)}, \ldots, \omega^{(N_K)}$,
+the MFMC estimator $A^{\text{MF}}$ combines an MC estimate of the high-fidelity model with differences 
+of MC estimates of the lower-fidelity level models.
+The MFMC estimator is defined as
 \begin{equation}\label{eq:MFMC_estimator}
-    A^{\text{MF}} := A^{\text{MC}}_{1,N_1} + \sum_{k=2}^K \alpha_k\left(\overline{A}_{k,N_k} - \overline{A}_{k,N_{k-1}} \right),
+    A^{\text{MF}}
+     := A^{\text{MC}}_{1,N_1} + \sum_{k=2}^K \alpha_k\left(A^{\text{MC}}_{k,N_k} - A^{\text{MC}}_{k,N_{k-1}} \right),
 \end{equation}
-%
-where $A^{\text{MC}}_{1,N_1}$ is the standard Monte Carlo estimator using $N_1$ samples of the high-fidelity model, $\alpha_k\in \mathbb{R}$ are control variate weights, and $\overline{A}_{k,N_k}$ denotes the sample average of model $u_{h,k}$ over $N_k$ samples. The control variate construction requires the nesting condition $N_{k-1}\le N_k$ for $k=2,\ldots, K$, as $\overline{A}_{k,N_{k}}$ reuses all $N_{k-1}$ samples from $\overline{A}_{k,N_{k-1}}$, possibly supplemented by additional $N_{k} - N_{k-1}$ samples. This reuse introduces statistical dependence between $\overline{A}_{k,N_{k-1}}$ and $\overline{A}_{k,N_{k}}$. To eliminate sampling dependence in the correction terms, we partition the $N_k$ samples into two disjoint sets of sizes  $N_{k-1}$ and $N_k - N_{k-1}$. This allows us to reformulate the multi-fidelity estimator \eqref{eq:MFMC_estimator} as
-%
+where
+\begin{equation}\label{eq:MFMC_estimator_MCk}
+     A^{\text{MC}}_{k,M} :=  \frac{1}{M} \sum_{i=1}^{M}   u_{h,k}(\omega^{(i)}), \quad M \in \{ N_{k-1}, N_k \},
+\end{equation}
+and $\alpha_k\in \mathbb{R}$ are weights that will be determined below.
+Note that the $N_{k-1}$ evaluations $u_{h,k}(\omega^{(i)})$, $i = 1, \ldots,  N_{k-1}$,
+used in  $A^{\text{MC}}_{k,N_{k-1}}$ are reused in  the computation of $A^{\text{MC}}_{k,N_k}$.
+are re-used. This reuse introduces statistical dependence between 
+$A^{\text{MC}}_{k,N_{k-1}}$ and $A^{\text{MC}}_{k,N_k}$. 
+If we denote the MC average over the $N_k - N_{k-1}$ samples $u_{h,k}(\omega^{(i)})$ 
+not included in $A^{\text{MC}}_{k,N_{k-1}}$ by
+\[
+     A^{\text{MC}}_{k,N_k \backslash N_{k-1}}
+      =  \frac{1}{N_k-N_{k-1}}  \sum_{i=N_{k-1}+1}^{N_k}   u_{h,k}(\omega^{(i)}), 
+\]
+the MFMC estimator \eqref{eq:MFMC_estimator} can be written as
 \begin{equation}\label{eq:MFMC_estimator_independent}
-    A^{\text{MF}} = A^{\text{MC}}_{1,N_1} +  \sum_{k=2}^K \alpha_k\left(1-\frac{N_{k-1}}{N_{k}}\right)\left(A_{k,N_k\backslash N_{k-1}}^{\text{MC}}-A_{k,N_{k-1}}^{\text{MC}}\right),
+    A^{\text{MF}} 
+    = A^{\text{MC}}_{1,N_1} 
+      +  \sum_{k=2}^K \alpha_k\left(1-\frac{N_{k-1}}{N_k}\right)
+                               \left(A_{k,N_k\backslash N_{k-1}}^{\text{MC}}-A_{k,N_{k-1}}^{\text{MC}}\right).
 \end{equation}
-%
-where $A^{\text{MC}}_{k,N_k \backslash N_{k-1}}$ denotes the Monte Carlo average over the $N_k - N_{k-1}$ samples not included in $A^{\text{MC}}_{k,N_{k-1}}$, and is defined to be zero whenever $N_k=N_{k-1}$. In this formulation, the two terms in each correction are evaluated on independent sample sets, which simplifies variance analysis. We can now express the MFMC estimator in compact form
-%
+In this formulation, the two terms in each correction are evaluated on independent sample sets, 
+which simplifies variance analysis. 
+We also express the MFMC estimator in compact form
 \begin{equation*}\label{eq:MFMC_estimator_Correction}
-A^{\text{MF}} = Y_1 + \sum_{k=2}^K \alpha_k Y_k,
+          A^{\text{MF}} = Y_1 + \sum_{k=2}^K \alpha_k Y_k,
 \end{equation*}
-%
 where the correction terms $Y_k$ are defined as
-%
 \begin{equation} \label{eq:MFMC_Yk}
-Y_1 :=A^{\text{MC}}_{1,N_1},\qquad Y_k:=\overline{A}_{k,N_k} - \overline{A}_{k,N_{k-1}}=\left(1-\frac{N_{k-1}}{N_{k}}\right)\left(A_{k,N_k\backslash N_{k-1}}^{\text{MC}}-A_{k,N_{k-1}}^{\text{MC}}\right), \quad k=2\ldots, K.
+       Y_1 := A^{\text{MC}}_{1,N_1},\qquad 
+       Y_k := A^{\text{MC}}_{k,N_k} - A^{\text{MC}}_{k,N_{k-1}}
+               =\left(1-\frac{N_{k-1}}{N_k}\right)
+                 \left(A_{k,N_k\backslash N_{k-1}}^{\text{MC}}-A_{k,N_{k-1}}^{\text{MC}}\right), \quad k=2\ldots, K.
 \end{equation}
 %
-Since $Y_k$ is defined as the difference between two independent Monte Carlo estimators of the same model, it is unbiased: $\mathbb{E}[Y_k] = 0$ for $k\ge 2$. Consequently, the MFMC estimator is itself unbiased, satisfying $\mathbb{E}[A^{\text{MF}}] = \mathbb{E}[u_{h,1}]$. The variances of the correction terms $Y_k$ are
+Because $\mathbb{E}\big[ A^{\text{MC}}_{k,M} \big] = \mathbb{E}\big[ u_{h,k} \big]$, $M \in \{ N_{k-1}, N_k \}$,
+$\mathbb{E}[Y_1] =  \mathbb{E}[u_{h,1}]  = \mathbb{E}\big[ u_h \big]$ and  $\mathbb{E}[Y_k] = 0$ for $k\ge 2$.
+Consequently, for any selection of weights $\alpha_k$, 
+the MFMC estimator is  unbiased, satisfying $\mathbb{E}[A^{\text{MF}}] =  \mathbb{E}[u_h]$. 
+
+
+The variances of the correction terms $Y_k$ are
 %
 \begin{equation}\label{eq:Var_Yk}
-    \mathbb{V}\left[Y_1\right] = \frac{\sigma_1^2}{N_1}, \quad \mathbb{V}\left[Y_k\right] = \left(1-\frac{N_{k-1}}{N_{k}}\right)^2\left(\frac{\sigma_k^2}{N_{k-1}}+\frac{\sigma_k^2}{N_k-N_{k-1}}\right) = \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\sigma_k^2.
+    \mathbb{V}\left[Y_1\right] = \frac{\sigma_1^2}{N_1}, \quad \mathbb{V}\left[Y_k\right] = \left(1-\frac{N_{k-1}}{N_k}\right)^2\left(\frac{\sigma_k^2}{N_{k-1}}+\frac{\sigma_k^2}{N_k-N_{k-1}}\right) = \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\sigma_k^2.
 \end{equation}
 %
 Although $Y_k$ and $Y_j$ for $2\le k<j \le K$ share overlapping sample sets and are therefore statistically dependent, they remain uncorrelated, as established in Lemma~\ref{lemma:Y_k_Y_j} in the appendix. However, each correction term $Y_k$ with $k\ge 2$ is correlated with the high-fidelity estimator $Y_1$. Using the covariance identity derived from \cite[Lemma~3.2]{PeWiGu:2016}, yields
@@ -122,7 +161,7 @@ Consider an ensemble of $K$ models $\{u_{h,k}\}_{k=1}^K$ each characterized by t
 %
 \begin{alignat*}{3}
 &(i)\;\; \textit{Correlation monotonicity}: \quad && |\rho_{1,1}| > \cdots > |\rho_{1,K}|, \\ 
-&(ii)\;\; \textit{Cost-correlation ratio}: \quad && \frac{\Delta_{k}}{C_k} > \frac{\Delta_{k-1}}{C_{k-1}}, \quad k=2,\ldots,K. 
+&(ii)\;\; \textit{Cost-correlation ratio}: \quad && \frac{\Delta_k}{C_k} > \frac{\Delta_{k-1}}{C_{k-1}}, \quad k=2,\ldots,K. 
 \end{alignat*}
 %
 Under these assumptions, the solution to the optimization problem \eqref{eq:Optimization_pb_sample_size} yields optimal weights $\alpha_k^*$ and sample sizes $N_k^*$
@@ -131,7 +170,7 @@ Under these assumptions, the solution to the optimization problem \eqref{eq:Opti
     % \label{eq:MFMC_coefficients}
     % &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k},\\
     \label{eq:MFMC_SampleSize}
-    &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k},\qquad \;N_k^*=\frac{\sigma_1^2}{\epsilon_\text{tar}^2}\sqrt{\frac{\Delta_{k}}{C_k}}\sum_{j=1}^K\sqrt{C_j\Delta_{j}}.
+    &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k},\qquad \;N_k^*=\frac{\sigma_1^2}{\epsilon_\text{tar}^2}\sqrt{\frac{\Delta_k}{C_k}}\sum_{j=1}^K\sqrt{C_j\Delta_{j}}.
 \end{align}
 %
 The resulting MFMC estimator \eqref{eq:MFMC_variance} achieves a variance of
@@ -140,13 +179,13 @@ The resulting MFMC estimator \eqref{eq:MFMC_variance} achieves a variance of
 \label{eq:MFMC_variance_optimal}
 \mathbb{V}\left[A^{\text{MF}}\right] =
 % \frac{\sigma_1^2}{N_1^*} - \sum_{k=2}^K \left(\frac{1}{N_{k-1}^*} - \frac{1}{N_k^*}\right)\rho_{1,k}^2\sigma_1^2=
-\sigma_1^2\sum_{k=1}^K\frac{\Delta_{k}}{N_k^*},
+\sigma_1^2\sum_{k=1}^K\frac{\Delta_k}{N_k^*},
 \end{equation}
 %
 with total computational cost
 %
 \begin{equation}\label{eq:MFMC_sampling_cost}
-    \mathcal{W}^\text{MF} = \sum_{k=1}^K C_k N_k^* = \frac{\sigma_1^2}{\epsilon_{\text{tar}}^2}\left(\sum_{k=1}^K\sqrt{C_k\Delta_{k}}\right)^2.
+    \mathcal{W}^\text{MF} = \sum_{k=1}^K C_k N_k^* = \frac{\sigma_1^2}{\epsilon_{\text{tar}}^2}\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2.
 \end{equation}
 %
 \end{theorem}
@@ -170,7 +209,7 @@ where the additive overhead $\sum_{k=1}^K C_k$ arises from the bound $N_k^*\le \
 % %
 % \begin{equation}
 % \label{eq:Bk_Ck_decay_rate}
-%     \frac{\sqrt{B_{k}}}{\sqrt{B_{k-1}}}>\frac{C_{k}}{C_{k-1}}, \quad k=2,\ldots,K.
+%     \frac{\sqrt{B_k}}{\sqrt{B_{k-1}}}>\frac{C_k}{C_{k-1}}, \quad k=2,\ldots,K.
 % \end{equation}
 % %
 % This inequality induces a strictly increasing sequence $\{\sqrt{B_k}/C_k\}_{k=1}^K$. Consequently, as $K \to \infty$, the sequence $\sqrt{B_k}$ decays slower (or grows faster) than $C_k$ in relative terms. Combined with the feasibility condition ($\sum_{k=1}^K C_kN_k^*\ge \sum_{k=1}^K C_k$), this ensures the overhead $\sum_{k=1}^K C_k$ is asymptotically negligible compared to $\sum_{k=1}^K C_k N_k^* \propto \left( \sum_{k=1}^K \sqrt{B_k} \right)^2$. 
