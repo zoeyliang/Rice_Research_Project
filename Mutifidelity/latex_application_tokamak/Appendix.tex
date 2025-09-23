@@ -4,13 +4,8 @@
 % ====================================================
 \section{Appendix}\label{sec:Appendix}
 % ====================================================
-\subsection{More lemmas and theorems}
-\begin{lemma}\label{lemma:Y_k_Y_j}
-Let $2\le k<j\le K$. Then the correction terms $Y_k$ and $Y_j$ defined in \eqref{eq:MFMC_Yk} are uncorrelated; that is,
-\begin{equation*}
-    \operatorname{Cov} \left[Y_k,Y_j\right]=0.
-\end{equation*}
-\end{lemma}
+\subsection{Proof of Lemma~\ref{lemma:Y_k_Y_j} }   \label{sec:proof_lemma:Y_k_Y_j}
+
 
 \begin{proof}
 Fix indices $2\le k<j\le K$. Since $N_{k-1}\le N_k\le N_{j-1}$, we can partition the $N_{j-1}$ samples into three mutually disjoint subsets with sizes $N_{k-1}$, $N_{k}-N_{k-1}$, and $N_{j-1} - N_{k}$. The samples in these three subsets are mutually independent. From the definition of $Y_k$ in \eqref{eq:MFMC_Yk},  the covariance between $Y_k$ and $Y_j$ is then given by

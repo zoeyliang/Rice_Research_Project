@@ -57,7 +57,7 @@ where
 and $\alpha_k\in \mathbb{R}$ are weights that will be determined below.
 Note that the $N_{k-1}$ evaluations $u_{h,k}(\omega^{(i)})$, $i = 1, \ldots,  N_{k-1}$,
 used in  $A^{\text{MC}}_{k,N_{k-1}}$ are reused in  the computation of $A^{\text{MC}}_{k,N_k}$.
-are re-used. This reuse introduces statistical dependence between 
+are reused. This reuse introduces statistical dependence between 
 $A^{\text{MC}}_{k,N_{k-1}}$ and $A^{\text{MC}}_{k,N_k}$. 
 If we denote the MC average over the $N_k - N_{k-1}$ samples $u_{h,k}(\omega^{(i)})$ 
 not included in $A^{\text{MC}}_{k,N_{k-1}}$ by
@@ -93,12 +93,20 @@ the MFMC estimator is  unbiased, satisfying $\mathbb{E}[A^{\text{MF}}] =  \mathb
 
 
 The variances of the correction terms $Y_k$ are
-%
 \begin{equation}\label{eq:Var_Yk}
     \mathbb{V}\left[Y_1\right] = \frac{\sigma_1^2}{N_1}, \quad \mathbb{V}\left[Y_k\right] = \left(1-\frac{N_{k-1}}{N_k}\right)^2\left(\frac{\sigma_k^2}{N_{k-1}}+\frac{\sigma_k^2}{N_k-N_{k-1}}\right) = \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\sigma_k^2.
 \end{equation}
-%
-Although $Y_k$ and $Y_j$ for $2\le k<j \le K$ share overlapping sample sets and are therefore statistically dependent, they remain uncorrelated, as established in Lemma~\ref{lemma:Y_k_Y_j} in the appendix. However, each correction term $Y_k$ with $k\ge 2$ is correlated with the high-fidelity estimator $Y_1$. Using the covariance identity derived from \cite[Lemma~3.2]{PeWiGu:2016}, yields
+The corrections term $Y_k$, $k\ge 2$, are correlated with the high-fidelity estimator $Y_1$.
+However, although $Y_k$ and $Y_j$, $2\le k<j \le K$, share overlapping sample sets and are therefore statistically dependent, they are uncorrelated.
+
+\begin{lemma}\label{lemma:Y_k_Y_j}
+Let $2\le k<j\le K$. Then 
+  The correction terms $Y_k$ and $Y_j$, $2\le k<j \le K$, defined in \eqref{eq:MFMC_Yk} are uncorrelated,
+  $\operatorname{Cov} [Y_k,Y_j ]=0$,  $2\le k<j \le K$.
+\end{lemma}
+The proof of Lemma~\ref{lemma:Y_k_Y_j} is given in Appendix~\ref{sec:proof_lemma:Y_k_Y_j}.
+
+ Using the covariance identity derived from \cite[Lemma~3.2]{PeWiGu:2016}, yields
 %
 \begin{equation}\label{eq:Cov_Yk}
 % \text{Cov}(Y_k,Y_j) =0,\quad \text{for } \;2\le k<j \le K,\qquad 
@@ -124,7 +132,12 @@ The normalized mean square error of the multi-fidelity Monte Carlo estimator, $\
 \mathcal{E}_{A^{\text{MF}}}^2= \frac{\left\Vert\mathbb{E}[u]-\mathbb{E}\left[A^{\text{MF}}\right] \right\Vert_{U}^2+\mathbb E\left[\left\Vert\mathbb{E}\left[A^{\text{MF}}\right]-A^{\text{MF}} \right\Vert_{U}^2\right]}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2} =\frac{\left\Vert\mathbb{E}[u]-\mathbb{E}\left[A^{\text{MF}}\right] \right\Vert_{U}^2}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}+ \frac{\mathbb{V}\left[A^{\text{MF}}\right]}{\left\Vert\mathbb{E}[u] \right\Vert_{U}^2}=\mathcal{E}_{\text{Bias}}^2 + \mathcal{E}_{\text{Stat}}^2,
 \]
 %
-where the variance term $\mathbb{V}[A^{\text{MF}}]$  can be explicitly expressed using \eqref{eq:MFMC_variance}. A splitting ratio $\theta$ is introduced as before to balance the contributions between these two components. The spatial resolution required to achieve the biased tolerance $\theta \epsilon^2$ is determined by estimating the number of spatial grid points $M_L$ at refinement level $L$, given by
+where the variance term $\mathbb{V}[A^{\text{MF}}]$  can be explicitly expressed using \eqref{eq:MFMC_variance}. 
+
+\MH{Need to revise the following.
+Multifidelity methods do not have a level and their costs shouldn't be estimated using $M_L$.}
+A splitting ratio $\theta$ is introduced as before to balance the contributions between these two components. The spatial resolution required to achieve the biased tolerance $\theta \epsilon^2$ is determined by estimating the number of spatial grid points $M_L$ at refinement level $L$, given by
+\MH{Multifidelity methods do not have a level and their costs shouldn't be estimated using $M_L$.}
 %
 \begin{equation}
     \label{eq:SLSGC_MLS_SpatialGridsNo}
