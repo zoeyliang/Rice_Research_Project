@@ -1,0 +1,58 @@
+% ====================================================
+\section{Modified iterative sample size estimation for MFMC}\label{sec:Modified_IntegerValued_Sample_Size}
+% ====================================================
+Moreover, simple flooring may yield zero samples for high-cost fidelities. To address this, a modified rounding procedure \cite{GrGuJuWa:2023} is considered: if any sample size falls below one, it is set to one and the allocation is recomputed among the remaining models, with the process repeated until all sample sizes are at least one. This iterative adjustment, implemented in Algorithm~\ref{algo:Modified_MFMC_Algo}, ensures that all fidelities contribute to the estimator.
+We now cast the optimization problem in the integer framework as
+%
+\begin{equation}\label{eq:Optimization_pb_integer}
+    \begin{array}{ll}
+    \min  &\mathbb{V}\left[A^{\text{MF}}\right],\\
+       \text{subject to} &\displaystyle\sum\limits_{k=1}^K C_kN_k\le p,\\[2pt]
+       &\displaystyle N_1\ge 1,\quad \displaystyle N_{k-1}-N_k\le 0, \;\; k=2\ldots,K,\\
+       &N_1,\ldots, N_K\in \mathbb{N},\\
+       &\alpha_2,\ldots,\alpha_K\in \mathbb{R}.
+    \end{array}
+\end{equation}
+%
+We can apply our iterative scheme to the result by \cite{GrGuJuWa:2023}. However, unlike \cite{GrGuJuWa:2023}, where sample size that are greater than 1 will follow the floored sample size estimation in \eqref{eq:MFMC_RealValued_Sample_Size}, our scheme uses an iterative scheme for all sample sizes for each fidelity. This holds due to the equivalence of variance of \eqref{eq:MFMC_RealValued_Sample_Size} and \eqref{eq:MFMC_New_IntegerValued_Sample_Size}.
+% \[
+% L = \mathbb{V}\left[A^{\text{MF}}\right]+\lambda_0\left(\sum_{k=i}^KC_kN_k-\left(p-\sum_{k=1}^{i-1}C_k\right)\right)-\lambda_k N_k+\sum_{k=i+1}^K \lambda_k(N_k-N_{k-1})
+% \]
+
+
+\begin{algorithm}[!ht]
+\label{algo:Iterative_MFMC_Algo}
+\DontPrintSemicolon
+
+\KwIn{Parameters $\rho_{1,k}$ and $C_k$ for each $\widehat u_{h, k}$, total cost $p$. }\vspace{1ex}
+\KwOut{Sample sizes $\left\lfloor M_k^*\right\rfloor$ for $K$ models.}\vspace{1ex}
+\hrule \vspace{1ex}
+
+\If{$p < \sum_{i=1}^K C_i$}{
+    \KwRet{Algorithm terminates since budget $p$ is insufficient.}
+}
+
+Set the weights 
+\[
+\alpha_k = \frac{\rho_{1,k}\sigma_1}{\sigma_k}, \quad 1\le k\le K.
+\]
+
+Initial real-valued sample size
+\[
+M_1^* = \sqrt{\frac{\Delta_1}{C_1}}\frac{p}{\sum_{i=1}^K\sqrt{C_i\Delta_i}}.
+\]
+
+\For{$2\le k\le K$}{
+    Compute the $k$-th sample size
+    \[
+    M_k^* = \sqrt{\frac{\Delta_k}{C_k}}
+      \frac{p-\sum_{i=1}^{k-1}C_i\left\lfloor M_i^* \right\rfloor}
+           {\sum_{i=k}^K\sqrt{C_i\Delta_i}}.
+    \]
+    \If{$\left\lfloor M_k^*\right\rfloor<1$}{
+        Set $\left\lfloor M_k^*\right\rfloor=1$.
+    }
+}
+
+\caption{Iterative sample size estimation for multi-fidelity Monte Carlo}
+\end{algorithm}

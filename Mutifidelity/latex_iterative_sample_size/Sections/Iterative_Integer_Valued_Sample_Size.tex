@@ -1,0 +1,193 @@
+% ====================================================
+\section{Iterative sample size estimation for MFMC}\label{sec:Iterative_IntegerValued_Sample_Size}
+% ====================================================
+
+Now we have a fundamental question: does the integer sample size obtained with using the floor function of the real-valued sample size really good? namely are there any other strategies for us to obtain an integer sample size which give us a smaller variance?
+
+Now we propose the following iterative real valued sample size
+%
+\begin{equation}
+    \label{eq:MFMC_New_IntegerValued_Sample_Size}
+    H_1^* = \sqrt{\frac{\Delta_1}{C_1}}\frac{p}{\sum_{i=1}^K\sqrt{C_i\Delta_i}}, \qquad H_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{i=1}^{k-1}C_iH_i^*}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}, \;\;\text{ for }\;\; k = 2,\ldots, K.
+\end{equation}
+%
+Theorem \ref{thm:MFMC_Iteravie_RealValued_Sample_Size} shows that the iterative scheme \eqref{eq:MFMC_New_IntegerValued_Sample_Size} has the same cost and variance (relate to $f$ value) as the original real-valued sample estimation from \cite{PeGuWi:2018}. 
+
+\begin{theorem}[Iterative real-valued sample size for MFMC]\label{thm:MFMC_Iteravie_RealValued_Sample_Size}
+For the iterative real-valued sample size defined in \eqref{eq:MFMC_New_IntegerValued_Sample_Size}, we have
+\[
+\sum_{k=1}^K C_kH_k^*=p,\qquad  f(H_k^*) = \sum_{k=1}^K\frac{\Delta_k}{H_k^*} = \frac{\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2}{p}.
+\]
+\end{theorem}
+
+\begin{proof}
+We first show that $\sum_{k=1}^K C_kH_k^* = p$.  
+Define the partial sums
+\[
+    S_k = \sum_{i=1}^k C_iH_i^*, 
+    \qquad 
+    D_k = p - S_k .
+\]
+Note that $S_0 = 0$ and $S_K = \sum_{k=1}^K C_kH_k^*$.  Define
+\[
+S = \sum_{k=1}^K\sqrt{C_k\Delta_k}
+\]
+
+For $k=1$, we have
+\[
+    S_1 = C_1H_1^* 
+    = \frac{p}{S}\sqrt{C_1\Delta_1},
+    \qquad
+    D_1 = p-S_1
+    = \frac{p}{S}\sum_{i=2}^K \sqrt{C_i\Delta_i}.
+\]
+For general $k$, we can write
+%
+\[
+    C_kH_k^* 
+    = \frac{\sqrt{C_k\Delta_k}}{\sum_{i=k}^K \sqrt{C_i\Delta_i}}\,D_{k-1},
+\]
+%
+so that
+%
+\[
+D_k=D_{k-1}-C_kH_k^*=\frac{\sum_{i=k+1}^K\sqrt{C_i\Delta_i}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}D_{k-1}
+\]
+%
+This is a geometric sequence, this indicates that 
+\[
+D_k=\frac{\sum_{i=k+1}^K\sqrt{C_i\Delta_i}}{S}p.
+\]
+In particular, when $k=K$ we obtain $D_K=0$, hence
+\[
+    S_K = p - D_K = p.
+\]
+This proves that $\sum_{k=1}^K C_kH_k^* = p$. We next show that
+\[
+    f(H_k^*) = \frac{\Bigl(\sum_{k=1}^K \sqrt{C_k\Delta_k}\Bigr)^2}{p}.
+\]
+From the explicit form of $H_k^*$,
+\[
+    H_k^*
+    = \sqrt{\frac{\Delta_k}{C_k}}\,
+      \frac{D_{k-1}}{\sum_{i=k}^K \sqrt{C_i\Delta_i}}
+    = \sqrt{\frac{\Delta_k}{C_k}}\,
+      \frac{p}{\sum_{i=1}^K \sqrt{C_i\Delta_i}}.
+\]
+Therefore,
+\[
+    f(H_k^*)=\sum_{k=1}^K \frac{\Delta_k}{H_k^*}
+    = \frac{1}{p}\sum_{k=1}^K \sqrt{C_k\Delta_k}\,
+      \sum_{i=1}^K \sqrt{C_i\Delta_i}
+    = \frac{\left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2}{p}.
+\]
+
+
+\end{proof}
+%
+Now our new iterative scheme for the integer-valued sample size for MFMC is formulated as follows:
+Consider the following real valued sample size proxy,
+\begin{equation}
+    \label{eq:MFMC_New_IntegerValued_Sample_Size}
+    M_1^* = \sqrt{\frac{\Delta_1}{C_1}}\frac{p}{\sum_{i=1}^K\sqrt{C_i\Delta_i}}, \qquad M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{i=1}^{k-1}C_i\left\lfloor M_i^* \right\rfloor}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}, \;\;\text{ for }\;\; k = 2,\ldots, K
+\end{equation}
+the integer valued sample size are $\left\lfloor M_k^* \right\rfloor$ for $k = 1,\ldots, K$. This scheme starts from the traditional real-valued solution $M_1^*$ in $\eqref{eq:MFMC_RealValued_Sample_Size}$ to obtain the integer value $\left\lfloor M_1^* \right\rfloor$, removing the total cost associated with $\left\lfloor M_1^* \right\rfloor$ samples, apply \eqref{eq:MFMC_RealValued_Sample_Size} again with the remaining budget to obtain $\left\lfloor M_2^* \right\rfloor$ and so on. We thus obtain the integer valued sample size in this iterative fashion.
+%
+\begin{theorem}[Cost bound for the iterative integer-valued sample size for MFMC]\label{thm:MFMC_New_IntegerValued_Cost} For the iterative integer-valued sample size defined by take the floor of \eqref{eq:MFMC_New_IntegerValued_Sample_Size}, the computational cost has an lower and upper bound as
+%
+\[
+\sum_{k=1}^K C_k\left\lfloor N_k^* \right\rfloor\le \sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor\le p.
+\]
+%
+\end{theorem}
+
+
+
+
+\begin{proof}
+
+First we need to show $\sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor\le p$. Note that $\left\lfloor M_k^* \right\rfloor\le M_k^* $. Let 
+\[
+T_k = \sum_{i=1}^k C_i\left\lfloor M_k^* \right\rfloor, 
+\]
+We consider inductive hypothesis. We want to show for each $k=1,\ldots, K$, we have 
+\[
+T_k\le \frac{p}{S}\sum_{i=1}^k \sqrt{C_i\Delta_i}
+\]
+for $k=1$, 
+\[
+C_1M_1^*=\sqrt{C_1\Delta_1}\cdot \frac{p}{S}, \quad C_1 \left\lfloor M_1^* \right\rfloor \le C_1M_1^* = \frac{p}{S}\sqrt{C_1\Delta_1}
+\]
+Suppose true for $k-1$, then 
+\[
+T_{k-1}\le \frac{p}{S}\sum_{i=1}^{k-1} \sqrt{C_i\Delta_i}
+\]
+By the definition of $M_k^*$, we have
+\[
+M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p-T_{k-1}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}
+\]
+therefore
+\[
+C_k \left\lfloor M_k^* \right\rfloor \le C_k M_k^*  = \sqrt{C_k\Delta_k}\frac{p-T_{k-1}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\\
+\]
+therefore
+\begin{align*}
+    T_k &= T_{k-1}+C_k\left\lfloor M_k^* \right\rfloor \\
+    &\le T_{k-1} + \sqrt{C_k\Delta_k}\frac{p-T_{k-1}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}
+    =T_{k-1}\left(1-\frac{\sqrt{C_k\Delta_k}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\right) + \frac{p}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\sqrt{C_k\Delta_k}\\
+    &\le \frac{p}{S}\sum_{i=1}^{k-1} \sqrt{C_i\Delta_i}\frac{\sum_{i=k+1}^K\sqrt{C_i\Delta_i}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}+\frac{p}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\sqrt{C_k\Delta_k}\\
+    &=\frac{p}{S}\left(\frac{\sum_{i=1}^{k-1} \sqrt{C_i\Delta_i}\sum_{i=k+1}^K\sqrt{C_i\Delta_i}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}+\frac{S\sqrt{C_k\Delta_k}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\right)\\
+    &=\frac{p}{S}\left(\frac{\sum_{i=1}^{k-1} \sqrt{C_i\Delta_i}\sum_{i=k+1}^K\sqrt{C_i\Delta_i}+\sqrt{C_k\Delta_k}\left(\sum_{i=1}^{k-1}\sqrt{C_i\Delta_i}+\sum_{i=k}^K\sqrt{C_i\Delta_i}\right)}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\right)\\
+    &=\frac{p}{S}\frac{\sum_{i=k}^K\sqrt{C_i\Delta_i}\sum_{i=1}^k\sqrt{C_i\Delta_i}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}=\frac{p}{S}\sum_{i=1}^k\sqrt{C_i\Delta_i}
+\end{align*}
+When $k=K$, $T_K = \sum_{i=1}^K C_i\left\lfloor M_i^* \right\rfloor\le p.$
+
+Next we want to show $\sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor\ge \sum_{k=1}^K C_k\left\lfloor N_k^* \right\rfloor$.
+
+In order to show this, we need to show that $M_k^*\ge N_k^*$. To show this, we need to show
+\[
+\frac{p-T_{k-1}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\ge \frac{p}{S}
+\]
+which is equivalent to show that
+\[
+T_{k-1}=\sum_{i=1}^{k-1}C_i\left\lfloor M_i^*\right\rfloor\le \frac{p}{S}\sum_{i=1}^{k-1}\sqrt{C_i\Delta_i}
+\]
+this is what was proved just now. Therefore, we have $M_k^*\ge N_k^*$ for $k\ge 2$. Since the floor function $\left\lfloor\cdot \right\rfloor$ is monotonically increasing, we have $\left\lfloor M_k^* \right\rfloor \ge \left\lfloor N_k^* \right\rfloor$, therefore $\sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor\ge \sum_{k=1}^K C_k\left\lfloor N_k^* \right\rfloor$.
+
+
+
+\end{proof}
+
+
+
+\begin{theorem}[$f$ (or variance) bound for the iterative integer-valued sample size for MFMC]\label{thm:MFMC_New_IntegerValued_Variance}
+
+For the iterative integer-valued sample size defined by take the floor of \eqref{eq:MFMC_New_IntegerValued_Sample_Size}, the value $f(\lfloor M_k^* \rfloor)$ has an lower and upper bound as
+\[
+\frac{\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2}{p}\le \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}\le \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor N_k^* \right\rfloor}.
+\]
+\end{theorem}
+
+\begin{proof}
+First we want to show the lower bound $\sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}\le \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor N_k^* \right\rfloor}$. This holds immediately since  $\left\lfloor M_k^* \right\rfloor \ge \left\lfloor N_k^* \right\rfloor$ from the proof in Theorem \ref{thm:MFMC_New_IntegerValued_Cost}.
+
+To show the upper bound $\frac{\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2}{p}\le \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}$. This holds immediately since $M_k^* \ge \left\lfloor M_k^* \right\rfloor$
+\[
+\frac{\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2}{p} = \sum_{k=1}^K\frac{\Delta_k}{ M_k^* }\le \sum_{k=1}^K\frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}
+\]
+
+
+\end{proof}
+% ------------------
+% Next consider the variance
+% \begin{align*}
+%     f_{\text{act}}(\overline{N_k})&=\sum_{i=1}^{K}\frac{\Delta_k}{\overline{N_k}}=\sum_{i=1}^{k-1}\frac{\Delta_i}{\overline{N_i}}+\frac{\Delta_k}{\overline{N_k}}+\sum_{i=k+1}^{K}\frac{\Delta_i}{\overline{N_i}}\\
+%     &\in \left[\sum_{i=1}^{k-1}\frac{\Delta_i}{\overline{N_i}}+\frac{\Delta_k}{\overline{N_k}}+\sum_{i=k+1}^K\frac{\Delta_{i}}{N_i^*},\; \sum_{i=1}^{k-1}\frac{\Delta_i}{\overline{N_i}}+\frac{\Delta_k}{\overline{N_k}}+\sum_{i=k+1}^K\frac{\Delta_{i}}{N_i^*-1}\right)=[f_1,f_2)\\
+%     f_1&=\sum_{i=1}^{k-1}\frac{\Delta_i}{\overline{N_i}}+\frac{\Delta_k}{\overline{N_k}}+\sum_{i=k+1}^K\frac{\Delta_{i}}{N_i^*}=\sum_{i=1}^{k-1}\frac{\Delta_i}{\overline{N_i}}+\frac{\Delta_k}{\overline{N_k}}+\sum_{i=k+1}^K\sqrt{C_i\Delta_i}\frac{\sum_{j=i}^K\sqrt{C_j\Delta_j}}{p-\sum_{j=1}^{i-1}C_j\overline{N_j}}\\
+%     f_2&=\sum_{i=1}^{k-1}\frac{\Delta_i}{\overline{N_i}}+\frac{\Delta_k}{\overline{N_k}}+\sum_{i=k+1}^K \ldots\\
+% \end{align*}
+% \begin{align*}
+%     \frac{d f_1}{d \overline{N_k}}&=-\frac{\Delta_k}{\overline{N_k}^2}+C_k\sum_{i=k+1}^K\sqrt{C_i\Delta_i}\frac{\sum_{j=i}^K\sqrt{C_j\Delta_j}}{\left(p-\sum_{j=1}^{i-1}C_j\overline{N_j}\right)^2}\\
+%     \frac{d^2 f_1}{d^2 \overline{N_k}}&=\frac{2\Delta_k}{\overline{N_k}^3}+2C_k^2\sum_{i=k+1}^K\sqrt{C_i\Delta_i}\frac{\sum_{j=i}^K\sqrt{C_j\Delta_j}}{\left(p-\sum_{j=1}^{i-1}C_j\overline{N_j}\right)^3}
+% \end{align*}
+% Note that $\frac{d^2 f_1}{d^2 \overline{N_k}}>0$ whenever $p>\sum_{j=1}^{i-1}C_j\overline{N_j}$. this means $f_1$ is convex in $\overline{N_k}$.

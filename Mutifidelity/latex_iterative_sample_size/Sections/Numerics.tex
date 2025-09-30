@@ -1,0 +1,154 @@
+% ====================================================
+\section{Numerical results}\label{sec:Num_Result}
+% ====================================================
+
+\subsection{First example}
+%
+\begin{table}[ht]
+\centering
+\scalebox{1}{
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Model index &1 &2 &3 &4 &5 \\
+\hline
+Correlation coeff $\rho_{1,k}$ &1     &9.9977e-01   &9.9925e-01  &9.9728e-01   &9.8390e-01\\
+% \hline
+% Standard deviation $\sigma_k$ &1.0840e-02    &1.0838e-02   &1.1001e-02  &1.1549e-02   &9.5720e-03\\
+\hline
+Cost &73&7.0318e-03 &1.4018e-03 &5.0613e-04 &2.6803e-04\\
+\hline
+\end{tabular}
+}
+\caption{Parameters from plasma problem.}
+\label{Tab:Parameters}
+\end{table}
+%
+
+
+
+
+
+
+% %
+% \begin{table}[ht]
+% \centering
+% \scalebox{0.6}{
+% \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+% \hline
+% Total cost $P$ &73.05 &73.051 &73.052 &73.053 &73.054 &73.055 &73.056\\
+% \hline
+% Sample size (real valued) &[1,   134,   588   2540,  21100] &[1,   135,   588,   2541,  21101]&same &same &[1,   135,   588,   2541,  21102] &same &same\\
+% \hline
+% Sample size (integer program) &[1, 2, 3, 11, 97]&[1, 2, 3, 12, 99]&-&-&-&-&-\\
+% \hline
+% CPU time for integer program [s] & 0.27 &0.32 &$>$ 1000 &$>$ 1000 &$>$ 1000 &$>$ 1000 &$>$ 1000\\
+% \hline
+% \end{tabular}
+% }
+% \caption{Sample size for real-valued optimization and integer optimization.}
+% \label{Tab:Sample_Size}
+% \end{table}
+% %
+
+%
+\begin{table}[ht]
+\centering
+\scalebox{1}{
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+&Sample size &Total cost $p$ &$f$\\
+\hline
+Real valued &[2.4129e+00 3.6959e+02 1.6102e+03 6.9567e+03 5.7770e+04]&200&2.1645e-04\\
+\hline
+Integer, floor &[2, 369, 1610, 6956, 57769]&1.698561e+02&2.5580e-04\\
+\hline
+Integer, iterative&[2, 836, 3644, 15744, 130749]&1.999999e+02&2.4138e-04\\
+% \hline
+% CPU time for integer program [s] & 0.27\\
+\hline
+\end{tabular}
+}
+\caption{Sample size for real-valued optimization and integer optimization for $p=200$.}
+\label{Tab:Sample_Size_1}
+\end{table}
+%
+
+%
+\begin{table}[ht]
+\centering
+\scalebox{1}{
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+&Sample size &Total cost $p$ &$f$\\
+\hline
+Real valued &[8.8106e-01,   1.3495e+02,   5.8795e+02,   2.5402e+03,  2.1095e+04]&73.03&5.9275e-04\\
+\hline
+Integer, floor &[0,         134,         587,        2540,  21094]&8.7045&$\infty$\\
+\hline
+Modified &[1,     1,     1,     7,    62]&7.302859e+01&2.4834e-02\\
+% \hline
+\hline
+Integer, iterative &[1,     1,     1,     7,    67]&7.302993e+01&2.3668e-02\\
+% \hline
+% CPU time for integer program [s] & 0.27\\
+\hline
+\end{tabular}
+}
+\caption{Sample size for real-valued optimization and integer optimization for $p=73.03$.}
+\label{Tab:Sample_Size_1}
+\end{table}
+%
+
+
+
+\subsection{Second example}
+
+%
+\begin{table}[ht]
+\centering
+\scalebox{1}{
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Model index &1 &2 &3 &4 \\
+\hline
+Correlation coeff $\rho_{1,k}$ &1     &9.999882e-01  &9.999743e-01 &9.958253e-01\\
+% \hline
+% Standard deviation $\sigma_k$ &0.03\\
+\hline
+Cost &44.395 &6.8409e-01 &2.9937e-01 &1.9908e-04\\
+\hline
+\end{tabular}
+}
+\caption{Parameters from Peherstorfer's paper \cite{PeWiGu:2016}.}
+\label{Tab:Parameters}
+\end{table}
+%
+
+%
+\begin{table}[ht]
+\centering
+\scalebox{1}{
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+&Sample size &Total cost $p$ &$f$\\
+\hline
+Real valued &[3.334886e-01 2.915781e+00 7.607103e+01 3.228216e+04]&46&2.1987267e-04\\
+\hline
+Integer, floor &[0, 2, 76, 32282]&3.054700e+01&$\infty$\\
+\hline
+Modified &[1, 1, 2, 1018]&4.588049e+01&5.1658e-03\\
+% \hline
+\hline
+Integer, iterative &[1, 1, 2, 1618]&4.599994e+01&4.8046e-03\\
+% \hline
+% CPU time for integer program [s] & 0.27\\
+\hline
+\end{tabular}
+}
+\caption{Sample size for real-valued optimization and integer optimization for $p=46$.}
+\label{Tab:Sample_Size_1}
+\end{table}
+%
+
+
+
