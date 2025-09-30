@@ -7,14 +7,14 @@ Now we have a fundamental question: does the integer sample size obtained with u
 Now we propose the following iterative real valued sample size
 %
 \begin{equation}
-    \label{eq:MFMC_New_IntegerValued_Sample_Size}
+    \label{eq:MFMC_New_RealValued_Sample_Size}
     H_1^* = \sqrt{\frac{\Delta_1}{C_1}}\frac{p}{\sum_{i=1}^K\sqrt{C_i\Delta_i}}, \qquad H_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{i=1}^{k-1}C_iH_i^*}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}, \;\;\text{ for }\;\; k = 2,\ldots, K.
 \end{equation}
 %
-Theorem \ref{thm:MFMC_Iteravie_RealValued_Sample_Size} shows that the iterative scheme \eqref{eq:MFMC_New_IntegerValued_Sample_Size} has the same cost and variance (relate to $f$ value) as the original real-valued sample estimation from \cite{PeGuWi:2018}. 
+Theorem \ref{thm:MFMC_Iteravie_RealValued_Sample_Size} shows that the iterative scheme \eqref{eq:MFMC_New_RealValued_Sample_Size} has the same cost and variance (relate to $f$ value) as the original real-valued sample estimation from \cite{PeGuWi:2018}. 
 
 \begin{theorem}[Iterative real-valued sample size for MFMC]\label{thm:MFMC_Iteravie_RealValued_Sample_Size}
-For the iterative real-valued sample size defined in \eqref{eq:MFMC_New_IntegerValued_Sample_Size}, we have
+For the iterative real-valued sample size defined in \eqref{eq:MFMC_New_RealValued_Sample_Size}, we have
 \[
 \sum_{k=1}^K C_kH_k^*=p,\qquad  f(H_k^*) = \sum_{k=1}^K\frac{\Delta_k}{H_k^*} = \frac{\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2}{p}.
 \]
