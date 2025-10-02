@@ -135,9 +135,9 @@ The normalized mean square error of the multi-fidelity Monte Carlo estimator, $\
 where the variance term $\mathbb{V}[A^{\text{MF}}]$  can be explicitly expressed using \eqref{eq:MFMC_variance}. 
 
 \MH{Need to revise the following.
-Multifidelity methods do not have a level and their costs shouldn't be estimated using $M_L$.}
+Multifidelity methods do not have a level and their costs shouldn't be estimated using $M_L$.} \JLcolor{$M_L$ is the spatial grid point nodes that is required to satisfy the discretization error of high fidelity model. }
 A splitting ratio $\theta$ is introduced as before to balance the contributions between these two components. The spatial resolution required to achieve the biased tolerance $\theta \epsilon^2$ is determined by estimating the number of spatial grid points $M_L$ at refinement level $L$, given by
-\MH{Multifidelity methods do not have a level and their costs shouldn't be estimated using $M_L$.}
+\MH{Multifidelity methods do not have a level and their costs shouldn't be estimated using $M_L$.} \JLcolor{You are correct that multifidelity methods, in general, do not rely on a notion of levels. However, in my later cost estimate (Theorem 2), the parameter L appears because the low-fidelity models are constructed using a spatial hierarchy. Thus, the cost estimate is specifically tailored to the class of multifidelity models I consider. My goal is to clarify why, in this setting, the cost scales like $\epsilon^{-1}$}
 %
 \begin{equation}
     \label{eq:SLSGC_MLS_SpatialGridsNo}
