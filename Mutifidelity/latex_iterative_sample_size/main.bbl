@@ -1,0 +1,20 @@
+\begin{thebibliography}{1}
+
+\bibitem{GrGuJuWa:2023}
+A.~Gruber, M.~Gunzburger, L.~Ju, and Z.~Wang.
+\newblock A multifidelity {M}onte {C}arlo method for realistic computational
+  budgets.
+\newblock {\em Journal of Scientific Computing}, 94(1):Paper No. 2, 18, 2023.
+
+\bibitem{PeGuWi:2018}
+B.~Peherstorfer, M.~Gunzburger, and K.~Willcox.
+\newblock Convergence analysis of multifidelity {M}onte {C}arlo estimation.
+\newblock {\em Numerische Mathematik}, 139(3):683--707, 2018.
+
+\bibitem{PeWiGu:2016}
+B.~Peherstorfer, K.~Willcox, and M.~Gunzburger.
+\newblock Optimal model management for multifidelity {M}onte {C}arlo
+  estimation.
+\newblock {\em SIAM Journal on Scientific Computing}, 38(5):A3163--A3194, 2016.
+
+\end{thebibliography}
