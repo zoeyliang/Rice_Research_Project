@@ -1,181 +1,284 @@
 % ====================================================
 \section{Iterative sample size estimation for MFMC}\label{sec:Iterative_IntegerValued_Sample_Size}
 % ====================================================
-
-Now we have a fundamental question: does the integer sample size obtained with using the floor function of the real-valued sample size really good? namely are there any other strategies for us to obtain an integer sample size which give us a smaller variance?
-
-Now we propose the following iterative real valued sample size
+To address this question, we propose an iterative scheme for estimating sample sizes that preserves the total computational budget while naturally extending the real-valued MFMC formulation.  
+Starting from the standard MFMC sample allocation \cite{PeGuWi:2018}, we define the iterative real-valued sample size sequence as
 %
 \begin{equation}
     \label{eq:MFMC_New_RealValued_Sample_Size}
-    H_1^* = \sqrt{\frac{\Delta_1}{C_1}}\frac{p}{\sum_{i=1}^K\sqrt{C_i\Delta_i}}, \qquad H_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{i=1}^{k-1}C_iH_i^*}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}, \;\;\text{ for }\;\; k = 2,\ldots, K.
+    H_1^* = \sqrt{\frac{\Delta_1}{C_1}}\frac{p}{\sum_{j=1}^K\sqrt{C_j\Delta_j}}, 
+    \qquad 
+    H_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{j=1}^{k-1}C_jH_j^*}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}, 
+    \quad k = 2,\ldots, K.
 \end{equation}
 %
-Theorem \ref{thm:MFMC_Iteravie_RealValued_Sample_Size} shows that the iterative scheme \eqref{eq:MFMC_New_RealValued_Sample_Size} has the same cost and variance (relate to $f$ value) as the original real-valued sample estimation from \cite{PeGuWi:2018}. 
+The next theorem establishes that this iterative construction yields exactly the same real-valued solution as the standard MFMC sample size \eqref{eq:MFMC_RealValued_Sample_Size}.  
+Consequently, the total cost and normalized variance remain unchanged.
+
 
 \begin{theorem}[Iterative real-valued sample size for MFMC]\label{thm:MFMC_Iteravie_RealValued_Sample_Size}
-For the iterative real-valued sample size defined in \eqref{eq:MFMC_New_RealValued_Sample_Size}, we have
+
+For the iterative real-valued sample size defined in \eqref{eq:MFMC_New_RealValued_Sample_Size}, 
+the resulting values coincide with the standard real-valued MFMC sample sizes in 
+\eqref{eq:MFMC_RealValued_Sample_Size}, i.e.,
+%
 \[
-\sum_{k=1}^K C_kH_k^*=p,\qquad  f(H_k^*) = \sum_{k=1}^K\frac{\Delta_k}{H_k^*} = \frac{\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2}{p}.
+H_k^* = N_k^*
+    = \sqrt{\frac{\Delta_k}{C_k}}\,
+      \frac{p}{\sum_{j=1}^K \sqrt{C_j\Delta_j}}.
 \]
+%
+Consequently,
+%
+\[
+\sum_{k=1}^K C_k H_k^* = p, 
+\qquad  
+f(H_k^*) = \sum_{k=1}^K \frac{\Delta_k}{H_k^*} 
+= \frac{1}{p} \left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2.
+\]
+%
 \end{theorem}
 
-\begin{proof}
-We first show that $\sum_{k=1}^K C_kH_k^* = p$.  
-Define the partial sums
-\[
-    S_k = \sum_{i=1}^k C_iH_i^*, 
-    \qquad 
-    D_k = p - S_k .
-\]
-Note that $S_0 = 0$ and $S_K = \sum_{k=1}^K C_kH_k^*$.  Define
-\[
-S = \sum_{k=1}^K\sqrt{C_k\Delta_k}
-\]
 
-For $k=1$, we have
+
+
+\begin{proof}
+Define the partial sum and remainder
 \[
-    S_1 = C_1H_1^* 
-    = \frac{p}{S}\sqrt{C_1\Delta_1},
+    T_k = \sum_{j=1}^k C_j H_j^*, 
+    \qquad 
+    R_k = p - T_k,
+\]
+For $k=0$ and $k=1$, we have
+\[
+    T_0 = 0, 
+    \qquad 
+    T_1 = C_1H_1^* 
+    = p\frac{\sqrt{C_1\Delta_1}}{\sum_{j=1}^K \sqrt{C_j\Delta_j}},
     \qquad
-    D_1 = p-S_1
-    = \frac{p}{S}\sum_{i=2}^K \sqrt{C_i\Delta_i}.
+    R_0 = p,
+    \qquad
+    R_1 = p-T_1
+    = p\frac{\sum_{j=2}^K \sqrt{C_j\Delta_j}}{\sum_{j=1}^K \sqrt{C_j\Delta_j}}.
 \]
-For general $k$, we can write
-%
-\[
-    C_kH_k^* 
-    = \frac{\sqrt{C_k\Delta_k}}{\sum_{i=k}^K \sqrt{C_i\Delta_i}}\,D_{k-1},
-\]
-%
-so that
-%
-\[
-D_k=D_{k-1}-C_kH_k^*=\frac{\sum_{i=k+1}^K\sqrt{C_i\Delta_i}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}D_{k-1}
-\]
-%
-This is a geometric sequence, this indicates that 
-\[
-D_k=\frac{\sum_{i=k+1}^K\sqrt{C_i\Delta_i}}{S}p.
-\]
-In particular, when $k=K$ we obtain $D_K=0$, hence
-\[
-    S_K = p - D_K = p.
-\]
-This proves that $\sum_{k=1}^K C_kH_k^* = p$. We next show that
-\[
-    f(H_k^*) = \frac{\Bigl(\sum_{k=1}^K \sqrt{C_k\Delta_k}\Bigr)^2}{p}.
-\]
-From the explicit form of $H_k^*$,
+For general $k\ge 1$, the iterative definition \eqref{eq:MFMC_New_RealValued_Sample_Size} gives
 \[
     H_k^*
     = \sqrt{\frac{\Delta_k}{C_k}}\,
-      \frac{D_{k-1}}{\sum_{i=k}^K \sqrt{C_i\Delta_i}}
-    = \sqrt{\frac{\Delta_k}{C_k}}\,
-      \frac{p}{\sum_{i=1}^K \sqrt{C_i\Delta_i}}.
+      \frac{R_{k-1}}{\sum_{j=k}^K \sqrt{C_j \Delta_j}},
 \]
-Therefore,
+%
+and therefore
+%
 \[
-    f(H_k^*)=\sum_{k=1}^K \frac{\Delta_k}{H_k^*}
-    = \frac{1}{p}\sum_{k=1}^K \sqrt{C_k\Delta_k}\,
-      \sum_{i=1}^K \sqrt{C_i\Delta_i}
-    = \frac{\left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2}{p}.
+    R_k 
+    = R_{k-1} - C_k H_k^*
+    = \frac{\sum_{j=k+1}^K \sqrt{C_j \Delta_j}}
+           {\sum_{j=k}^K \sqrt{C_j \Delta_j}} \, R_{k-1}.
 \]
-
-
+%
+Hence $R_k$ forms a geometric sequence, from which it follows that
+%
+\[
+R_k=\frac{p}{S}\sum_{j=k+1}^K\sqrt{C_j\Delta_j}.
+\]
+%
+where the aggregate cost–variance weight $S$ serves as a normalization factor that balances the contributions of model cost and variance reduction across all fidelity levels and is defined as
+%
+\begin{equation}\label{eq:aggregate_cost–variance_weight_S}
+    S = \sum_{j=1}^K \sqrt{C_j \Delta_j}.
+\end{equation}
+%
+Substituting this relation into the expression for $H_k^*$ yields
+%
+\[
+    H_k^*
+    = \frac{p}{S}\sqrt{\frac{\Delta_k}{C_k}}.
+\]
+In particular, for $k = K$ we obtain $R_K = 0$, implying
+\[
+    T_K = p - R_K = p,
+\]
+which verifies that $\sum_{k=1}^K C_k H_k^* = p$. Finally,
+\[
+    f(H_k^*)
+    = \sum_{k=1}^K \frac{\Delta_k}{H_k^*}
+    = \frac{1}{p} \left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2.
+\]
 \end{proof}
 %
-Now our new iterative scheme for the integer-valued sample size for MFMC is formulated as follows:
-Consider the following real valued sample size proxy,
+
+Now we formulate an iterative scheme for computing the \textit{integer-valued} sample sizes in MFMC. We introduce the following real-valued proxy sequence, unlike the remaining budget in \eqref{eq:MFMC_New_RealValued_Sample_Size} where the remaining budget $p$ is subtract from the total budget with real-valued sample size, here the remaining budget $p$ is subtract from the total budget with integer-valued sample size
+%
 \begin{equation}
     \label{eq:MFMC_New_IntegerValued_Sample_Size}
-    M_1^* = \sqrt{\frac{\Delta_1}{C_1}}\frac{p}{\sum_{i=1}^K\sqrt{C_i\Delta_i}}, \qquad M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{i=1}^{k-1}C_i\left\lfloor M_i^* \right\rfloor}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}, \;\;\text{ for }\;\; k = 2,\ldots, K
+    M_1^* = \sqrt{\frac{\Delta_1}{C_1}}\frac{p}{\sum_{j=1}^K\sqrt{C_j\Delta_j}}, 
+    \qquad 
+    M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{j=1}^{k-1}C_j\left\lfloor M_j^* \right\rfloor}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}, 
+    \quad k = 2,\ldots, K.
 \end{equation}
-the integer valued sample size are $\left\lfloor M_k^* \right\rfloor$ for $k = 1,\ldots, K$. This scheme starts from the traditional real-valued solution $M_1^*$ in $\eqref{eq:MFMC_RealValued_Sample_Size}$ to obtain the integer value $\left\lfloor M_1^* \right\rfloor$, removing the total cost associated with $\left\lfloor M_1^* \right\rfloor$ samples, apply \eqref{eq:MFMC_RealValued_Sample_Size} again with the remaining budget to obtain $\left\lfloor M_2^* \right\rfloor$ and so on. We thus obtain the integer valued sample size in this iterative fashion.
 %
-\begin{theorem}[Cost bound for the iterative integer-valued sample size for MFMC]\label{thm:MFMC_New_IntegerValued_Cost} For the iterative integer-valued sample size defined by take the floor of \eqref{eq:MFMC_New_IntegerValued_Sample_Size}, the computational cost has an lower and upper bound as
+The integer-valued sample sizes are then given by $\lfloor M_k^* \rfloor$ for $k = 1,\ldots, K$.  
+This procedure begins with the standard real-valued MFMC solution $M_1^*$ in \eqref{eq:MFMC_RealValued_Sample_Size}, from which the integer allocation $\lfloor M_1^* \rfloor$ is obtained.  
+The cost associated with $\lfloor M_1^* \rfloor$ samples is subtracted from the total budget, and the same allocation principle \eqref{eq:MFMC_RealValued_Sample_Size} is applied to the remaining budget to compute $\lfloor M_2^* \rfloor$, and so on.  
+In this way, integer-valued sample sizes are determined iteratively while respecting the total budget constraint.
+
+In particular, Theorem \ref{thm:MFMC_New_IntegerValued_Cost} shows that the iterative allocation scheme ensures that the accumulated cost does not exceed the prescribed budget, while improving upon the direct flooring approach in terms of budget utilization.
+
+
+\begin{theorem}[Cost bound for the iterative integer-valued sample allocation]
+\label{thm:MFMC_New_IntegerValued_Cost} 
+
+Let $\lfloor M_k^* \rfloor$ denote the integer-valued sample sizes obtained from the iterative scheme \eqref{eq:MFMC_New_IntegerValued_Sample_Size}, and let $\lfloor N_k^* \rfloor$ denote those obtained by directly flooring the standard real-valued MFMC sample allocation \eqref{eq:MFMC_RealValued_Sample_Size}. 
+Assume that the prescribed computational budget satisfies 
 %
-\[
-\sum_{k=1}^K C_k\left\lfloor N_k^* \right\rfloor\le \sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor\le p.
-\]
+\begin{equation}\label{eq:p_bound}
+     p \ge \sum_{k=1}^K C_k.
+\end{equation}
 %
+Then, the total cost associated with the iterative integer-valued allocation is bounded by
+\begin{equation}\label{eq:Iterative_integer_sample_size_cost_bound}
+    \sum_{k=1}^K C_k \left\lfloor N_k^* \right\rfloor
+    \;\le\;
+    \sum_{k=1}^K C_k \left\lfloor M_k^* \right\rfloor
+    \;\le\;
+    p.
+\end{equation}
 \end{theorem}
 
 
-
-
 \begin{proof}
+We first establish that the total cost of the iterative scheme does not exceed the prescribed budget, i.e.,
+\[
+\sum_{k=1}^K C_k \left\lfloor M_k^* \right\rfloor \le p.
+\]
+Define the cumulative integer cost up to level $k$ as
+\[
+T_k = \sum_{j=1}^k C_j\left\lfloor M_j^* \right\rfloor.
+\]
+Since $\lfloor M_j^* \rfloor \le M_j^*$, we claim, and prove by induction, that for each $k = 1, \ldots, K$,
+\begin{equation}\label{eq:Tk_bound}
+T_k \le \frac{p}{S}\sum_{j=1}^k \sqrt{C_j \Delta_j}.
+\end{equation}
+where $S$ is defined in \eqref{eq:aggregate_cost–variance_weight_S}. Inequality \eqref{eq:Tk_bound} shows that the cumulative integer cost up to level $k$ is bounded by a proportional share of the total budget, scaled by $S$.
 
-First we need to show $\sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor\le p$. Note that $\left\lfloor M_k^* \right\rfloor\le M_k^* $. Let 
+
+
+
+The base case $k=1$ follows immediately,
 \[
-T_k = \sum_{i=1}^k C_i\left\lfloor M_k^* \right\rfloor, 
+T_1=C_1 \left\lfloor M_1^* \right\rfloor \le C_1M_1^* = \frac{p}{S}\sqrt{C_1\Delta_1},
 \]
-We consider inductive hypothesis. We want to show for each $k=1,\ldots, K$, we have 
+so \eqref{eq:Tk_bound} holds for \(k=1\). Assume \eqref{eq:Tk_bound} holds for \(k-1\). By definition of \(M_k^*\),
+%
 \[
-T_k\le \frac{p}{S}\sum_{i=1}^k \sqrt{C_i\Delta_i}
+M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p - T_{k-1}}{\sum_{j=k}^K \sqrt{C_j\Delta_j}},
 \]
-for $k=1$, 
+%
+and hence
+%
 \[
-C_1M_1^*=\sqrt{C_1\Delta_1}\cdot \frac{p}{S}, \quad C_1 \left\lfloor M_1^* \right\rfloor \le C_1M_1^* = \frac{p}{S}\sqrt{C_1\Delta_1}
+C_k \left\lfloor M_k^* \right\rfloor \le C_k M_k^*  = \sqrt{C_k\Delta_k}\frac{p-T_{k-1}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}.
 \]
-Suppose true for $k-1$, then 
-\[
-T_{k-1}\le \frac{p}{S}\sum_{i=1}^{k-1} \sqrt{C_i\Delta_i}
-\]
-By the definition of $M_k^*$, we have
-\[
-M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p-T_{k-1}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}
-\]
-therefore
-\[
-C_k \left\lfloor M_k^* \right\rfloor \le C_k M_k^*  = \sqrt{C_k\Delta_k}\frac{p-T_{k-1}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\\
-\]
-therefore
+%
+
+Using the inductive hypothesis and simplifying the resulting algebraic expression yields
 \begin{align*}
     T_k &= T_{k-1}+C_k\left\lfloor M_k^* \right\rfloor \\
-    &\le T_{k-1} + \sqrt{C_k\Delta_k}\frac{p-T_{k-1}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}
-    =T_{k-1}\left(1-\frac{\sqrt{C_k\Delta_k}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\right) + \frac{p}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\sqrt{C_k\Delta_k}\\
-    &\le \frac{p}{S}\sum_{i=1}^{k-1} \sqrt{C_i\Delta_i}\frac{\sum_{i=k+1}^K\sqrt{C_i\Delta_i}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}+\frac{p}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\sqrt{C_k\Delta_k}\\
-    &=\frac{p}{S}\left(\frac{\sum_{i=1}^{k-1} \sqrt{C_i\Delta_i}\sum_{i=k+1}^K\sqrt{C_i\Delta_i}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}+\frac{S\sqrt{C_k\Delta_k}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\right)\\
-    &=\frac{p}{S}\left(\frac{\sum_{i=1}^{k-1} \sqrt{C_i\Delta_i}\sum_{i=k+1}^K\sqrt{C_i\Delta_i}+\sqrt{C_k\Delta_k}\left(\sum_{i=1}^{k-1}\sqrt{C_i\Delta_i}+\sum_{i=k}^K\sqrt{C_i\Delta_i}\right)}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\right)\\
-    &=\frac{p}{S}\frac{\sum_{i=k}^K\sqrt{C_i\Delta_i}\sum_{i=1}^k\sqrt{C_i\Delta_i}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}=\frac{p}{S}\sum_{i=1}^k\sqrt{C_i\Delta_i}
+    &\le T_{k-1} + \sqrt{C_k\Delta_k}\frac{p-T_{k-1}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}
+    =T_{k-1}\left(1-\frac{\sqrt{C_k\Delta_k}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}\right) + p\frac{\sqrt{C_k\Delta_k}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}\\
+    &\le \frac{p}{S}\sum_{j=1}^{k-1} \sqrt{C_j\Delta_j}\frac{\sum_{j=k+1}^K\sqrt{C_j\Delta_j}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}+p\frac{\sqrt{C_k\Delta_k}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}=\frac{p}{S}\cdot \frac{\sum_{j=1}^{k-1} \sqrt{C_j\Delta_j}\sum_{j=k+1}^K\sqrt{C_j\Delta_j}+S\sqrt{C_k\Delta_k}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}\\
+    &=\frac{p}{S}\cdot \frac{\sum_{j=1}^{k-1} \sqrt{C_j\Delta_j}\sum_{j=k+1}^K\sqrt{C_j\Delta_j}+\sqrt{C_k\Delta_k}\left(\sum_{j=1}^{k-1}\sqrt{C_j\Delta_j}+\sum_{j=k}^K\sqrt{C_j\Delta_j}\right)}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}
+    %=\frac{p}{S}\frac{\sum_{j=k}^K\sqrt{C_j\Delta_j}\sum_{j=1}^k\sqrt{C_j\Delta_j}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}
+    =\frac{p}{S}\sum_{j=1}^k\sqrt{C_j\Delta_j},
 \end{align*}
-When $k=K$, $T_K = \sum_{i=1}^K C_i\left\lfloor M_i^* \right\rfloor\le p.$
-
-Next we want to show $\sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor\ge \sum_{k=1}^K C_k\left\lfloor N_k^* \right\rfloor$.
-
-In order to show this, we need to show that $M_k^*\ge N_k^*$. To show this, we need to show
+%
+which completes the inductive step. Thus, inequality \eqref{eq:Tk_bound} holds for all $k$. 
+In particular, when $k=K$, we obtain
+\begin{equation}\label{eq:MFMC_iterative_total_cost}
+T_K = \sum_{j=1}^K C_j\left\lfloor M_j^*\right\rfloor \le p,
+\end{equation}
+confirming that the iterative scheme never exceeds the prescribed computational budget. To establish the lower bound in \eqref{eq:Iterative_integer_sample_size_cost_bound}, we compare the auxiliary sequences $M_k^*$ and $N_k^*$. Using \eqref{eq:Tk_bound}, we have
+%
 \[
-\frac{p-T_{k-1}}{\sum_{i=k}^K\sqrt{C_i\Delta_i}}\ge \frac{p}{S}
+M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p - T_{k-1}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}} \ge \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\frac{p}{S}\sum_{j=1}^{k-1}\sqrt{C_j\Delta_j}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}} = \sqrt{\frac{\Delta_k}{C_k}}\frac{p}{S}=N_k^*, \qquad k \ge 1.
 \]
-which is equivalent to show that
+% 
+Monotonicity of the floor function yields \(\lfloor M_k^*\rfloor\ge\lfloor N_k^*\rfloor\) for every \(k\), and summing after multiplying by \(C_k\) gives the desired lower bound in \eqref{eq:Iterative_integer_sample_size_cost_bound}.  Combining this result with \eqref{eq:MFMC_iterative_total_cost} completes the proof.
+
+\vspace{4mm}
+\noindent{{\it When equality holds.}}
+The upper bound in \eqref{eq:Iterative_integer_sample_size_cost_bound} is attained if and only if no budget remains unused, i.e.,
 \[
-T_{k-1}=\sum_{i=1}^{k-1}C_i\left\lfloor M_i^*\right\rfloor\le \frac{p}{S}\sum_{i=1}^{k-1}\sqrt{C_i\Delta_i}
+\sum_{k=1}^K C_k \left(M_k^* - \left\lfloor M_k^*\right\rfloor\right) = 0.
 \]
-this is what was proved just now. Therefore, we have $M_k^*\ge N_k^*$ for $k\ge 2$. Since the floor function $\left\lfloor\cdot \right\rfloor$ is monotonically increasing, we have $\left\lfloor M_k^* \right\rfloor \ge \left\lfloor N_k^* \right\rfloor$, therefore $\sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor\ge \sum_{k=1}^K C_k\left\lfloor N_k^* \right\rfloor$.
+Because each fractional part satisfies $M_k^* - \lfloor M_k^* \rfloor \in [0,1)$, this condition holds precisely when every $M_k^*$ is an integer. Hence, equality occurs when all $M_k^* \in \mathbb{Z}$.
 
-
-
+The lower bound is attained if and only if $\lfloor M_k^* \rfloor = \lfloor N_k^* \rfloor$ for every $k$, or equivalently, when both real-valued allocations $M_k^*$ and $N_k^*$ lie in the same integer interval:
+\[
+\left\lfloor N_k^*\right\rfloor\le M_k^* < \left\lfloor N_k^*\right\rfloor + 1.
+\]
+Since $M_k^* \ge N_k^*$, this occurs precisely when the two share the same integer part for all $k$.
 \end{proof}
 
 
 
-\begin{theorem}[$f$ (or variance) bound for the iterative integer-valued sample size for MFMC]\label{thm:MFMC_New_IntegerValued_Variance}
+Theorem \ref{thm:MFMC_New_IntegerValued_Variance} shows that the iterative integer-valued allocation achieves a variance no smaller than the continuous optimum but no greater than that obtained by direct flooring, providing a better variance–cost tradeoff under a fixed budget.
 
-For the iterative integer-valued sample size defined by take the floor of \eqref{eq:MFMC_New_IntegerValued_Sample_Size}, the value $f(\lfloor M_k^* \rfloor)$ has an lower and upper bound as
-\[
-\frac{\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2}{p}\le \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}\le \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor N_k^* \right\rfloor}.
-\]
+\begin{theorem}[Normalized variance bound for the iterative integer-valued sample allocation]
+\label{thm:MFMC_New_IntegerValued_Variance}
+
+Let $\lfloor M_k^* \rfloor$ denote the integer-valued sample sizes obtained from the iterative allocation scheme \eqref{eq:MFMC_New_IntegerValued_Sample_Size}, and let $\lfloor N_k^* \rfloor$ denote those obtained by directly flooring the real-valued optimal allocation \eqref{eq:MFMC_RealValued_Sample_Size}. 
+Assume that the computational budget $p$ satisfies \eqref{eq:p_bound}, and that the variance-related quantities $\Delta_k$ are defined as in Theorem~\ref{thm:Sample_size_est} and meet the same conditions. 
+Then, the normalized variance associated with the iterative integer-valued allocation satisfies the following bounds
+%
+\begin{equation}\label{eq:Iterative_Integer_Variance_Bound}
+\frac{1}{p}\left(\sum_{k=1}^K \sqrt{C_k \Delta_k}\right)^2
+= \sum_{k=1}^K \frac{\Delta_k}{N_k^*}
+\;\le\;
+\sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}
+\;\le\;
+\sum_{k=1}^K \frac{\Delta_k}{\left\lfloor N_k^* \right\rfloor}.
+\end{equation}
+%
 \end{theorem}
 
+
+
 \begin{proof}
-First we want to show the lower bound $\sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}\le \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor N_k^* \right\rfloor}$. This holds immediately since  $\left\lfloor M_k^* \right\rfloor \ge \left\lfloor N_k^* \right\rfloor$ from the proof in Theorem \ref{thm:MFMC_New_IntegerValued_Cost}.
-
-To show the upper bound $\frac{\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2}{p}\le \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}$. This holds immediately since $M_k^* \ge \left\lfloor M_k^* \right\rfloor$
+We first establish the right-hand inequality in \eqref{eq:Iterative_Integer_Variance_Bound}.  
+From Theorem~\ref{thm:MFMC_New_IntegerValued_Cost}, it follows that $\lfloor M_k^* \rfloor \ge \lfloor N_k^* \rfloor$ for all $k$.  
+Since $x \mapsto \Delta_k/x$ is strictly decreasing for $x > 0$, we obtain
 \[
-\frac{\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2}{p} = \sum_{k=1}^K\frac{\Delta_k}{ M_k^* }\le \sum_{k=1}^K\frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}
+\sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}
+\le 
+\sum_{k=1}^K \frac{\Delta_k}{\left\lfloor N_k^* \right\rfloor},
 \]
+establishing the upper bound. To show the lower bound, we apply the Cauchy--Schwarz inequality:
+\[
+\left(\sum_{k=1}^K \sqrt{C_k \Delta_k}\right)^2
+\le
+\left(\sum_{k=1}^K C_k \left\lfloor M_k^* \right\rfloor\right)
+\left(\sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}\right).
+\]
+By the cost bound proved in \eqref{eq:MFMC_iterative_total_cost}, we have 
+$\sum_{k=1}^K C_k \lfloor M_k^* \rfloor \le p$, hence
+%
+\[
+\frac{1}{p}\left(\sum_{k=1}^K \sqrt{C_k \Delta_k}\right)^2
+\le
+\sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}.
+\]
+%
+This establishes the lower bound in \eqref{eq:Iterative_Integer_Variance_Bound}.
 
+\vspace{4mm}
+\noindent{{\it When equality holds.}}
+Equality in the Cauchy--Schwarz step holds if and only if there exists a constant $\lambda>0$ such that 
+\[
+\left\lfloor M_k^* \right\rfloor = \lambda \sqrt{\frac{\Delta_k}{C_k}},
+\]
+which corresponds to the continuous optimal allocation $M_k^* = N_k^*$. Therefore, equality in \eqref{eq:Iterative_Integer_Variance_Bound} holds if and only if the iterative scheme reproduces the continuous solution exactly, i.e., when all $\lfloor M_k^* \rfloor = N_k^*$ and the total cost equals $p$.
 
 \end{proof}
 % ------------------
