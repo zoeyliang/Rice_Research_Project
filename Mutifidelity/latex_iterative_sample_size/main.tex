@@ -57,9 +57,9 @@
 \title{Iterative estimation of integer sample sizes for multi-fidelity Monte Carlo}
 
 
-\author[RiceCMOR]{Damon Spencer}
-\ead{heinken@rice.edu}
-\address[RiceCMOR]{Department of Computational Applied Mathematics \& Operations Research, Rice University.}
+% \author[RiceCMOR]{Damon Spencer}
+% \ead{heinken@rice.edu}
+% \address[RiceCMOR]{Department of Computational Applied Mathematics \& Operations Research, Rice University.}
 \author[RiceCMOR]{Jiaxing Liang}
 \ead{jl508@rice.edu}
 \address[RiceCMOR]{Department of Computational Applied Mathematics \& Operations Research, Rice University.}
@@ -67,8 +67,11 @@
 \ead{heinken@rice.edu}
 \address[RiceCMOR]{Department of Computational Applied Mathematics \& Operations Research and The Ken Kennedy Institute, Rice  University.}
 \begin{abstract}
-In multifidelity Monte Carlo (MFMC), sample sizes are often determined by solving a real-valued optimization problem \cite{PeGuWi:2018}, with integer allocations obtained by flooring the solution. This rounding step introduces slack between the prescribed and actual computational budgets and may result in suboptimal variance reduction. In this work, we propose an iterative scheme for directly estimating integer-valued sample sizes in MFMC. The method enforces the budget constraint exactly and, while potentially more costly than the naïve floor-based approach, achieves lower estimator variance and improved efficiency.
+In multifidelity Monte Carlo (MFMC) methods, optimal sample allocations are typically obtained from a continuous optimization problem \cite{PeGuWi:2018}, with integer sample sizes determined by flooring the real-valued solution. This rounding step can lead to budget underutilization and suboptimal variance reduction. In this work, we develop an iterative scheme for the direct estimation of integer-valued sample sizes in MFMC. The proposed method enforces the total budget constraint exactly and produces integer-feasible allocations that better approximate the continuous optimum. Numerical results demonstrate that the iterative approach consistently achieves lower estimator variance and improved computational efficiency compared to conventional rounding strategies.
 \end{abstract}
+
+
+
 
 
 % \begin{keyword}

@@ -1,142 +1,175 @@
 % ====================================================
 \section{Iterative sample size estimation for MFMC}\label{sec:Iterative_IntegerValued_Sample_Size}
 % ====================================================
-To address this question, we propose an iterative scheme for estimating sample sizes that preserves the total computational budget while naturally extending the real-valued MFMC formulation.  
-Starting from the standard MFMC sample allocation \cite{PeGuWi:2018}, we define the iterative real-valued sample size sequence as
-%
-\begin{equation}
-    \label{eq:MFMC_New_RealValued_Sample_Size}
-    H_1^* = \sqrt{\frac{\Delta_1}{C_1}}\frac{p}{\sum_{j=1}^K\sqrt{C_j\Delta_j}}, 
+
+To address this challenge, we develop an iterative scheme for MFMC sample size estimation grounded in dynamic programming principles, specifically using Bellman's principle of optimality \cite{Be:1957}. This approach ensures consistency with the continuous optimal allocation while enabling sequential decision-making that naturally accommodates integer constraints in practical implementations. 
+
+\subsection{Theoretical Justification for Dynamic Programming Decomposition}
+
+The decomposition of the original optimization problem \eqref{eq:Optimization_pb_sample_size_reduced} into sequential subproblems is justified by the problem's mathematical structure and fundamental optimization principles:
+
+
+\begin{enumerate}
+
+    \item \textbf{Optimal Substructure and Separability}: The objective function $\sum_{k=1}^K \frac{\Delta_k}{N_k}$ exhibits complete separability across fidelity levels, while the budget constraint $\sum_{k=1}^K C_kN_k = p$ admits additive decomposition. This separable structure ensures that the optimal solution possesses the key property that any subsequence of decisions must be optimal for the corresponding subproblem with the remaining budget.
+
+    \item \textbf{Bellman's Principle of Optimality}: If $\{N_1^*, N_2^*, \ldots, N_K^*\}$ constitutes an optimal solution to the global problem, then for any $k \in \{1,\ldots,K\}$, the truncated sequence $\{N_k^*, N_{k+1}^*, \ldots, N_K^*\}$ must be an optimal solution to the subproblem defined on levels $k$ through $K$ with residual budget $R_k = p - \sum_{j=1}^{k-1} C_j N_j^*$. This principle follows directly from the contradiction that would arise if a superior partial solution existed for any subproblem.
+
+    \item \textbf{State Variable Sufficiency}: The recursive definition of the state variable $R_k$ 
+    \[
+    R_1 := p, \qquad R_k := p - \sum_{j=1}^{k-1} C_j H_j, \quad k=2,\ldots,K.
+    \]
+    as the remaining computational budget captures all essential information from previous decisions. The Markovian property holds because future optimization depends only on the current remaining budget $R_k$ and not on the specific history of allocations that led to this state.
+
+
+    \item \textbf{Sequential Decision Framework}: At each stage $k$, given the fixed decisions $\{H_1, \ldots, H_{k-1}\}$ and current state $R_k$, the optimization over remaining levels $\{H_k, \ldots, H_K\}$ constitutes a well-defined subproblem that preserves the original problem's structure:
+    \begin{equation}\label{eq:Sequential_Optimization}
+        \begin{array}{ll}
+        \displaystyle 
+        \min_{H_k,\ldots,H_K\in \mathbb{R}} & 
+            \displaystyle 
+            \sum_{j=k}^K \frac{\Delta_j}{H_{j}}, \\
+        \text{subject to} &
+            \displaystyle \sum_{j=k}^K C_j H_j = R_k,\\
+            &H_k\ge 0,\quad H_{j-1}-H_j\le 0,\;\; j=k+1,\ldots,K.
+        \end{array}
+    \end{equation}
+
+    \item \textbf{Constraint Preservation}: The sequential formulation inherently maintains all original constraints. The budget constraint is preserved through the recursive budget update, while the monotonicity constraints $H_{j-1} \leq H_j$ are enforced locally at each stage, ensuring global consistency with the MFMC hierarchy requirements.
+\end{enumerate}
+
+\subsection{Convexity and Global Optimality}
+
+The convexity of each subproblem in \eqref{eq:Sequential_Optimization} is fundamental to guaranteeing global optimality. Since $\Delta_j > 0$ and $H_j > 0$, the objective function $\sum_{j=k}^K \frac{\Delta_j}{H_j}$ is strictly convex on the positive orthant, while the budget constraint is linear and the monotonicity constraints form a convex polyhedron. This convexity ensures that:
+\begin{itemize}
+    \item Local optimal solutions are globally optimal
+    \item The sequential dynamic programming approach cannot be trapped in suboptimal local minima
+    \item The KKT conditions provide both necessary and sufficient conditions for optimality
+\end{itemize}
+
+
+Applying the optimality conditions derived in Theorem~\ref{thm:Sample_size_est} to each subproblem yields the recursive solution:
+\begin{equation*}
+    H_k^* = \sqrt{\frac{\Delta_k}{C_k}} \frac{R_k}{\sum_{j=k}^K\sqrt{C_j\Delta_j}},
     \qquad 
-    H_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{j=1}^{k-1}C_jH_j^*}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}, 
+    R_{k+1} = R_k - C_k H_k^*.
+\end{equation*}
+Unfolding this recursion provides the explicit forward iterative process:
+\begin{equation}\label{eq:MFMC_New_RealValued_Sample_Size}
+    H_1^* = \sqrt{\frac{\Delta_1}{C_1}} \frac{p}{\sum_{j=1}^K\sqrt{C_j\Delta_j}}, 
+    \qquad 
+    H_k^* = \sqrt{\frac{\Delta_k}{C_k}} \frac{p-\sum_{j=1}^{k-1}C_jH_j^*}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}, 
     \quad k = 2,\ldots, K.
 \end{equation}
+
+
+This iterative scheme possesses several desirable properties: it maintains feasibility at every step, enables progressive budget allocation, provides computational advantages by decomposing a high-dimensional constrained optimization into a sequence of lower-dimensional problems, and maintains guaranties of global optimality through the dynamic programming framework.
+
+
+\subsection{Equivalence with Continuous MFMC Solution}
+
+The following theorem establishes the fundamental equivalence between the iterative formulation and the standard MFMC allocation, ensuring that the sequential approach preserves all optimality properties of the original continuous solution.
+
 %
-The next theorem establishes that this iterative construction yields exactly the same real-valued solution as the standard MFMC sample size \eqref{eq:MFMC_RealValued_Sample_Size}.  
-Consequently, the total cost and normalized variance remain unchanged.
-
-
-\begin{theorem}[Iterative real-valued sample size for MFMC]\label{thm:MFMC_Iteravie_RealValued_Sample_Size}
-
-For the iterative real-valued sample size defined in \eqref{eq:MFMC_New_RealValued_Sample_Size}, 
-the resulting values coincide with the standard real-valued MFMC sample sizes in 
-\eqref{eq:MFMC_RealValued_Sample_Size}, i.e.,
-%
+\begin{theorem}[Equivalence of iterative and standard MFMC formulations]\label{thm:MFMC_Iterative_RealValued_Sample_Size}
+The iteratively defined sample sizes $H_k^*$ in \eqref{eq:MFMC_New_RealValued_Sample_Size} are identical to the standard real-valued MFMC sample sizes $N_k^*$ in \eqref{eq:MFMC_RealValued_Sample_Size}, i.e.,
 \[
 H_k^* = N_k^*
     = \sqrt{\frac{\Delta_k}{C_k}}\,
       \frac{p}{\sum_{j=1}^K \sqrt{C_j\Delta_j}}.
 \]
-%
-Consequently,
-%
+Moreover, this iterative scheme preserves both the total computational budget and the optimal variance reduction:
 \[
 \sum_{k=1}^K C_k H_k^* = p, 
 \qquad  
-f(H_k^*) = \sum_{k=1}^K \frac{\Delta_k}{H_k^*} 
-= \frac{1}{p} \left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2.
+f(H_k^*) = \sum_{k=1}^K \frac{\Delta_k}{H_k^*} = \frac{1}{p} \left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2.
 \]
-%
 \end{theorem}
-
-
+%
 
 
 \begin{proof}
-Define the partial sum and remainder
+Define the cumulative cost and remaining budget by
 \[
     T_k = \sum_{j=1}^k C_j H_j^*, 
     \qquad 
     R_k = p - T_k,
 \]
-For $k=0$ and $k=1$, we have
+so that $R_0 = p$ and $T_0 = 0$. For $k=1$, from \eqref{eq:MFMC_New_RealValued_Sample_Size} we obtain
 \[
-    T_0 = 0, 
-    \qquad 
     T_1 = C_1H_1^* 
-    = p\frac{\sqrt{C_1\Delta_1}}{\sum_{j=1}^K \sqrt{C_j\Delta_j}},
+    = p\,\frac{\sqrt{C_1\Delta_1}}{\sum_{j=1}^K \sqrt{C_j\Delta_j}},
     \qquad
-    R_0 = p,
-    \qquad
-    R_1 = p-T_1
-    = p\frac{\sum_{j=2}^K \sqrt{C_j\Delta_j}}{\sum_{j=1}^K \sqrt{C_j\Delta_j}}.
+    R_1 = p - T_1
+    = p\,\frac{\sum_{j=2}^K \sqrt{C_j\Delta_j}}{\sum_{j=1}^K \sqrt{C_j\Delta_j}}.
 \]
+
 For general $k\ge 1$, the iterative definition \eqref{eq:MFMC_New_RealValued_Sample_Size} gives
 \[
     H_k^*
     = \sqrt{\frac{\Delta_k}{C_k}}\,
       \frac{R_{k-1}}{\sum_{j=k}^K \sqrt{C_j \Delta_j}},
 \]
-%
-and therefore
-%
+which implies that the remaining budget satisfies
 \[
     R_k 
     = R_{k-1} - C_k H_k^*
     = \frac{\sum_{j=k+1}^K \sqrt{C_j \Delta_j}}
            {\sum_{j=k}^K \sqrt{C_j \Delta_j}} \, R_{k-1}.
 \]
-%
-Hence $R_k$ forms a geometric sequence, from which it follows that
-%
-\[
-R_k=\frac{p}{S}\sum_{j=k+1}^K\sqrt{C_j\Delta_j}.
-\]
-%
-where the aggregate cost–variance weight $S$ serves as a normalization factor that balances the contributions of model cost and variance reduction across all fidelity levels and is defined as
-%
-\begin{equation}\label{eq:aggregate_cost–variance_weight_S}
-    S = \sum_{j=1}^K \sqrt{C_j \Delta_j}.
+Hence, $\{R_k\}_{k=1}^K$ forms a geometric sequence. Introducing the normalization factor
+\begin{equation}\label{eq:aggregate_cost_variance_weight_S}
+    S := \sum_{j=1}^K \sqrt{C_j \Delta_j},
 \end{equation}
-%
-Substituting this relation into the expression for $H_k^*$ yields
-%
+we obtain by recursion that
+\[
+    R_k = \frac{p}{S}\sum_{j=k+1}^K\sqrt{C_j\Delta_j}.
+\]
+Substituting this expression into the formula for $H_k^*$ yields
 \[
     H_k^*
-    = \frac{p}{S}\sqrt{\frac{\Delta_k}{C_k}}.
+    = \frac{p}{S}\sqrt{\frac{\Delta_k}{C_k}},
 \]
-In particular, for $k = K$ we obtain $R_K = 0$, implying
-\[
-    T_K = p - R_K = p,
-\]
-which verifies that $\sum_{k=1}^K C_k H_k^* = p$. Finally,
+which coincides with the closed-form MFMC sample size in \eqref{eq:MFMC_RealValued_Sample_Size}.  
+In particular, for $k=K$, we have $R_K=0$, and thus $T_K = p - R_K = p$, verifying that the total cost constraint $\sum_{k=1}^K C_k H_k^* = p$ is satisfied.  
+Finally,
 \[
     f(H_k^*)
     = \sum_{k=1}^K \frac{\Delta_k}{H_k^*}
-    = \frac{1}{p} \left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2.
+    = \frac{1}{p} \left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2,
 \]
+which completes the proof.
 \end{proof}
-%
 
-Now we formulate an iterative scheme for computing the \textit{integer-valued} sample sizes in MFMC. We introduce the following real-valued proxy sequence, unlike the remaining budget in \eqref{eq:MFMC_New_RealValued_Sample_Size} where the remaining budget $p$ is subtract from the total budget with real-valued sample size, here the remaining budget $p$ is subtract from the total budget with integer-valued sample size
+Theorem~\ref{thm:MFMC_Iterative_RealValued_Sample_Size} establishes that the iterative construction preserves the optimality properties of the continuous MFMC allocation. This sequential framework naturally extends to {\it integer-valued} sample sizes, which are essential for practical implementations. We now develop an iterative scheme for computing such integer-valued allocations, using the continuous formulation as a foundation.
+
+The key idea is to maintain the analytical structure of the continuous optimizer while enforcing integer feasibility through a forward recursive process. Unlike the direct flooring of the continuous solution -- which may lead to suboptimal budget utilization due to independent rounding -- the iterative approach updates the residual budget using the accumulated integer costs from preceding levels. This ensures that the allocation at each step adapts to the actual remaining resources. The recursive definition is given by
 %
-\begin{equation}
-    \label{eq:MFMC_New_IntegerValued_Sample_Size}
+\begin{equation}\label{eq:MFMC_New_IntegerValued_Sample_Size}
     M_1^* = \sqrt{\frac{\Delta_1}{C_1}}\frac{p}{\sum_{j=1}^K\sqrt{C_j\Delta_j}}, 
     \qquad 
     M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{j=1}^{k-1}C_j\left\lfloor M_j^* \right\rfloor}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}, 
-    \quad k = 2,\ldots, K.
+    \quad k = 2,\ldots, K,
 \end{equation}
 %
-The integer-valued sample sizes are then given by $\lfloor M_k^* \rfloor$ for $k = 1,\ldots, K$.  
-This procedure begins with the standard real-valued MFMC solution $M_1^*$ in \eqref{eq:MFMC_RealValued_Sample_Size}, from which the integer allocation $\lfloor M_1^* \rfloor$ is obtained.  
-The cost associated with $\lfloor M_1^* \rfloor$ samples is subtracted from the total budget, and the same allocation principle \eqref{eq:MFMC_RealValued_Sample_Size} is applied to the remaining budget to compute $\lfloor M_2^* \rfloor$, and so on.  
-In this way, integer-valued sample sizes are determined iteratively while respecting the total budget constraint.
+with the integer-valued sample sizes taken as $\lfloor M_k^* \rfloor$ for $k=1,\ldots,K$.
 
-In particular, Theorem \ref{thm:MFMC_New_IntegerValued_Cost} shows that the iterative allocation scheme ensures that the accumulated cost does not exceed the prescribed budget, while improving upon the direct flooring approach in terms of budget utilization.
+The procedure begins with the continuous allocation $M_1^*$, from which $\lfloor M_1^* \rfloor$ is derived. The cost of this integer allocation is deducted from the total budget, and the process repeats for subsequent levels using the updated residual budget. By construction, this sequential method guarantees that the total cost constraint is satisfied exactly, as the residual budget at each step reflects the actual integer expenditures. Moreover, it preserves the relative variance–cost balancing of the continuous optimizer, as the allocation weights remain proportional to $\sqrt{\Delta_k/C_k}$.
 
 
-\begin{theorem}[Cost bound for the iterative integer-valued sample allocation]
-\label{thm:MFMC_New_IntegerValued_Cost} 
-
-Let $\lfloor M_k^* \rfloor$ denote the integer-valued sample sizes obtained from the iterative scheme \eqref{eq:MFMC_New_IntegerValued_Sample_Size}, and let $\lfloor N_k^* \rfloor$ denote those obtained by directly flooring the standard real-valued MFMC sample allocation \eqref{eq:MFMC_RealValued_Sample_Size}. 
-Assume that the prescribed computational budget satisfies 
+To ensure that each fidelity level contributes at least one sample, the total budget must satisfy
 %
 \begin{equation}\label{eq:p_bound}
-     p \ge \sum_{k=1}^K C_k.
+    p \ge \sum_{k=1}^K C_k.
 \end{equation}
 %
-Then, the total cost associated with the iterative integer-valued allocation is bounded by
+This condition is necessary and sufficient for feasibility, as it prevents over-allocation that would violate the monotonicity constraints or lead to insufficient samples at higher fidelity levels.
+
+The following theorem demonstrates that the iterative integer-valued scheme achieves superior budget utilization compared to direct flooring, formalizing the advantage of adaptive resource allocation.
+%
+\begin{theorem}[Cost bound for the iterative integer-valued sample allocation]
+\label{thm:MFMC_New_IntegerValued_Cost} 
+Let $\lfloor M_k^* \rfloor$ denote the integer-valued sample sizes from the iterative scheme \eqref{eq:MFMC_New_IntegerValued_Sample_Size}, and let $\lfloor N_k^* \rfloor$ denote those from direct flooring of the continuous solution \eqref{eq:MFMC_RealValued_Sample_Size}. Under the feasibility condition \eqref{eq:p_bound}, the total costs satisfy
 \begin{equation}\label{eq:Iterative_integer_sample_size_cost_bound}
     \sum_{k=1}^K C_k \left\lfloor N_k^* \right\rfloor
     \;\le\;
@@ -145,10 +178,21 @@ Then, the total cost associated with the iterative integer-valued allocation is 
     p.
 \end{equation}
 \end{theorem}
+%
+
+
+
+
+
+
+
+
+
+
 
 
 \begin{proof}
-We first establish that the total cost of the iterative scheme does not exceed the prescribed budget, i.e.,
+We first show that the total cost of the iterative scheme does not exceed the prescribed budget,
 \[
 \sum_{k=1}^K C_k \left\lfloor M_k^* \right\rfloor \le p.
 \]
@@ -160,7 +204,11 @@ Since $\lfloor M_j^* \rfloor \le M_j^*$, we claim, and prove by induction, that 
 \begin{equation}\label{eq:Tk_bound}
 T_k \le \frac{p}{S}\sum_{j=1}^k \sqrt{C_j \Delta_j}.
 \end{equation}
-where $S$ is defined in \eqref{eq:aggregate_cost–variance_weight_S}. Inequality \eqref{eq:Tk_bound} shows that the cumulative integer cost up to level $k$ is bounded by a proportional share of the total budget, scaled by $S$.
+where $S$ is the aggregate cost–variance weight defined in \eqref{eq:aggregate_cost_variance_weight_S}. 
+Inequality \eqref{eq:Tk_bound} bounds the cumulative integer cost at level $k$ by a proportional share of the total budget, scaled by $S$.
+
+
+
 
 
 
@@ -181,8 +229,7 @@ and hence
 C_k \left\lfloor M_k^* \right\rfloor \le C_k M_k^*  = \sqrt{C_k\Delta_k}\frac{p-T_{k-1}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}.
 \]
 %
-
-Using the inductive hypothesis and simplifying the resulting algebraic expression yields
+Using the inductive hypothesis and simplifying yields
 \begin{align*}
     T_k &= T_{k-1}+C_k\left\lfloor M_k^* \right\rfloor \\
     &\le T_{k-1} + \sqrt{C_k\Delta_k}\frac{p-T_{k-1}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}
@@ -190,47 +237,48 @@ Using the inductive hypothesis and simplifying the resulting algebraic expressio
     &\le \frac{p}{S}\sum_{j=1}^{k-1} \sqrt{C_j\Delta_j}\frac{\sum_{j=k+1}^K\sqrt{C_j\Delta_j}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}+p\frac{\sqrt{C_k\Delta_k}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}=\frac{p}{S}\cdot \frac{\sum_{j=1}^{k-1} \sqrt{C_j\Delta_j}\sum_{j=k+1}^K\sqrt{C_j\Delta_j}+S\sqrt{C_k\Delta_k}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}\\
     &=\frac{p}{S}\cdot \frac{\sum_{j=1}^{k-1} \sqrt{C_j\Delta_j}\sum_{j=k+1}^K\sqrt{C_j\Delta_j}+\sqrt{C_k\Delta_k}\left(\sum_{j=1}^{k-1}\sqrt{C_j\Delta_j}+\sum_{j=k}^K\sqrt{C_j\Delta_j}\right)}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}
     %=\frac{p}{S}\frac{\sum_{j=k}^K\sqrt{C_j\Delta_j}\sum_{j=1}^k\sqrt{C_j\Delta_j}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}
-    =\frac{p}{S}\sum_{j=1}^k\sqrt{C_j\Delta_j},
+    =\frac{p}{S}\sum_{j=1}^k\sqrt{C_j\Delta_j}.
 \end{align*}
 %
-which completes the inductive step. Thus, inequality \eqref{eq:Tk_bound} holds for all $k$. 
+Thus, inequality \eqref{eq:Tk_bound} holds for all $k$. 
+
 In particular, when $k=K$, we obtain
 \begin{equation}\label{eq:MFMC_iterative_total_cost}
 T_K = \sum_{j=1}^K C_j\left\lfloor M_j^*\right\rfloor \le p,
 \end{equation}
-confirming that the iterative scheme never exceeds the prescribed computational budget. To establish the lower bound in \eqref{eq:Iterative_integer_sample_size_cost_bound}, we compare the auxiliary sequences $M_k^*$ and $N_k^*$. Using \eqref{eq:Tk_bound}, we have
+confirming that the iterative scheme never exceeds the prescribed computational budget. To establish the lower bound in \eqref{eq:Iterative_integer_sample_size_cost_bound}, we compare the auxiliary sequences $M_k^*$ and $N_k^*$. From \eqref{eq:Tk_bound},
 %
 \[
 M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p - T_{k-1}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}} \ge \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\frac{p}{S}\sum_{j=1}^{k-1}\sqrt{C_j\Delta_j}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}} = \sqrt{\frac{\Delta_k}{C_k}}\frac{p}{S}=N_k^*, \qquad k \ge 1.
 \]
 % 
-Monotonicity of the floor function yields \(\lfloor M_k^*\rfloor\ge\lfloor N_k^*\rfloor\) for every \(k\), and summing after multiplying by \(C_k\) gives the desired lower bound in \eqref{eq:Iterative_integer_sample_size_cost_bound}.  Combining this result with \eqref{eq:MFMC_iterative_total_cost} completes the proof.
+Monotonicity of the floor function implies \(\lfloor M_k^*\rfloor\ge\lfloor N_k^*\rfloor\) for every \(k\). Multiplying by \(C_k\) and summing yields the desired lower bound in 
+\eqref{eq:Iterative_integer_sample_size_cost_bound}.  
+Combining this with \eqref{eq:MFMC_iterative_total_cost} completes the proof of the cost bound.
 
-\vspace{4mm}
-\noindent{{\it When equality holds.}}
+
+\medskip
+\noindent
+\textit{ Equality conditions.}
 The upper bound in \eqref{eq:Iterative_integer_sample_size_cost_bound} is attained if and only if no budget remains unused, i.e.,
 \[
 \sum_{k=1}^K C_k \left(M_k^* - \left\lfloor M_k^*\right\rfloor\right) = 0.
 \]
-Because each fractional part satisfies $M_k^* - \lfloor M_k^* \rfloor \in [0,1)$, this condition holds precisely when every $M_k^*$ is an integer. Hence, equality occurs when all $M_k^* \in \mathbb{Z}$.
-
-The lower bound is attained if and only if $\lfloor M_k^* \rfloor = \lfloor N_k^* \rfloor$ for every $k$, or equivalently, when both real-valued allocations $M_k^*$ and $N_k^*$ lie in the same integer interval:
+Because each fractional part satisfies $M_k^* - \lfloor M_k^* \rfloor \in [0,1)$, this condition holds precisely when every $M_k^*$ is an integer. Similarly, the lower bound is attained if and only if \(\lfloor M_k^* \rfloor = \lfloor N_k^* \rfloor\) for all \(k\), equivalently when both real-valued allocations \(M_k^*\) and \(N_k^*\) lie in the same integer interval
+%
 \[
 \left\lfloor N_k^*\right\rfloor\le M_k^* < \left\lfloor N_k^*\right\rfloor + 1.
 \]
-Since $M_k^* \ge N_k^*$, this occurs precisely when the two share the same integer part for all $k$.
+Since \(M_k^* \ge N_k^*\), this occurs precisely when they share the same integer part for every \(k\).
+
 \end{proof}
 
 
-
-Theorem \ref{thm:MFMC_New_IntegerValued_Variance} shows that the iterative integer-valued allocation achieves a variance no smaller than the continuous optimum but no greater than that obtained by direct flooring, providing a better variance–cost tradeoff under a fixed budget.
-
+Theorem \ref{thm:MFMC_New_IntegerValued_Variance} establishes that the iterative integer-valued allocation achieves superior variance performance compared to direct flooring while maintaining proximity to the continuous optimum, thus providing an improved variance--cost tradeoff under fixed budget constraints.
+%
 \begin{theorem}[Normalized variance bound for the iterative integer-valued sample allocation]
 \label{thm:MFMC_New_IntegerValued_Variance}
-
-Let $\lfloor M_k^* \rfloor$ denote the integer-valued sample sizes obtained from the iterative allocation scheme \eqref{eq:MFMC_New_IntegerValued_Sample_Size}, and let $\lfloor N_k^* \rfloor$ denote those obtained by directly flooring the real-valued optimal allocation \eqref{eq:MFMC_RealValued_Sample_Size}. 
-Assume that the computational budget $p$ satisfies \eqref{eq:p_bound}, and that the variance-related quantities $\Delta_k$ are defined as in Theorem~\ref{thm:Sample_size_est} and meet the same conditions. 
-Then, the normalized variance associated with the iterative integer-valued allocation satisfies the following bounds
+Let $\lfloor M_k^* \rfloor$ denote the integer-valued sample sizes obtained from the iterative allocation scheme \eqref{eq:MFMC_New_IntegerValued_Sample_Size}, and let $\lfloor N_k^* \rfloor$ denote those obtained by directly flooring the real-valued optimal allocation \eqref{eq:MFMC_RealValued_Sample_Size}. Under the computational budget constraint \eqref{eq:p_bound} and the standard variance conditions on $\Delta_k$ from Theorem~\ref{thm:Sample_size_est}, the normalized variance satisfies the following bounds
 %
 \begin{equation}\label{eq:Iterative_Integer_Variance_Bound}
 \frac{1}{p}\left(\sum_{k=1}^K \sqrt{C_k \Delta_k}\right)^2
@@ -242,27 +290,33 @@ Then, the normalized variance associated with the iterative integer-valued alloc
 \end{equation}
 %
 \end{theorem}
+%
+
 
 
 
 \begin{proof}
-We first establish the right-hand inequality in \eqref{eq:Iterative_Integer_Variance_Bound}.  
+We first prove the upper bound in \eqref{eq:Iterative_Integer_Variance_Bound}.  
 From Theorem~\ref{thm:MFMC_New_IntegerValued_Cost}, it follows that $\lfloor M_k^* \rfloor \ge \lfloor N_k^* \rfloor$ for all $k$.  
-Since $x \mapsto \Delta_k/x$ is strictly decreasing for $x > 0$, we obtain
+Since $x \mapsto \Delta_k/x$ is strictly decreasing for $x > 0$, it immediately follows that
 \[
-\sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}
-\le 
-\sum_{k=1}^K \frac{\Delta_k}{\left\lfloor N_k^* \right\rfloor},
+\sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor} 
+\le \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor N_k^* \right\rfloor}.
 \]
-establishing the upper bound. To show the lower bound, we apply the Cauchy--Schwarz inequality:
+
+\medskip
+\noindent
+To establish the lower bound, we apply the Cauchy--Schwarz inequality:
+%
 \[
 \left(\sum_{k=1}^K \sqrt{C_k \Delta_k}\right)^2
 \le
 \left(\sum_{k=1}^K C_k \left\lfloor M_k^* \right\rfloor\right)
 \left(\sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}\right).
 \]
-By the cost bound proved in \eqref{eq:MFMC_iterative_total_cost}, we have 
-$\sum_{k=1}^K C_k \lfloor M_k^* \rfloor \le p$, hence
+%
+From the cost bound \eqref{eq:MFMC_iterative_total_cost}, it follows that 
+$\sum_{k=1}^K C_k \lfloor M_k^* \rfloor \le p$, and hence
 %
 \[
 \frac{1}{p}\left(\sum_{k=1}^K \sqrt{C_k \Delta_k}\right)^2
@@ -270,17 +324,20 @@ $\sum_{k=1}^K C_k \lfloor M_k^* \rfloor \le p$, hence
 \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}.
 \]
 %
-This establishes the lower bound in \eqref{eq:Iterative_Integer_Variance_Bound}.
+which proves the lower bound.
 
-\vspace{4mm}
-\noindent{{\it When equality holds.}}
-Equality in the Cauchy--Schwarz step holds if and only if there exists a constant $\lambda>0$ such that 
+\medskip
+\noindent
+\textit{Equality conditions.} 
+Equality in the Cauchy--Schwarz step occurs if and only if there exists a constant $\lambda>0$ such that
 \[
-\left\lfloor M_k^* \right\rfloor = \lambda \sqrt{\frac{\Delta_k}{C_k}},
+\left\lfloor M_k^* \right\rfloor = \lambda \sqrt{\frac{\Delta_k}{C_k}}, \qquad k=1,\ldots,K,
 \]
 which corresponds to the continuous optimal allocation $M_k^* = N_k^*$. Therefore, equality in \eqref{eq:Iterative_Integer_Variance_Bound} holds if and only if the iterative scheme reproduces the continuous solution exactly, i.e., when all $\lfloor M_k^* \rfloor = N_k^*$ and the total cost equals $p$.
-
 \end{proof}
+
+
+
 % ------------------
 % Next consider the variance
 % \begin{align*}

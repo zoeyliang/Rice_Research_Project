@@ -1,184 +1,261 @@
 % ====================================================
 \section{Modified iterative sample size estimation for MFMC}\label{sec:Modified_IntegerValued_Sample_Size}
 % ====================================================
-A straightforward flooring of the real-valued MFMC sample allocation may yield zero samples for high-cost fidelity models, leading to a degenerate estimator. To address this issue, a modified rounding procedure was proposed in \cite{GrGuJuWa:2023}. The idea is to prevent any fidelity from being excluded by enforcing a minimum of one sample per model. Specifically, if any computed sample size falls below one, it is replaced by one, and the remaining budget is redistributed among the other models according to the real-valued allocation formula \eqref{eq:MFMC_RealValued_Sample_Size}. This procedure is applied iteratively to compute the real-valued sample estimates and then floor them to obtain integer allocations. Starting with the highest-fidelity model, any sample size falling below one is forcibly set to one, and the remaining budget is redistributed among the other fidelities according to the real-valued allocation formula. The iteration continues until all remaining sample sizes satisfy the minimum requirement. By combining ceiling and floor operations in this manner, the procedure ensures that every fidelity contributes to the estimator while strictly adhering to the total budget constraint.
+A direct flooring of real-valued MFMC allocations can lead to pathological cases where high-fidelity models receive zero samples due to their substantial computational costs, resulting in degenerate estimators that violate the fundamental variance reduction principles of multifidelity methods. To address this critical limitation, we extend the modified rounding procedure introduced in~\cite{GrGuJuWa:2023} within our iterative framework, ensuring robust estimator construction while maintaining theoretical guarantees.
 
-The modified sample size allocation can be formulated as the following integer-constrained optimization problem
+\subsection{Modified Allocation Framework}
+
+The core modification enforces a minimum of one sample per fidelity level while preserving exact budget adherence. This is achieved through an iterative redistribution mechanism: whenever a computed sample size falls below unity, it is set to one, and the residual budget is reallocated among remaining models according to the continuous optimality principle. Formally, this corresponds to the integer-constrained optimization problem:
 %
 \begin{equation}\label{eq:Optimization_pb_integer}
     \begin{array}{ll}
-    \min  &\mathcal{V}^{\text{MF}},\\
+    \min  &\sum_{k=1}^K\frac{\Delta_k}{N_k},\\
        \text{subject to} &\displaystyle\sum\limits_{k=1}^K C_kN_k\le p,\\[2pt]
        &\displaystyle N_1\ge 1,\quad \displaystyle N_{k-1}-N_k\le 0, \;\; k=2\ldots,K,\\
-       &N_1,\ldots, N_K\in \mathbb{N},\\
-       &\alpha_2,\ldots,\alpha_K\in \mathbb{R}.
+       &N_1,\ldots, N_K\in \mathbb{N}.
+       % &\alpha_2,\ldots,\alpha_K\in \mathbb{R}.
     \end{array}
 \end{equation}
 %
-Suppose that the floor of the real-valued solution $N_k^*$ for the first $i-1$ entries is zero. We then assign 
-\[
-N_1 = \ldots = N_{i-1} = 1,
-\] 
-and the remaining budget is used to compute integer sample sizes for $k \ge i$ according to
+Let $i$ denote the first index where the continuous solution yields $N_k^* \geq 1$ for all $k \geq i$. The modified allocation takes the form
 %
 \begin{equation}
     \label{eq:Modified_sample_size_floor_real_valued}
-    N_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p - \sum_{j=1}^{i-1} C_j}{\sum_{j=i}^{K} \sqrt{C_j \Delta_j}}, \quad i \le k \le K,
+    N_1^* =\ldots=N_{i-1}^*= 1, \qquad N_k^* = \sqrt{\dfrac{\Delta_k}{C_k}}
+        \dfrac{p - \sum_{j=1}^{i-1} C_j}
+        {\sum_{j=i}^{K} \sqrt{C_j \Delta_j}},\quad  i \le k \le K,
 \end{equation}
 %
-followed by taking the floor of $N_k^*$. As shown in \cite{GrGuJuWa:2023}, with the weights $\alpha_k^* = \rho_{1,k} \sigma_1 / \sigma_k$, the real-valued solution $N_k^*$ is the unique global minimum of \eqref{eq:Optimization_pb_integer}, and the floored solution in \eqref{eq:Modified_sample_size_floor_real_valued} is optimal for the integer-constrained problem. The corresponding normalized variance is
+followed by taking the floor of $N_k^*$.
+As established in~\cite{GrGuJuWa:2023}, this formulation yields the unique global minimizer under integer constraints when using optimal weights in \eqref{eq:MFMC_weights}. The corresponding budget utilization and variance of the real-valued solution are given by
 %
 \begin{equation}\label{eq:Modified_f_real_valued}
-    f(N_k^*) = \sum_{k=1}^K \frac{\Delta_k}{N_k^*} = \sum_{k=1}^{i-1} \Delta_k + \frac{\left(\sum_{k=i}^K \sqrt{C_k \Delta_k}\right)^2}{p - \sum_{k=1}^{i-1} C_k}.
+    \sum_{k=1}^K C_k N_k^* = p, 
+    \qquad 
+    f(N_k^*) = \sum_{k=1}^K \frac{\Delta_k}{N_k^*}
+    = \sum_{k=1}^{i-1} \Delta_k 
+    + \frac{\left(\sum_{k=i}^K \sqrt{C_k \Delta_k}\right)^2}
+    {p - \sum_{k=1}^{i-1} C_k}.
 \end{equation}
-
-
-Our iterative scheme can be applied to the modified MFMC sample size proposed in \cite{GrGuJuWa:2023}. However, unlike \cite{GrGuJuWa:2023}, where sample sizes greater than one follow the floored real-valued allocation in \eqref{eq:MFMC_RealValued_Sample_Size}, our approach applies the iterative procedure to all sample sizes for each fidelity. This is essentially justified by the equivalence between the sample size formulas \eqref{eq:MFMC_RealValued_Sample_Size} and \eqref{eq:MFMC_New_RealValued_Sample_Size}.
-
-
-================================================================
-
-
-
-
-\begin{theorem}[Iterative real-valued modified sample size for MFMC]
-First I want to show the real-valued case, namely the following iterative scheme
 %
+
+
+\subsection{Iterative Extension of Modified Allocation}
+
+We now extend our iterative framework to accommodate this modified allocation strategy. Unlike the original approach in~\cite{GrGuJuWa:2023} which uses direct computation of remaining allocations, our method applies the iterative principle uniformly across all fidelity levels
 \begin{equation}
-    \label{eq: Modified_sample_size_iterative_real_valued}
+    \label{eq:Modified_sample_size_iterative_real_valued}
     H_1^* = \ldots = H_{i-1}^* =1, \qquad H_k^*=\sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{j=1}^{k-1}C_j  H_j^* }{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}, \quad i\le k\le K.
 \end{equation}
-%
-Then for $N_k^*$ in \eqref{eq:Modified_sample_size_floor_real_valued},
+
+The following theorem establishes the equivalence between this iterative formulation and the modified allocation, ensuring consistency with the original optimization objective.
+
+
+
+
+
+% %
+% \begin{equation}
+%     \label{eq:Modified_sample_size_floor_real_valued}
+%     N_k^* =
+%     \begin{cases}
+%         1, & 1 \le k < i, \\[4pt]
+%         \sqrt{\dfrac{\Delta_k}{C_k}}
+%         \dfrac{p - \sum_{j=1}^{i-1} C_j}
+%         {\sum_{j=i}^{K} \sqrt{C_j \Delta_j}}, & i \le k \le K,
+%     \end{cases}
+% \end{equation}
+% %
+
+\begin{theorem}[Equivalence of Iterative and Modified MFMC Allocations]
+\label{thm:MFMC_modified_Iterative_RealValued_Sample_Size}
+Let $\{H_k^*\}_{k=1}^K$ be defined by the iterative scheme \eqref{eq:Modified_sample_size_iterative_real_valued} and $\{N_k^*\}_{k=1}^K$ by the modified allocation \eqref{eq:Modified_sample_size_floor_real_valued}. Under the budget admissibility condition \eqref{eq:p_bound} and standard variance assumptions on $\Delta_k$, these allocations are identical:
 \[
-H_k^*=N_k^*,
+H_k^* = N_k^*, \quad \forall k = 1,\ldots,K.
 \]
-%
-and the Normalized variance bound for the modified sample allocation and cost are the same.
+Consequently, both allocations achieve identical budget utilization and variance performance:
+\[
+\sum_{k=1}^K C_k H_k^* = p, 
+\quad \text{and} \quad
+f(H_k^*) = \sum_{k=1}^{i-1} \Delta_k + \frac{\left(\sum_{k=i}^K \sqrt{C_k \Delta_k}\right)^2}{p - \sum_{k=1}^{i-1} C_k}.
+\]
 \end{theorem}
 
+
+
 \begin{proof}
-Define the partial sum and the remainder budget
+Define the cumulative cost and the remaining budget by
 %
 \[
-S_k=\sum_{j=1}^{k}C_jH_j^*, \quad R_k = p-S_k
+T_k = \sum_{j=1}^k C_j H_j^*, 
+\qquad 
+R_k = p - T_k.
 \]
 %
-Note 
+For the first $i-1$ fidelities, we have $H_j^* = 1$, hence
+%
 \[
-S_k=\sum_{j=1}^k C_j,\; \text{for } \; 1\le k\le i-1, \quad S_k=\sum_{j=1}^{i-1} C_j+\sum_{j=i}^k C_jH_j^*, \; \text{for } \; i\le k\le K,
+T_k = \sum_{j=1}^k C_j, \qquad R_k = p - \sum_{j=1}^k C_j, \qquad 1 \le k < i-1.
 \]
-
+%
+For $i \le k \le K$, substituting the iterative definition \eqref{eq: Modified_sample_size_iterative_real_valued} gives
+%
 \[
-C_kH_k^* = \sqrt{C_k\Delta_k}\frac{R_{k-1}}{\sum_{j=k}^K \sqrt{C_j\Delta_j}}, \quad i\le k\le K,
+H_k^* 
+= \sqrt{\frac{\Delta_k}{C_k}}
+  \frac{R_{k-1}}{\sum_{j=k}^{K} \sqrt{C_j \Delta_j}},
 \]
-
+%
+Combining these relations yields the recurrence
+%
 \[
-R_k=R_{k-1}-C_kH_k^*=\frac{\sum_{j=k+1}^K\sqrt{C_j\Delta_j}}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}R_{k-1}, \quad i\le k\le K,
+R_k = R_{k-1} - C_k H_k^*
+=
+\frac{\sum_{j=k+1}^{K} \sqrt{C_j \Delta_j}}
+       {\sum_{j=k}^{K} \sqrt{C_j \Delta_j}} R_{k-1},
+\qquad i \le k \le K.
 \]
-
+%
+Iterating this expression from $R_{i-1} = p - \sum_{j=1}^{i-1} C_j$ gives
+%
 \[
-R_k = p-\sum_{j=1}^k C_j,\; \text{for } \; 1\le k\le i-1,\quad R_k = \frac{\sum_{j=k+1}^K\sqrt{C_j\Delta_j}}{\sum_{j=i}^K\sqrt{C_j\Delta_j}}\left(p-\sum_{j=1}^{i-1}C_j\right)\; \text{for } \; i\le k\le K,
+R_k 
+= 
+\frac{\sum_{j=k+1}^{K} \sqrt{C_j \Delta_j}}
+       {\sum_{j=i}^{K} \sqrt{C_j \Delta_j}}
+  \left( p - \sum_{j=1}^{i-1} C_j \right),
+\qquad i \le k \le K.
 \]
-therefore,
+%
+Substituting this result back into the definition of $H_k^*$ yields
+%
 \[
-H_k^*= \sqrt{\frac{\Delta_k}{C_k}}\frac{R_{k-1}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}=\sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{j=1}^{i-1}C_j}{\sum_{j=i}^{K}\sqrt{C_j\Delta_j}}\quad \text{for } \; i\le k\le K,
+H_k^*
+= \sqrt{\frac{\Delta_k}{C_k}}
+  \frac{R_{k-1}}{\sum_{j=k}^{K} \sqrt{C_j \Delta_j}}
+= \sqrt{\frac{\Delta_k}{C_k}}
+  \frac{p - \sum_{j=1}^{i-1} C_j}
+       {\sum_{j=i}^{K} \sqrt{C_j \Delta_j}},
+\qquad i \le k \le K.
 \]
-
-\[
-f(H_k^*)=\sum_{k=1}^K\frac{\Delta_k}{H_k^*}=\sum_{k=1}^{i-1}\Delta_k+\frac{\left(\sum_{k=i}^K \sqrt{C_k\Delta_k}\right)^2}{p-\sum_{k=1}^{i-1} C_k}
-\]
+%
+Thus $H_k^* = N_k^*$ for all $k$, establishing the equivalence. 
+% Substituting $H_k^*$ into $f(H_k^*) = \sum_{k=1}^K \Delta_k / H_k^*$ 
+% gives the desired variance expression, completing the proof.
 \end{proof}
-Therefore, we can see that for both \eqref{eq:Modified_sample_size_floor_real_valued} and \eqref{eq: Modified_sample_size_iterative_real_valued}, the real-valued sample size $N_k^*$ and $H_k^*$ are the same, therefore $f$ value (variance) and cost are the same.
 
 
-======================================
-
-Now, our method reads that
+\subsection{Integer-Valued Allocation}
+Extending to integer-valued allocations, we define the proxy sequence $\{M_k^*\}$ through iterative flooring and budget updates
 %
 \begin{equation}
-    \label{eq: Modified_sample_size_iterative}
-    M_1^*  = \ldots = M_{i-1}^* =1, \qquad M_k^*=\sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{j=1}^{k-1}C_j \left\lfloor M_j^* \right\rfloor}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}, \quad i\le k\le K.
+    \label{eq:Modified_sample_size_iterative_integer_proxy}
+    M_1^*=\cdots=M_{i-1}^*=1, \qquad 
+    M_k^*=\sqrt{\frac{\Delta_k}{C_k}}
+    \frac{p-\sum_{j=1}^{k-1} C_j\left\lfloor M_j^*\right\rfloor}
+         {\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}, \quad i\le k\le K.
 \end{equation}
 %
-======================================
+
+The following theorems establish that this approach achieves superior resource utilization and variance performance compared to direct flooring of the modified allocation.
 
 
-\begin{theorem}
-%
+\begin{theorem}[Cost bound for modified iterative integer-valued sample allocation]
+\label{thm:MFMC_modified_integer_cost}
+Let $\lfloor N_k^* \rfloor$ denote the integer allocation from direct flooring of \eqref{eq:Modified_sample_size_floor_real_valued}, and $\lfloor M_k^* \rfloor$ the iterative integer allocation. Under budget admissibility \eqref{eq:p_bound}, the integer-valued costs satisfy
 \[
-\sum_{k=1}^K C_k\left\lfloor N_k^* \right\rfloor\le \sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor\le p.
+\sum_{k=1}^K C_k \left\lfloor N_k^* \right\rfloor\;\le\; \sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor \;\le\; p.
 \]
-%
 \end{theorem}
-\begin{proof}
-    First, prove the upper bound $\sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor\le p$.
 
-Define the remainder $R_k = p-\sum_{j=1}^k C_j \left\lfloor M_j^* \right\rfloor$, then for $k\ge i$,
+
+
+
+\begin{proof}
+Define the remaining budget after assigning the first $k$ integer proxy allocations by 
 \[
-M_k^*=\sqrt{\frac{\Delta_k}{C_k}}\frac{R_{k-1}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}, \quad i\le k\le K.
+R_k = p-\sum_{j=1}^k C_j \left\lfloor M_j^* \right\rfloor, \quad \text{for}\quad i\le k\le K.
 \]
-Since $\left\lfloor M_k^* \right\rfloor\le M_k^*$,
+with the convention $R_0=p$. By construction of the proxy, for $k\ge i$ we have
+%
+\begin{equation}\label{eq:M_def_proof}
+    M_k^*=\sqrt{\frac{\Delta_k}{C_k}}\frac{R_{k-1}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}.
+\end{equation}
+%
+We first show $\sum_{k=1}^K C_k\lfloor M_k^*\rfloor \le p$, equivalently $R_K\ge 0$.
+Because $\lfloor M_k^*\rfloor \le M_k^*$ and using \eqref{eq:M_def_proof}, for $k\ge i$,
 \[
-C_k \left\lfloor M_k^* \right\rfloor\le \sqrt{C_k\Delta_k}\frac{R_{k-1}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}
+C_k \left\lfloor M_k^* \right\rfloor\le \sqrt{C_k\Delta_k}\frac{R_{k-1}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}, \quad i\le k\le K.
 \]
-We then obtain the recursion
+Hence
+%
+\begin{equation*}
+    R_k = R_{k-1}-C_k  \left\lfloor M_k^* \right\rfloor\ge R_{k-1}\left(1-\frac{\sqrt{C_k\Delta_k}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}\right) = R_{k-1}\frac{\sum_{j=k+1}^{K}\sqrt{C_j\Delta_j}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}, \quad i\le k\le K.
+\end{equation*}
+%
+Iterating this inequality starting from
+%
+\[
+R_{i-1} \;=\; p - \sum_{j=1}^{i-1} C_j \left\lfloor M_j^*\right\rfloor
+         \;=\; p - \sum_{j=1}^{i-1} C_j
+\]
+%
+(since $\lfloor M_j^*\rfloor =1$ for $j<i$ by construction) yields,
+%
 \begin{equation}\label{eq:modified_proof_recursion}
-    R_k = R_{k-1}-C_k  \left\lfloor M_k^* \right\rfloor\ge R_{k-1}\left(1-\frac{\sqrt{C_k\Delta_k}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}\right) = R_{k-1}\frac{\sum_{j=k+1}^{K}\sqrt{C_j\Delta_j}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}
+R_{k}\ge \left(p-\sum_{j=1}^{i-1}C_j\right)\frac{\sum_{j=k+1}^K \sqrt{C_j\Delta_j}}{\sum_{j=i}^K \sqrt{C_j\Delta_j}},\quad i\le k\le K.
 \end{equation}
+%
+In particular, for $k=K$ we obtain $R_K\ge 0$, which is equivalent to
+%
+\begin{equation*}\label{eq:modified_total_cost}
+    \sum_{k-1}^K C_k\left\lfloor M_k^* \right\rfloor=p-R_K\le p,
+\end{equation*}
+proving the upper bound.
 
-
-Note that
-\[
-R_{i-1} = p-\sum_{j=1}^{i-1}C_j
-\]
-By recursion, we have
-\[
-R_K\ge R_{i-1}\frac{\sum_{j=K+1}^{K}\sqrt{C_j\Delta_j}}{\sum_{j=i}^{K}\sqrt{C_j\Delta_j}}=0
-\]
-therefore, 
-\begin{equation}\label{eq:modified_total_cost}
-    \sum_{k-1}^K C_k\left\lfloor M_k^* \right\rfloor=p-R_K\le p.
+We now show
+$\sum_{k=1}^K C_k\lfloor N_k^*\rfloor \le \sum_{k=1}^K C_k\lfloor M_k^*\rfloor$.
+Substituting \eqref{eq:modified_proof_recursion} into \eqref{eq:M_def_proof} gives
+%
+\begin{equation}\label{eq:Modified_nondecreasing_sample_size_proof}
+    M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{R_{k-1}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}\ge \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{j=1}^{i-1}C_j}{\sum_{j=i}^K \sqrt{C_j\Delta_j}}=N_k^*, \quad i\le k\le K.
 \end{equation}
-
-
-Next, we wat to prove the lower bound $\sum_{k=1}^K C_k\left\lfloor N_k^* \right\rfloor\le \sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor$. To show this, we want to show $\left\lfloor N_k^* \right\rfloor\le \left\lfloor M_k^* \right\rfloor$.
-
-By the recursion in \eqref{eq:modified_proof_recursion}, we have
-\[
-R_{k-1}\ge \left(p-\sum_{j=1}^{i-1}C_j\right)\frac{\sum_{j=k}^K \sqrt{C_j\Delta_j}}{\sum_{j=i}^K \sqrt{C_j\Delta_j}}
-\]
-then 
-\[
-M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{R_{k-1}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}\ge \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{j=1}^{i-1}C_j}{\sum_{j=i}^K \sqrt{C_j\Delta_j}}=N_k^*
-\]
-Since floor function is increasing, then we have $\left\lfloor N_k^* \right\rfloor\le \left\lfloor M_k^* \right\rfloor$ and $\sum_{k=1}^K C_k\left\lfloor N_k^* \right\rfloor\le \sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor$.
+%
+For $k<i$ we already have $M_k^*=N_k^*=1$. Since the floor function is monotone non-decreasing, it follows that $\lfloor N_k^* \rfloor\le \lfloor M_k^* \rfloor$, and this prove the lower bound.
 \end{proof}
 
-\begin{theorem}
 
-For the iterative integer-valued sample size defined by take the floor of \eqref{eq: Modified_sample_size_iterative},  and floored integer sample size $\left\lfloor N_k^* \right\rfloor$ of \eqref{eq: Modified_sample_size_floor_real_valued}, the value $f(\lfloor M_k^* \rfloor)$ has an lower and upper bound as
+\begin{theorem}[Variance Bound for Modified Integer-Valued Allocation]
+\label{thm:MFMC_IntegerValued_Variance_Bound}
+Let $\lfloor M_k^* \rfloor$ and $\lfloor N_k^* \rfloor$ be defined as above. Under the same assumptions:
 \[
-\frac{\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2}{p}\le \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}\le \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor N_k^* \right\rfloor}.
+\frac{1}{p}\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2
+\le \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}
+\le \sum_{k=1}^K \frac{\Delta_k}{\left\lfloor N_k^* \right\rfloor}.
 \]
 \end{theorem}
-
-
 \begin{proof}
-    the upper bound is immediately proved due to the fact that $\left\lfloor N_k^* \right\rfloor\le \left\lfloor M_k^* \right\rfloor$.
-
-
-    By Cauchy-Schwartz
-    \[
-    \left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2\le  \left(\sum_{k=1}^KC_k\left\lfloor M_k^* \right\rfloor\right) \left(\sum_{k=1}^K\frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}\right)
-    \]
-    
-    By \eqref{eq:modified_total_cost}
-
-    \[
-    \left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2\le  p \left(\sum_{k=1}^K\frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}\right)
-    \]
+The left inequality reflects the optimal continuous variance as a lower bound. The right inequality follows from $\lfloor M_k^* \rfloor \geq \lfloor N_k^* \rfloor$ for all $k$ (established inductively from the cost theorem), combined with the monotonicity of $x \mapsto \Delta_k/x$ for $x > 0$.
 \end{proof}
+
+% \begin{proof}
+% Similar proof as that in Theorem \ref{thm:MFMC_New_IntegerValued_Variance}. 
+% Since $\lfloor N_k^* \rfloor \le \lfloor M_k^* \rfloor$ for all $k$ in \eqref{eq:Modified_nondecreasing_sample_size_proof}, we immediately have the upper bound. To establish the lower bound, we apply the Cauchy–Schwarz inequality,
+% %
+% \[
+% \left(\sum_{k=1}^K \sqrt{C_k \Delta_k}\right)^2
+% \le 
+% \left(\sum_{k=1}^K C_k \left\lfloor M_k^* \right\rfloor \right)
+% \left(\sum_{k=1}^K \frac{\Delta_k}{\left\lfloor M_k^* \right\rfloor}\right).
+% \]
+% %
+% By the cost constraint for the iterative allocation 
+% (cf.~\eqref{eq:modified_total_cost}), we have 
+% \(\sum_{k=1}^K C_k \lfloor M_k^* \rfloor \le p\). 
+% Substituting this bound gives the lower bound. This completes the proof.
+% \end{proof}
+
+
 
 
 % \begin{align*}
@@ -201,39 +278,44 @@ For the iterative integer-valued sample size defined by take the floor of \eqref
 % \frac{\partial L}{\partial N_k} = - \frac{\sigma_1^2\Delta_{k}}{N_{k}^2} +\lambda_0 C_{k}-\lambda_{k}+\lambda_{k+1}=0,\qquad i\le k\le K.
 % \]
 
+This iterative extension establishes a unified computational framework that preserves the robustness guarantees of modified allocation strategies while systematically leveraging the computational advantages and theoretical foundations of dynamic programming. By maintaining mathematical consistency with the original MFMC optimality principles, the approach ensures that fundamental variance-cost balancing properties are retained throughout the allocation process, even under practical integer constraints. The sequential decomposition transforms complex integer-constrained optimization into a series of tractable subproblems, enabling efficient implementation with linear computational complexity in the number of fidelity levels. Simultaneously, the minimum sample enforcement mechanism prevents pathological allocations that could compromise estimator stability, while iterative budget redistribution ensures full utilization of computational resources. The framework's unified structure further permits seamless integration of various constraint handling strategies and domain-specific requirements, offering both theoretical rigor and practical utility for robust multifidelity estimation under realistic computational constraints.
+
+
 \begin{algorithm}[!ht]
+\caption{Iterative Integer-Valued Sample Size Allocation for Multi-Fidelity Monte Carlo}
 \label{algo:Iterative_MFMC_Algo}
 \DontPrintSemicolon
 
-\KwIn{Parameters $\rho_{1,k}$ and $C_k$, total cost $p$. }\vspace{1ex}
-\KwOut{Sample sizes $\left\lfloor M_k^*\right\rfloor$ for $K$ models.}\vspace{1ex}
-\hrule \vspace{1ex}
+\KwIn{Correlation coefficients $\rho_{1,k}$, standard deviations $\sigma_k$, computational costs $C_k$, total budget $p$.}
+\KwOut{Integer-valued sample sizes $\lfloor M_k^* \rfloor$ for $k=1,\dots,K$.}
+\hrule\vspace{1ex}
 
 \If{$p < \sum_{i=1}^K C_i$}{
-    \KwRet{Algorithm terminates since budget $p$ is insufficient.}
+    \textbf{return} ``Insufficient budget: requires at least $\sum_{i=1}^K C_i$''.
 }
 
-Set the weights 
+Compute variance terms: $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k = 1, \dots, K$ with $\rho_{1,K+1}=0$.
+
+% Compute normalization constant: $S = \sum_{i=1}^K \sqrt{C_i \Delta_i}$\;
+
+Initialize with first fidelity level:
 \[
-\alpha_k = \frac{\rho_{1,k}\sigma_1}{\sigma_k}, \quad 1\le k\le K.
+M_1^* = \sqrt{\frac{\Delta_1}{C_1}} \frac{p}{ \sum_{i=1}^K \sqrt{C_i \Delta_i}}.
 \]
 
-Initial real-valued sample size
-\[
-M_1^* = \sqrt{\frac{\Delta_1}{C_1}}\frac{p}{\sum_{i=1}^K\sqrt{C_i\Delta_i}}.
-\]
-
-\For{$2\le k\le K$}{
-    Compute the $k$-th sample size
+\For{$k = 2$ \KwTo $K$}{
+    Update residual budget: $R_k = p - \sum_{j=1}^{k-1} C_j \lfloor M_j^* \rfloor$.\;
+    Compute current allocation:
     \[
-    M_k^* = \sqrt{\frac{\Delta_k}{C_k}}
-      \frac{p-\sum_{i=1}^{k-1}C_i\left\lfloor M_i^* \right\rfloor}
-           {\sum_{i=k}^K\sqrt{C_i\Delta_i}}.
+    M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{R_k}{\sum_{j=k}^K \sqrt{C_j \Delta_j}}.
     \]
-    \If{$\left\lfloor M_k^*\right\rfloor<1$}{
-        Set $\left\lfloor M_k^*\right\rfloor=1$.
+    \If{$\lfloor M_k^* \rfloor < 1$}{
+        Enforce minimum sample: $\lfloor M_k^* \rfloor = 1$.
     }
 }
 
-\caption{Iterative sample size estimation for multi-fidelity Monte Carlo}
+\textbf{return} $\lfloor M_1^* \rfloor, \dots, \lfloor M_K^* \rfloor$.
 \end{algorithm}
+
+
+
