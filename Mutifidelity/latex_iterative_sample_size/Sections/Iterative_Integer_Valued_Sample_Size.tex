@@ -40,7 +40,7 @@ The decomposition of the original optimization problem \eqref{eq:Optimization_pb
 
 \subsection{Convexity and Global Optimality}
 
-The convexity of each subproblem in \eqref{eq:Sequential_Optimization} is fundamental to guaranteeing global optimality. Since $\Delta_j > 0$ and $H_j > 0$, the objective function $\sum_{j=k}^K \frac{\Delta_j}{H_j}$ is strictly convex on the positive orthant, while the budget constraint is linear and the monotonicity constraints form a convex polyhedron. This convexity ensures that:
+The convexity of each subproblem in \eqref{eq:Sequential_Optimization} is fundamental to guaranteeing global optimality. Since $\Delta_j > 0$ and $H_j\ge 0$, the objective function $\sum_{j=k}^K \frac{\Delta_j}{H_j}$ is strictly convex on the positive orthant, while the budget constraint is linear and the monotonicity constraints form a convex polyhedron. This convexity ensures that:
 \begin{itemize}
     \item Local optimal solutions are globally optimal
     \item The sequential dynamic programming approach cannot be trapped in suboptimal local minima
@@ -65,6 +65,30 @@ Unfolding this recursion provides the explicit forward iterative process:
 
 This iterative scheme possesses several desirable properties: it maintains feasibility at every step, enables progressive budget allocation, provides computational advantages by decomposing a high-dimensional constrained optimization into a sequence of lower-dimensional problems, and maintains guaranties of global optimality through the dynamic programming framework.
 
+%
+\begin{theorem}[Monotonicity of the iterative formulation]\label{thm:Monotonicity_H_k}
+Under the assumptions of Theorem \label{thm:Sample_size_est}, the iteratively defined sample sizes $H_k^*$ in \eqref{eq:MFMC_New_RealValued_Sample_Size} is monotonically decreasing for all $K$.
+\end{theorem}
+%
+\begin{proof}
+Let $S_k = \sum_{j=k}^K \sqrt{C_j\Delta_j}$. Then
+\[
+S_{k-1} = \sqrt{C_{k-1}\Delta_{k-1}}+S_k, \quad H_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{R_k}{S_k}
+\]
+\[
+R_k = R_{k-1}-C_{k-1}H_{k-1}^* = R_{k-1}\left(1-\frac{\sqrt{C_{k-1}\Delta_{k-1}}}{S_{k-1}}\right) = R_{k-1}\frac{S_k}{S_{k-1}}
+\]
+Therefore, 
+\[
+\frac{R_k}{S_k} = \frac{R_{k-1}}{S_{k-1}}
+\]
+Therefore,
+\[
+H_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{R_k}{S_k}>\sqrt{\frac{\Delta_{k-1}}{C_{k-1}}}\frac{R_{k-1}}{S_{k-1}} = H_{k-1}^*, \quad k=2,\ldots,K
+\]
+
+\end{proof}
+
 
 \subsection{Equivalence with Continuous MFMC Solution}
 
@@ -72,6 +96,7 @@ The following theorem establishes the fundamental equivalence between the iterat
 
 %
 \begin{theorem}[Equivalence of iterative and standard MFMC formulations]\label{thm:MFMC_Iterative_RealValued_Sample_Size}
+\JLcolor{Under the assumptions of Theorem \label{thm:Sample_size_est}},
 The iteratively defined sample sizes $H_k^*$ in \eqref{eq:MFMC_New_RealValued_Sample_Size} are identical to the standard real-valued MFMC sample sizes $N_k^*$ in \eqref{eq:MFMC_RealValued_Sample_Size}, i.e.,
 \[
 H_k^* = N_k^*

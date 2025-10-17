@@ -82,13 +82,13 @@ Integer, iterative
 \includegraphics[width=0.48\linewidth]{./Figures/Eg1_f.pdf}
 \end{tabular}
 \caption{
-Budget sensitivity analysis for the plasma physics example. \textbf{Left:} Cost deviation $p - \sum_k C_k \lfloor \cdot \rfloor$ versus prescribed budget $p$. \textbf{Right:} Variance deviation $\sum_k (\Delta_k/\lfloor \cdot \rfloor - \Delta_k/N_k^*)$ versus prescribed budget $p$. 
+Budget sensitivity analysis for the plasma physics example. Left: Relative cost deviation $(p - \sum_k C_k \lfloor \cdot \rfloor)/p$ versus prescribed budget $p$. Right: Relative variance deviation $(f(\lfloor \cdot \rfloor) - f(N_k^*))/f(N_k^*)$ versus prescribed budget $p$. 
 } 
 \label{fig:Eg1} 
 \end{figure}
 %
 
-Figure~\ref{fig:Eg1} examines the sensitivity of cost utilization and variance performance to the prescribed budget $p \in [\sum_k C_k, 10^6]$, illustrating the relative performance of integer allocation schemes compared to the continuous optimum.
+Figure~\ref{fig:Eg1} examines the sensitivity of cost utilization and variance performance to the prescribed budget $p \in [\sum_k C_k, 10^4]$, illustrating the relative performance of integer allocation schemes compared to the continuous optimum.
 
 The left panel quantifies the budget under-utilization through the metric $p - \sum_k C_k \lfloor \cdot \rfloor$. The iterative scheme demonstrates near-perfect budget adherence across all budget levels, with deviations remaining at numerical precision levels. In contrast, direct flooring exhibits approximately six orders of magnitude greater under-utilization across most budget values. This substantial gap underscores the iterative method's ability to fully leverage available computational resources.
 
@@ -120,7 +120,7 @@ Under the more constrained budget $p=46$, direct flooring produces a degenerate 
 \hline
 Model index &1 &2 &3 &4 \\
 \hline
-Correlation coeff $\rho_{1,k}$ &1     &9.999882e-01  &9.999743e-01 &9.958253e-01\\
+Correlation coeff $\rho_{1,k}$ &1     &9.9999e-01  &9.9997e-01 &9.9583e-01\\
 % \hline
 % Standard deviation $\sigma_k$ &0.03\\
 \hline
@@ -183,8 +183,7 @@ Integer, iterative
 \includegraphics[width=0.48\linewidth]{./Figures/Eg2_f.pdf}
 \end{tabular}
 \caption{
-Left: Deviation of both direct floor and iterative with respect to the real-valued $f$ vs. budget  $p$.
-Right: Deviation of both direct floor and iterative with respect to the real-valued cost vs. budget  $p$. $p$ ranges from $p=\sum_{k}C_k$ to $10^4$. When $p=\sum_{k}C_k$, the cost deviation is zero.
+Left: Relative cost deviation $(p - \sum_k C_k \lfloor \cdot \rfloor)/p$ versus prescribed budget $p$. Right: Relative variance deviation $(f(\lfloor \cdot \rfloor) - f(N_k^*))/f(N_k^*)$ versus prescribed budget $p$.
 } 
 \label{fig:Eg2} 
 \end{figure}
