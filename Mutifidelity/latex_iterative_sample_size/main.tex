@@ -54,7 +54,7 @@
 
 \begin{document}
 \begin{frontmatter}
-\title{Iterative estimation of integer sample sizes for multi-fidelity Monte Carlo}
+\title{Iterative estimation of integer sample size for multi-fidelity Monte Carlo}
 
 
 % \author[RiceCMOR]{Damon Spencer}
@@ -67,18 +67,18 @@
 \ead{heinken@rice.edu}
 \address[RiceCMOR]{Department of Computational Applied Mathematics \& Operations Research and The Ken Kennedy Institute, Rice  University.}
 \begin{abstract}
-In multifidelity Monte Carlo (MFMC) methods, optimal sample allocations are typically obtained from a continuous optimization problem \cite{PeGuWi:2018}, with integer sample sizes determined by flooring the real-valued solution. This rounding step can lead to budget underutilization and suboptimal variance reduction. In this work, we develop an iterative scheme for the direct estimation of integer-valued sample sizes in MFMC. The proposed method enforces the total budget constraint exactly and produces integer-feasible allocations that better approximate the continuous optimum. Numerical results demonstrate that the iterative approach consistently achieves lower estimator variance and improved computational efficiency compared to conventional rounding strategies.
+In multifidelity Monte Carlo (MFMC) methods, optimal sample allocations are typically derived by solving a continuous optimization problem, with integer solutions obtained through flooring operations. This rounding approach frequently leads to budget underutilization and suboptimal variance reduction in practical implementations. In this work, we present a novel iterative scheme that directly computes integer-valued sample allocations for MFMC estimation. The proposed method guarantees a better adherence to total budget constraints while generating integer-feasible solutions that more closely approximate the continuous optimum. Numerical results demonstrate that our approach achieves lower estimator variance compared to conventional rounding strategies. These advancements offer significant practical benefits for uncertainty quantification applications requiring optimal resource allocation across multiple model fidelities.
 \end{abstract}
 
 
 
 
 
-% \begin{keyword}
-% Inverse problem \sep Uncertainty Quantification \sep Free Boundary Grad-Shafranov Problem.
+\begin{keyword}
+Multi-fidelity Monte Carlo \sep Sample Allocation \sep Integer Optimization  \sep Uncertainty Quantification \sep Variance Reduction.
 %
-% \MSC[2020] 
-% \end{keyword}
+\MSC[2020] 65C05\sep 62K05 \sep 49M20.
+\end{keyword}
 \end{frontmatter}
 
 \input{./Sections/Introduction} 

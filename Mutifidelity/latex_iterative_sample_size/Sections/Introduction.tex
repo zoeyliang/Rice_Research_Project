@@ -2,36 +2,21 @@
 \section{Introduction}\label{sec:Intro}
 % ====================================================
 
-Monte Carlo (MC) methods are widely used for the estimation of statistical quantities arising in scientific and engineering applications. However, their computational cost can become prohibitive when the evaluation of a single high-fidelity (HF) model realization is expensive. Multi-fidelity Monte Carlo (MFMC) methods mitigate this limitation by exploiting correlations among models of differing accuracy and cost. By combining high-fidelity (HF) and low-fidelity (LF) evaluations within a single estimator, MFMC achieves variance reduction under a fixed computational budget while maintaining the bias properties of the HF model.
+Monte Carlo (MC) methods are widely used for estimating statistical quantities in scientific and engineering applications. However, their computational cost can become prohibitive when each high-fidelity (HF) model evaluation is expensive. Multi-fidelity Monte Carlo (MFMC) methods \cite{PeWiGu:2016} address this challenge by exploiting correlations between models of varying accuracy and cost. By combining high-fidelity and low-fidelity (LF) evaluations within a single estimator, MFMC reduces the variance under a fixed computational budget while preserving the accuracy of the HF model.
+
+
+A crucial aspect of MFMC is determining the optimal sample allocation across different model fidelities. In the standard formulation, the sample sizes are obtained by solving a continuous optimization problem that minimizes the estimator variance under a prescribed cost constraint. This yields real-valued sample sizes, which are then rounded to integers for practical implementation. Although rounding is computationally convenient, it introduces a discrepancy between the theoretical and implemented allocations, leading to potential suboptimality. This issue is particularly pronounced when the computational budget is limited or when model costs vary significantly.
+
+
+This work introduces a novel iterative scheme that computes integer-valued sample allocations to solve the budget under-utilization problem. The proposed approach generates admissible integer allocations through sequentially generating a sequence of proxy variables at each fidelity level, where each component is updated based on residual budget after flooring previous allocations. This recursive procedure implicitly enforces integer feasibility,  ensuring stricter adherence to total cost constraints, and preserving the structural properties of the optimal continuous solution.
 
 
 
-A key component in MFMC design is the determination of the optimal sample allocation across different model fidelities. In the standard formulation, the sample sizes are obtained by solving a continuous optimization problem that minimizes the estimator variance under a prescribed cost constraint. The solution yields real-valued sample sizes, which are then rounded to the nearest integers before simulation. Although this rounding step is computationally convenient, it introduces a discrepancy between the theoretical and realizable allocations, leading to potential suboptimality, particularly when the available budget is limited or when cost disparities among models are large.
+We provide theoretical analysis of the proposed scheme establishing bounds on variance and guarantees budget admissibility of the estimator using integer-valued sample estimation. Numerical experiments confirm that our iterative allocation consistently outperforms conventional rounding strategies, particularly in regimes with tight computational budgets or highly heterogeneous model costs.
 
-======================================================
-
-To address this issue, we propose an iterative scheme for directly estimating integer-valued sample sizes in the MFMC framework. The method sequentially adjusts allocations across model levels by incorporating the remaining computational budget at each step, thereby ensuring that the final integer-valued sample sizes exactly satisfy the prescribed cost constraint. The iterative update preserves the structure of the optimal real-valued allocation while providing a systematic correction to rounding errors. The approach is applicable to both fixed and adaptive settings and can be readily integrated into existing MFMC workflows.
-
-We provide a theoretical analysis of the proposed scheme, including upper and lower bounds on the estimator variance, and demonstrate that the resulting integer allocations remain close to the continuous optimum. The method guarantees admissibility of the total budget and maintains monotonic variance reduction across iterations. Numerical experiments confirm that the iterative allocation yields improved efficiency compared to naive rounding, particularly in regimes with tight computational budgets or highly heterogeneous model costs.
-
-The paper is organized as follows. In Section~\ref{sec:MFMC}, we briefly review the MFMC formulation and the optimal real-valued sample allocation. Section~\ref{sec:Iterative_IntegerValued_Sample_Size} introduces the proposed iterative integer-valued allocation scheme and its theoretical properties. 
-Section~\ref{sec:Modified_IntegerValued_Sample_Size} discusses the modified version of the integer-valued sample size that deals with the ill-conditioned sample size scenario.
-Section~\ref{sec:Num_Result} presents numerical results illustrating the performance of the method. 
-
-% Finally, Section~\ref{sec:conclusion} summarizes the findings and discusses potential extensions to adaptive and multi-level frameworks.
+The paper is organized as follows: Section~\ref{sec:MFMC} reviews the MFMC formulation and continuous allocation theory; Section~\ref{sec:Iterative_IntegerValued_Sample_Size} develops the iterative integer-valued allocation scheme and its theoretical foundations; Section~\ref{sec:Modified_IntegerValued_Sample_Size} addresses modifications for ill-conditioned scenarios; Section~\ref{sec:Num_Result} presents numerical results illustrating the performance of the method.
 
 
-
-=========================================================================
-
-
-
-
-
-
-In practical implementations, however, sample sizes must be integers. The standard approach applies a floor or rounding operation to the real-valued sample size, yielding $\lfloor N_k^* \rfloor$. This naive discretization may violate the cost constraint or lead to non-optimal allocations, especially when $p$ is small or the model costs $\{C_k\}$ vary substantially across fidelities. Consequently, the realized estimator variance can deviate from the theoretical optimum.
-
-To overcome this limitation, we introduce an iterative integer-valued allocation scheme that preserves the structure of the real-valued sample size while ensuring exact budget satisfaction. The proposed method constructs a sequence of proxy allocations $\{M_k^*\}$, where each component is updated recursively according to the remaining computational budget after flooring the previous allocations. This procedure implicitly enforces integer feasibility at each iteration, and the resulting allocation converges to an admissible integer-valued point that is provably close to the continuous optimum.
 
 
 
