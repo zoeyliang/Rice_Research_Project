@@ -61,7 +61,7 @@ Each correction $Y_k$($k\ge2$) is correlated with $Y_1$, with covariance
 \begin{equation}\label{eq:Cov_Yk}
 \operatorname{Cov}[Y_1,Y_k] = -\!\left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\rho_{1,k}\sigma_1\sigma_k,
 \end{equation}
-as shown in \cite[Lemma~3.2]{PeWiGu:2016}. Combining \eqref{eq:Var_Yk}–\eqref{eq:Cov_Yk} gives
+as shown in \cite[Lemma~3.2]{PeWiGu:2016}. Combining \eqref{eq:Var_Yk} and \eqref{eq:Cov_Yk} gives
 %
 \begin{equation}\label{eq:MFMC_variance}
     \mathcal{V}^{\text{MF}}
@@ -70,7 +70,7 @@ as shown in \cite[Lemma~3.2]{PeWiGu:2016}. Combining \eqref{eq:Var_Yk}–\eqref{
 \end{equation}
 %
 
-In order to determine optimal sample sizes $N_k$ and weights $\alpha_k$ in the MFMC estimator \eqref{eq:MFMC_estimator_independent}, an optimization problem is formulated \cite{PeWiGu:2016} to minimize the estimator variance \eqref{eq:MFMC_variance} subject to a total computational budget constraint. Let $C_k$ denote the cost per sample of model $u_k$, the total cost is 
+In order to determine optimal sample sizes $N_k$ and weights $\alpha_k$ in the MFMC estimator \eqref{eq:MFMC_estimator_independent}, an optimization problem is formulated \cite{PeWiGu:2016} by minimizing the estimator variance \eqref{eq:MFMC_variance} subject to a fixed budget $p$. Let $C_k$ denote the per-sample cost of model $u_k$, the total computational cost is 
 %
 \[
 \mathcal{W}^{\text{MF}} = \sum_{k=1}^K C_k N_k,
@@ -88,9 +88,7 @@ and the constrained optimization problem becomes
     \end{array}
 \end{equation}
 %
-
-
-Note that for each level $k\ge 2$, $\alpha_k$ enters only through a quadratic expression independent of $N_k$ in the variance term. A fundamental mathematical simplification arises from the separable structure of the variance functional.  i.e. the minimization over $\alpha_k$ and $N_k$ can be performed hierarchically
+Note that for each level $k\ge 2$, $\alpha_k$ enters only through a quadratic expression independent of $N_k$ in the variance term. This separable structure allows a fundamental simplification of the variance functional, which allows hierarchical minimization
 %
 \begin{equation*}
     \min_{\alpha_k,\, N_k} \mathcal{V}^{\text{MF}}\left(\alpha_k, N_k\right)
@@ -110,7 +108,7 @@ Substituting $\alpha_k^*$ into \eqref{eq:MFMC_variance} simplifies the variance 
     = \sigma_1^2\sum_{k=1}^K \frac{\Delta_k}{N_k},
 \end{equation*}
 %
-where $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k = 1, \dots, K$ with $\rho_{1,K+1}=0$. This reduces the joint optimization to a problem involving only sample allocation
+where $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k = 1, \dots, K$ with $\rho_{1,K+1}=0$. This reduces the joint optimization to a continuous resource allocation problem involving only sample allocation
 %
 \begin{equation}\label{eq:Optimization_pb_sample_size_reduced}
     \begin{array}{ll}
@@ -121,9 +119,7 @@ where $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k = 1, \dots, K$ with $\rh
     \end{array}
 \end{equation}
 %
-where $f(N_k)$ is the {\it normalized variance functional}.
-
-Under suitable monotonicity and ordering assumptions, this problem admits a closed-form real-valued solution that characterizes the optimal allocation of resources across fidelity levels, which is summarized in Theorem~\ref{thm:Sample_size_est}.
+where $f(N_k)$ is the {\it normalized variance functional}. Under suitable monotonicity and ordering assumptions, this problem admits an analytic solution that characterizes the optimal allocation of resources across fidelity levels.
 
 
 %
@@ -157,13 +153,24 @@ The resulting minimal variance of the MFMC estimator is
 \end{theorem}
 %
 
-While Theorem~\ref{thm:Sample_size_est} provides real-valued optimal allocations $N_k^*$, practical implementation requires integer sample sizes. The standard approach \cite{PeWiGu:2016} applies the floor function $\lfloor N_k^* \rfloor$ to ensure budget feasibility. The realized performance metrics become
+
+Differentiating the normalized variance and cost with respect to the sample sizes gives
+%
+\[
+\frac{\partial f}{\partial N_k} = -\frac{\Delta_k}{N_k^2},
+\qquad 
+\frac{\partial \mathcal{W}^{\text{MF}}}{\partial N_k} = C_k.
+\]
+%
+These relations quantify the variance–cost trade-off: increasing samples at any level reduces variance at the expense of computational resources. At the continuous optimum \eqref{eq:MFMC_RealValued_Sample_Size}, the marginal variance reduction per unit cost $\Delta_k/(C_k N_k^2)$ is identical across all active models, establishing a balanced resource allocation that characterizes the optimal allocation.
+
+While Theorem~\ref{thm:Sample_size_est} provides real-valued optimal allocations $N_k^*$, practical implementation requires integer sample sizes. The standard approach \cite{PeWiGu:2016} applies the floor function $\lfloor N_k^* \rfloor$ to ensure budget feasibility. The realized variance and cost are
 %
 \[
 f\left(\left\lfloor N_k^* \right\rfloor\right) = \sum_{k=1}^K\frac{\Delta_{k}}{\left\lfloor N_k^* \right\rfloor}, \qquad \mathcal{W}^{\text{MF}}\left(\left\lfloor N_k^* \right\rfloor\right) = \sum_{k=1}^K C_k\left\lfloor N_k^* \right\rfloor.
 \]
 %
-The floor operation induces bounded sub-optimality due to the inequalities $N_k^*-1 < \lfloor N_k^*\rfloor \le N_k^*$, producing the bounds
+Since $N_k^*-1 < \lfloor N_k^*\rfloor \le N_k^*$, the floor operation induces bounded sub-optimality, producing the bounds
 %
 \begin{equation}\label{eq:bounds_for_floor}
 \begin{aligned}
@@ -176,19 +183,9 @@ The floor operation induces bounded sub-optimality due to the inequalities $N_k^
 \end{aligned}
 \end{equation}
 %
+The term $\sum_{k=1}^K C_k$ represents the rounding-induced slack in the budget, which becomes negligible asymptotically as $p \to \infty$. However, in the pre-asymptotic regime -- where the total budget $p$ is moderate -- this  slack can lead to significant under-utilization of the computational resources. This observation naturally motivates \textit{the development of  alternative integer-valued allocation strategies that reduce slack and achieve tighter budget utilization.}
 
-The term $\sum_{k=1}^K C_k$ represents the rounding-induced slack in the budget, which becomes negligible asymptotically as $p \to \infty$. However, in the pre-asymptotic regime -- where the total budget $p$ is moderate -- this  slack can lead to significant under-utilization of the computational resources. This observation naturally motivates \textit{investigating alternative integer-valued allocation strategies that minimize slack and ensure the realized cost approaches the prescribed budget.}
 
-
-Finally, differentiating the normalized variance and cost with respect to the sample sizes yields
-%
-\[
-\frac{\partial f}{\partial N_k} = -\frac{\Delta_k}{N_k^2},
-\qquad 
-\frac{\partial \mathcal{W}^{\text{MF}}}{\partial N_k} = C_k.
-\]
-%
-These relations quantify the variance–cost trade-off: increasing samples at any level reduces variance at the expense of computational resources. At the continuous optimum, the marginal variance reduction per unit cost is identical across all active models, establishing a balanced resource allocation that characterizes the optimal allocation.
 
 
 
