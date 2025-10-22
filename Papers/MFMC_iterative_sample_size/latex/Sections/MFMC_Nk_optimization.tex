@@ -2,53 +2,41 @@
 % ====================================================
 \section{Optimal Sample Size Allocation}\label{sec:MFMC_Nk_optimize}
 % ====================================================
-
-
-
-
-\begin{equation}\label{eq:Optimization_pb_sample_size}
-    \begin{array}{ll}
-    \min &\mathcal{V}^{\text{MF}}\left(\alpha_k,N_k\right),\\
-       \text{subject to} &\displaystyle\sum\limits_{k=1}^K C_kN_k=p,\\[2pt]
-       &\displaystyle N_1\ge 0,\quad \displaystyle N_{k-1}\le N_k, \;\; k=2\ldots,K,\\
-       &N_1,\ldots, N_K\in \mathbb{R},\\
-       &\alpha_2,\ldots,\alpha_K\in \mathbb{R}.
-    \end{array}
-\end{equation}
-%
-Note that for each level $k\ge 2$, $\alpha_k$ enters only through a quadratic expression independent of $N_k$ in the variance term. This separable structure allows a fundamental simplification of the variance functional, which allows hierarchical minimization
-%
-\begin{equation*}
-    \min_{\alpha_k,\, N_k} \mathcal{V}^{\text{MF}}\left(\alpha_k, N_k\right)
-    = \min_{N_k}\Big(\min_{\alpha_k} \mathcal{V}^{\text{MF}}(\alpha_k, N_k)\Big).
-\end{equation*}
-%
-The hierarchical minimization admits a closed-form solution for optimal weights by solving the inner optimization $\partial \mathcal{V}^{\text{MF}}/\partial \alpha_k = 0$, yielding 
-%
-\begin{equation}\label{eq:MFMC_weights}
-    \alpha_k^* = \frac{\rho_{1,k}\sigma_1}{\sigma_k}.
-\end{equation}
-%
-Substituting $\alpha_k^*$ into \eqref{eq:MFMC_variance} simplifies the variance to 
-%
-\begin{equation*}
-    \mathcal{V}^{\text{MF}}\left(\alpha_k^*, N_k\right)
-    = \sigma_1^2\sum_{k=1}^K \frac{\Delta_k}{N_k},
-\end{equation*}
-%
-where $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k = 1, \dots, K$ with $\rho_{1,K+1}=0$. This reduces the joint optimization to a continuous resource allocation problem involving only sample allocation
-%
-\begin{equation}\label{eq:Optimization_pb_sample_size_reduced}
-    \begin{array}{ll}
-    \min &\displaystyle f(N_k) =\sum_{k=1}^K \frac{\Delta_k}{N_k},\\
-       \text{subject to} &\displaystyle\sum\limits_{k=1}^K C_kN_k=p,\\[2pt]
-       &\displaystyle -N_1\le 0,\quad \displaystyle N_{k-1}-N_k\le 0, \;\; k=2\ldots,K,\\
-       &N_1,\ldots, N_K\in \mathbb{R},
-    \end{array}
-\end{equation}
-%
-where $f(N_k)$ is the {\it normalized variance functional}. Under suitable monotonicity and ordering assumptions, this problem admits an analytic solution that characterizes the optimal allocation of resources across fidelity levels. 
-
+The optimal samples $1 \le N_1 \le N_2 \le \ldots \le N_K$ are computed to minimize
+the variance \eqref{eq:MFMC_variance} of the MFMC estimator
+subject to (s.t.) a constraint on the cost \eqref{eq:MFMC_cost} to execute the MFMC estimator.
+A first version of the optimization problem to compute $1 \le N_1 \le N_2 \le \ldots \le N_K$ is
+\begin{subequations}\label{eq:Optimization_sample_size_N}
+    \begin{align}
+    \min \quad &\sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{N_k},   \\
+       \text{s.t.}\quad & \sum_{k=1}^K C_kN_k \le p,       \label{eq:Optimization_sample_size_N_budget}  \\
+                                & N_1\ge 1,\quad  N_k \ge N_{k-1}, \quad k=2\ldots,K,\\
+                                &N_1,\ldots, N_K\in \nat.
+    \end{align}
+\end{subequations}
+The issue with this formulation is that if $N_k = N_{k-1}$, the $k$-th model
+does not contribute to the variance, which is easier to see from \eqref{eq:MFMC_variance_a}.
+Therefore, if $N_k = N_{k-1}$, the $k$-th model should not be executed, but it still contributes to
+the computing budget \eqref{eq:Optimization_sample_size_0_budget}.
+To fix this issue we iontrduce binary variables $z_2, \ldots, z_K \in \{0,1\}$ such that
+$z_k = 1$ if $N_k > N_{k-1}$ and model $k$ will be sampled $N_k$ times, and 
+$z_k = 0$ if $N_k = N_{k-1}$ and model $k$ will be skippted.
+The optimization formulation requires 
+an upper bound $M$ for all possible differences $N_k - N_{k-1}$, $k=2\ldots,K$.
+For example, $M = p/ C_K$ is such an upper bound because  $p/ C_K \ge N_K \ge N_k - N_{k-1}$, $k=2\ldots,K$.
+The optimization problem formulation for the optimal sample size selection is
+\begin{subequations}\label{eq:Optimization_sample_size_Nz}
+    \begin{align}
+    \min \quad &\sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{N_k},   \\
+       \text{s.t.}\quad &  C_1 N_1 + \sum_{k=2}^K z_k C_k N_k \le p,       \label{eq:Optimization_sample_size_Nz_budget}  \\
+                                & N_1\ge 1,\quad  N_k \ge N_{k-1}, \quad k=2\ldots,K,\\
+                                & N_k - N_{k-1} \ge z_k, \quad M z_k \ge N_k - N_{k-1},  \quad k=2\ldots,K,  \label{eq:Optimization_sample_size_Nz_z}  \\
+                                &N_1,\ldots, N_K\in \nat, \quad z_2 ,\ldots, z_K\in \{0,1\}.
+    \end{align}
+\end{subequations}
+The constraints \eqref{eq:Optimization_sample_size_Nz_z} ensures that $z_k = 0$ if $N_k = N_{k-1}$ and 
+$z_k = 1$ if $N_k >  N_{k-1}$. If $z_k = 0$, model $k$ will not be executed and does not contribute to the 
+computational cost \eqref{eq:Optimization_sample_size_Nz_budget}.
 
 %
 \begin{theorem}[Optimal MFMC real-valued sample allocation]
