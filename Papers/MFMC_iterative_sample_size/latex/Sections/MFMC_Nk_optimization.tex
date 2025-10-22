@@ -2,106 +2,179 @@
 % ====================================================
 \section{Optimal Sample Size Allocation}\label{sec:MFMC_Nk_optimize}
 % ====================================================
-The optimal samples $1 \le N_1 \le N_2 \le \ldots \le N_K$ are computed to minimize
+
+% ====================================================
+\subsection{Integer Programming Formulation}  \label{sec:MFMC_Nk_optimize_IP}
+% ====================================================
+The optimal samples $1 \le m_1 \le m_2 \le \ldots \le m_K$ are computed to minimize
 the variance \eqref{eq:MFMC_variance} of the MFMC estimator
 subject to (s.t.) a constraint on the cost \eqref{eq:MFMC_cost} to execute the MFMC estimator.
-A first version of the optimization problem to compute $1 \le N_1 \le N_2 \le \ldots \le N_K$ is
+A first version of the optimization problem to compute $1 \le m_1 \le m_2 \le \ldots \le m_K$ is
 \begin{subequations}\label{eq:Optimization_sample_size_N}
     \begin{align}
-    \min \quad &\sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{N_k},   \\
-       \text{s.t.}\quad & \sum_{k=1}^K C_kN_k \le p,       \label{eq:Optimization_sample_size_N_budget}  \\
-                                & N_1\ge 1,\quad  N_k \ge N_{k-1}, \quad k=2\ldots,K,\\
-                                &N_1,\ldots, N_K\in \nat.
+    \min \quad &\sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k},   \\
+       \text{s.t.}\quad & \sum_{k=1}^K C_km_k \le p,       \label{eq:Optimization_sample_size_m_budget}  \\
+                                & m_1\ge 1,\quad  m_k \ge m_{k-1}, \quad k=2\ldots,K,\\
+                                &m_1,\ldots, m_K\in \nat.
     \end{align}
 \end{subequations}
-The issue with this formulation is that if $N_k = N_{k-1}$, the $k$-th model
+The issue with this formulation is that if $m_k = m_{k-1}$, the $k$-th model
 does not contribute to the variance, which is easier to see from \eqref{eq:MFMC_variance_a}.
-Therefore, if $N_k = N_{k-1}$, the $k$-th model should not be executed, but it still contributes to
-the computing budget \eqref{eq:Optimization_sample_size_0_budget}.
-To fix this issue we iontrduce binary variables $z_2, \ldots, z_K \in \{0,1\}$ such that
-$z_k = 1$ if $N_k > N_{k-1}$ and model $k$ will be sampled $N_k$ times, and 
-$z_k = 0$ if $N_k = N_{k-1}$ and model $k$ will be skippted.
+Therefore, if $m_k = m_{k-1}$, the $k$-th model should not be executed, but it still contributes to
+the computing budget \eqref{eq:Optimization_sample_size_m_budget}.
+To fix this issue we introduce binary variables $z_2, \ldots, z_K \in \{0,1\}$ such that
+$z_k = 1$ if $m_k > m_{k-1}$ and model $k$ will be sampled $m_k$ times, and 
+$z_k = 0$ if $m_k = m_{k-1}$ and model $k$ will be skippted.
 The optimization formulation requires 
-an upper bound $M$ for all possible differences $N_k - N_{k-1}$, $k=2\ldots,K$.
-For example, $M = p/ C_K$ is such an upper bound because  $p/ C_K \ge N_K \ge N_k - N_{k-1}$, $k=2\ldots,K$.
+an upper bound $M$ for all possible differences $m_k - m_{k-1}$, $k=2\ldots,K$.
+For example, $M = p/ C_K$ is such an upper bound because  $p/ C_K \ge m_K \ge m_k - m_{k-1}$, $k=2\ldots,K$.
 The optimization problem formulation for the optimal sample size selection is
 \begin{subequations}\label{eq:Optimization_sample_size_Nz}
     \begin{align}
-    \min \quad &\sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{N_k},   \\
-       \text{s.t.}\quad &  C_1 N_1 + \sum_{k=2}^K z_k C_k N_k \le p,       \label{eq:Optimization_sample_size_Nz_budget}  \\
-                                & N_1\ge 1,\quad  N_k \ge N_{k-1}, \quad k=2\ldots,K,\\
-                                & N_k - N_{k-1} \ge z_k, \quad M z_k \ge N_k - N_{k-1},  \quad k=2\ldots,K,  \label{eq:Optimization_sample_size_Nz_z}  \\
-                                &N_1,\ldots, N_K\in \nat, \quad z_2 ,\ldots, z_K\in \{0,1\}.
+    \min \quad &\sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k},   \\
+       \text{s.t.}\quad &  C_1 m_1 + \sum_{k=2}^K z_k C_k m_k \le p,       \label{eq:Optimization_sample_size_Nz_budget}  \\
+                                & m_1\ge 1,\quad  m_k \ge m_{k-1}, \quad k=2\ldots,K,\\
+                                & m_k - m_{k-1} \ge z_k, \quad M z_k \ge m_k - m_{k-1},  \quad k=2\ldots,K,  \label{eq:Optimization_sample_size_Nz_z}  \\
+                                &m_1,\ldots, m_K\in \nat, \quad z_2 ,\ldots, z_K\in \{0,1\}.
     \end{align}
 \end{subequations}
-The constraints \eqref{eq:Optimization_sample_size_Nz_z} ensures that $z_k = 0$ if $N_k = N_{k-1}$ and 
-$z_k = 1$ if $N_k >  N_{k-1}$. If $z_k = 0$, model $k$ will not be executed and does not contribute to the 
+The constraints \eqref{eq:Optimization_sample_size_Nz_z} ensures that $z_k = 0$ if $m_k = m_{k-1}$ and 
+$z_k = 1$ if $m_k >  m_{k-1}$. If $z_k = 0$, model $k$ will not be executed and does not contribute to the 
 computational cost \eqref{eq:Optimization_sample_size_Nz_budget}.
 
-%
-\begin{theorem}[Optimal MFMC real-valued sample allocation]
-\label{thm:Sample_size_est}
-Consider $K$ models $\{u_{k}\}_{k=1}^K$ with standard deviations $\sigma_k$, correlation coefficients $\rho_{1,k}$ of LF model $u_k$ with the HF model $u_1$, and per-sample costs $C_k$. Define $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k = 1, \dots, K$ with $\rho_{1,K+1}=0$. Assume the following conditions hold
-%
-\begin{alignat*}{3}
-&(i)\;\textit{Monotone correlations:} &\quad& |\rho_{1,1}| > \cdots > |\rho_{1,K}|,\\
-&(ii)\;\textit{Cost-correlation ratio:} &\quad& \frac{\Delta_{k}}{C_k} > \frac{\Delta_{k-1}}{C_{k-1}}, \quad k=2,\ldots,K.
-\end{alignat*}
-%
-Then the optimal control weights and sample sizes for \eqref{eq:Optimization_pb_sample_size} are
-%
-\begin{equation}\label{eq:MFMC_RealValued_Sample_Size}
-    \alpha_k^* = \frac{\rho_{1,k}\sigma_1}{\sigma_k}, \qquad
-    N_k^* = \sqrt{\frac{\Delta_k}{C_k}}\,
-    \frac{p}{\sum_{j=1}^K \sqrt{C_j \Delta_j}}.
-\end{equation}
-%
-% \[
-% r_k^* = \sqrt{\frac{C_1\Delta_k}{C_k\Delta_1}},\quad N_1^* = \frac{p}{\sum_{k=1}^K C_k r^*_k}, \quad N_k^*=N_1^*r_k^*.
-% \] 
-% %
-% \JLcolor{alternatively, in my way to represent it without mentioning the vector $\boldsymbol{r}^*$, we have}
-%
-The resulting minimal variance of the MFMC estimator is
-\begin{equation}\label{eq:MFMC_variance_optimal}
-\mathcal{V}^{\text{MF}}
-= \sigma_1^2\sum_{k=1}^K \frac{\Delta_k}{N_k^*}=\frac{\sigma_1^2}{p}\!\left(\sum_{k=1}^K \sqrt{C_k \Delta_k}\right)^{\!2}.
-\end{equation}
+
+
+
+% ====================================================
+\subsection{Relaxation}  \label{sec:MFMC_Nk_optimize_relax}
+% ====================================================
+Instead of solving the integer programming problem \eqref{eq:Optimization_sample_size_Nz} or
+even \eqref{eq:Optimization_sample_size_N}, previous papers including
+\cite{BPeherstorfer_KWillcox_MDGunzburger_2016a} and \cite{AGruber_MGunzburger_LJu_ZWang_2023a}
+have considered a relaxation  and then used rounding to obtain integer sample sizes.
+Specifically, \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a}
+considered the problem
+\begin{subequations}\label{eq:Optimization_sample_size_m_relaxed}
+    \begin{align}
+    \min \quad &\sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k},   \\
+       \text{s.t.}\quad & \sum_{k=1}^K C_km_k \le p,       \\
+                                & m_1\ge 0,\quad  m_k \ge m_{k-1}, \quad k=2\ldots,K,\\
+                                &m_1,\ldots, m_K\in \real.
+    \end{align}
+\end{subequations}
+The formulation \eqref{eq:Optimization_sample_size_m_relaxed} potentially suffers from the same isses as 
+\eqref{eq:Optimization_sample_size_N}, namely that if f $m_k = m_{k-1}$, the $k$-th model does not
+provide variance reduction, but it's cost is included. 
+However, under conditions specified in the following Theorem~\ref{thm:Sample_size_real}, the solution
+of \eqref{eq:Optimization_sample_size_m_relaxed} can be computed analytically, and it satisfies
+$0  < m_1^* < m_2^* <  \ldots < m_K^*$.
+
+
+The following theorem is proven in \cite[Th.~3.4]{BPeherstorfer_KWillcox_MDGunzburger_2016a}.
+
+\begin{theorem}[Optimal MFMC Real-Valued Sample Allocation]   \label{thm:Sample_size_real}
+   Let models $u_1, \ldots, u_k \in   L_{\mathbb{P}}^2(W, {\mathcal U})$ with
+   standard deviations $\sigma_k$, correlation coefficients $\rho_{1,k}$, $k = 2, \ldots, K$,
+   between the HF model $u_1$  and the  LF models $u_k$, $k = 2, \ldots, K$, and 
+   per-sample costs $C_1, \ldots, C_K$ be given.
+   If 
+   \begin{subequations}\label{eq:Sample_size_real_assumptions}
+   \begin{align}
+       \label{eq:Sample_size_real_assumptions_a}
+        & |\rho_{1,1}| > \cdots > |\rho_{1,K}|, & \text{(monotone correlations)} \\
+      \label{eq:Sample_size_real_assumptions_b}
+        & \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2 }{C_k} > \frac{ \rho_{1,k-1}^2 - \rho_{1,k}^2 }{C_{k-1}}, \quad k=2,\ldots,K, 
+                                                                  & \text{(cost-correlation ratio)}
+    \end{align}
+    \end{subequations}
+    hold, where $\rho_{1,K+1} :=0$, then the solution of \eqref{eq:Optimization_sample_size_m_relaxed} is
+    \begin{equation}\label{eq:MFMC_RealValued_Sample_Size}
+             m_k^* = \sqrt{\frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{C_k}} \; 
+                          \frac{p}{\sum_{j=1}^K \sqrt{C_j (\rho_{1,j}^2 - \rho_{1,j+1}^2)}},
+     \end{equation}
+    the cost constraint is active $\sum_{k=1}^K C_km_k^* = p$, 
+    and the resulting minimal variance of the MFMC estimator is
+     \begin{equation}\label{eq:MFMC_variance_optimal}
+           \mathcal{V}^{\text{MF}}(m_1^*, \ldots, m_K^*)
+           =   \sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k^*}
+           =  \frac{\sigma_1^2}{p}\!\left(\sum_{k=1}^K \sqrt{C_k (\rho_{1,k}^2 - \rho_{1,k+1}^2) }\right)^{\!2}.
+       \end{equation}
 \end{theorem}
+
+Note that because of the cost-correlation ratio assumption, the  solution \eqref{eq:MFMC_RealValued_Sample_Size}
+satisfies $0  < m_1^* < m_2^* <  \ldots < m_K^*$.
+To obtain integer samples,  \cite[p.~A3171]{BPeherstorfer_KWillcox_MDGunzburger_2016a}
+round down, i.e., use $\lfloor m_1^* \rfloor, \ldots, \lfloor m_K^* \rfloor$. 
+Rounding down will reduce the cost, i.e., the rounded down sample sizes are still feasible for
+\eqref{eq:Optimization_sample_size_m_relaxed}. Rounding down increases the variance.
+Rounding may lead to $\lfloor m_1^* \rfloor = 0$, which introduces bias,  
+$\mathbb{E}[A^{\text{MF}}] \not=  \mathbb{E}[u_1]$,
+or may lead to $\lfloor m_k^* \rfloor = \lfloor m_{k-1}^* \rfloor$ for some $k \in \{ 2, \ldots, K\}$, 
+which means the $k$-th model does not contribute to variance reduction, but its cost is included in the
+computational budget.
+
+The case $\lfloor m_1^* \rfloor = 0$ can happen if the computational budget $p$ is small.
+If $0< m_1^* < 1$, \cite{AGruber_MGunzburger_LJu_ZWang_2023a} use $\lceil m_1^* \rceil = 1$,
+and iterative recompute integer sample sizes from a modified version of 
+Theorem~\ref{thm:Sample_size_real}. See Algorithm~2 in \cite{AGruber_MGunzburger_LJu_ZWang_2023a}.
+However, their iterative sample size computation can generate integer sample sizes
+with $1 = m_1 =  m_2 = \ldots = m_k$ for some $l \in \{ 2, \ldots, K\}$. 
+See Tables~1 and 2 in \cite{AGruber_MGunzburger_LJu_ZWang_2023a}.
+In this case, the models $2$ to $k$ do not contribute to variance reduction, but their cost is included in the
+computational budget.
+
+The issues using the rounded-down solution of \eqref{eq:MFMC_RealValued_Sample_Size},
+namely, that $\lfloor m_1^* \rfloor = 0$ or  $\lfloor m_k^* \rfloor = \lfloor m_{k-1}^* \rfloor$ for some $k \in \{ 2, \ldots, K\}$, 
+is more likely to occur when the total computational budget $p$ is small relative to the cost $C_1$ of the HF.
+See, e.g., the numerical examples in  \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a} or \cite{AGruber_MGunzburger_LJu_ZWang_2023a}.
+
+Generally, because $m_k^*-1 < \lfloor m_k^*\rfloor \le m_k^*$, the floor operation induces bounded 
+sub-optimality, producing the bounds
 %
-This theorem provides an explicit expression for the optimal tradeoff between statistical efficiency and computational cost in MFMC estimation. The monotone correlation assumption ensures that each successive model provides diminishing but positive variance reduction, while the ordering of the cost–correlation ratios guarantees that adding lower-fidelity models yields net benefit within the total budget. 
+\begin{subequations}\label{eq:bounds_for_floor}
+\begin{align}
+    \mathcal{V}^{\text{MF}}\left(\lfloor m_1^* \rfloor, \ldots \lfloor m_K^* \rfloor \right)
+    & \in \left[\frac{\sigma_1^2}{p}\left(\sum_{k=1}^K \sqrt{C_k  (\rho_{1,k}^2 - \rho_{1,k+1}^2)}\right)^2,
+                   \sum_{k=1}^K\frac{ (\rho_{1,k}^2 - \rho_{1,k+1}^2)}{m_k^*-1}\right),       \\
+   \mathcal{W}^{\text{MF}}\left(\lfloor m_1^* \rfloor, \ldots \lfloor m_K^* \rfloor \right)
+   &\in \left( p-\sum_{k=1}^K C_k, p\right].
+\end{align}
+\end{subequations}
+If $\sum_{k=1}^K C_k \ll p$, the work 
+$\mathcal{W}^{\text{MF}}\big(\lfloor m_1^* \rfloor, \ldots, \lfloor m_K^* \rfloor \big)
+ \approx  \mathcal{W}^{\text{MF}}\big( m_1^* , \ldots,  m_K^* \big) = p$.
 
 
-In practical applications, Two stages of MFMC: first is model selection, the second uses the selected models to compute MFMC estimator. the quantities $\{C_k\}$ and $\{\rho_{1,k}\}$ are estimated from data or pilot simulations. Based on these estimates, one performs model selection by identifying the subset of fidelity levels that satisfy the monotonicity and ordering assumptions while minimizing the estimator variance. This subset defines the active models used in the MFMC estimator in the first stage, ensuring that the allocation $\{N_k^*\}$ derived from \eqref{eq:MFMC_RealValued_Sample_Size} attains the minimum variance \eqref{eq:MFMC_variance_optimal} under the prescribed computational budget in the second stage.
 
+% ====================================================
 \subsection{Model selection}
-We need to select the models from the available set such that the parameteres associated with the selected models satisfy the two conditions in Theorem \ref{thm:Sample_size_est}, as well as the $\mathcal{V}^{\text{MF}}$ as small as possible (Note that minimize \eqref{eq:MFMC_variance_optimal} is a selection of model that associated with different cost and $\Delta_k$, and is independent of budget $p$). Let $\mathcal{S}^*=\{1, \ldots, K^*\}$ be the indices of $K^*$ available models. We seek a subset $\mathcal{S}=\{i_1,i_2, \ldots,i_{K}\}\subseteq \mathcal{S}^* (K\le K^*)$ of indices that minimizes the sampling cost of multifidelity Monte Carlo estimator. Note that $\mathcal{S}$ is non-empty and $i_1=1$ since the high fidelity model must be included. We will follow the exhaustive algorithm in \cite[Algorithm~1]{PeWiGu:2016} for $2^{K^*-1}$ subsets of $\mathcal{S}^*$.  This algorithm gives the indices of the selected model.
-
-% \begin{equation*}\label{eq:Optimization_pb_model_selection}
-%     \begin{array}{lll}
-%     \displaystyle\min_{k\in \mathcal{S}^*} &\displaystyle \mathcal{V}^\text{MF},\\
-%        \text{s.t.} &\displaystyle |\rho_{1,1}|>\ldots>|\rho_{1,K^*}|,\\
-%        &\displaystyle \frac{\Delta_k}{C_k}>\frac{\Delta_{k-1}}{C_{k-1}}, \quad k=2,\ldots,K^*, \quad \rho_{1,K^*+1}=0,\\
-%        % &\JLcolor{\displaystyle \frac{\sum_{k\in S_1}\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}}{\sum_{k\in S_1} C_k}\sum_{k\in S_1}\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2\ge \frac{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}{\sigma_1^2},}\\
-%        % &\JLcolor{\displaystyle \log_s\left\{\frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2\right\}\ge \gamma,}\\
-%         % &\displaystyle \rho_{1,0}=\infty \;\text{ and } \;\rho_{1,K+1}=0. \\%[6pt]
-%     \end{array}
-% \end{equation*}
-
+% ====================================================
+\MH{may not need a subsection on this. Can simply reference}
+The analytical solution of \eqref{eq:Optimization_sample_size_m_relaxed} in 
+Theorem~\ref{thm:Sample_size_real} requires that the models satsfy 
+\eqref{eq:Sample_size_real_assumptions}.
+Thus, given models, we need to select the models from the available set such that the parameters 
+associated with the selected models satisfy the two conditions in Theorem \ref{thm:Sample_size_real}, as well as the $\mathcal{V}^{\text{MF}}$ as small as possible (Note that minimize \eqref{eq:MFMC_variance_optimal} is a selection of model that associated with 
+different cost and $\rho_{1,k}^2 - \rho_{1,k+1}^2$, 
+and is independent of budget $p$). Let $\mathcal{S}^*=\{1, \ldots, K^*\}$ be the indices of $K^*$ available models. 
+We seek a subset $\mathcal{S}=\{i_1,i_2, \ldots,i_{K}\}\subseteq \mathcal{S}^* (K\le K^*)$ of indices that minimizes the sampling cost of multifidelity Monte Carlo estimator. Note that $\mathcal{S}$ is non-empty and $i_1=1$ since the high fidelity model must be included. 
+We will follow the exhaustive algorithm in \cite[Algorithm~1]{BPeherstorfer_KWillcox_MDGunzburger_2016a} 
+for $2^{K^*-1}$ subsets of $\mathcal{S}^*$.  This algorithm gives the indices of the selected model.
 
 \normalem
 \begin{algorithm}[!ht]
 \label{algo:MFMC_Algo_model_selection}
 \DontPrintSemicolon    
-   \KwIn{$K^*$ models $u_k$ with $C_k$ and $\rho_{1,k}.$}\vspace{1ex}
+   \KwIn{Models $u_1, \ldots, u_{K^*}$ ordered such that $\rho_{1,2}^2 \ge \ldots \ge \rho_{1,K^*}$,
+             and corresponding sample costs  $C_1, \ldots, C_{K^*}$.}\vspace{1ex}
     
     \KwOut{ Selected index set $\mathcal{S}$.}\vspace{1ex}
     \hrule \vspace{1ex}
 
-   % Estimate $\rho_{1,k}$ and $C_k$ for each model $f_k$ using $N_0$ samples.
+   % Estimate $\rho_{1,k}$ and $C_k$ for each model $f_k$ using $m_0$ samples.
    
    
-   Reorder $u_k$ by decreasing $|\rho_{1,k}|$ with their corresponding $C_k$. Rename the model as 1 to $K^*$, $\mathcal{S}=\{1,\ldots, K^*\}$. 
+   Set $\mathcal{S}=\{1,\ldots, K^*\}$. 
    
    Initialize $v_{\min}=C_1$, $\mathcal{S}=\{1\}$. Let $ \mathcal{\widehat S}$ be all $2^{K-1}$ ordered subsets of $\mathcal{S}^*$, each containing the high fidelity model with index $1$. 
    % Set $ \mathcal{\widehat S}_1=\mathcal{S}^*$.
@@ -110,8 +183,9 @@ We need to select the models from the available set such that the parameteres as
     \For{each subset $\mathcal{\widehat S}_j$\,}{
 
     {
-    \If{ condition $(ii)$ from Theorem \ref{thm:Sample_size_est} is satisfied}{
-    Compute $\Delta_k$ and $v = \left(\sum_{k=1}^K \sqrt{C_k \Delta_k}\right)^{\!2}$.
+    \If{ Condition \eqref{eq:Sample_size_real_assumptions_b} from Theorem \ref{thm:Sample_size_real} is satisfied}{
+    Compute $\Delta_k$ and $v = \left(\sum_{k=1}^K \sqrt{C_k (\rho_{1,k}^2 - \rho_{1,k+1}^2) }\right)^{\!2}$.
+    \MH{What is $K$?}
     
     \If{$v<v_{\min}$}{
     {
@@ -126,57 +200,6 @@ We need to select the models from the available set such that the parameteres as
 \caption{Multi-fidelity Model Selection}
 \end{algorithm}
 \ULforem
-
-
-Differentiating the normalized variance and cost with respect to the sample sizes gives
-%
-\[
-\frac{\partial f}{\partial N_k} = -\frac{\Delta_k}{N_k^2},
-\qquad 
-\frac{\partial \mathcal{W}^{\text{MF}}}{\partial N_k} = C_k.
-\]
-%
-These relations quantify the variance–cost trade-off: increasing samples at any level reduces variance at the expense of computational resources. At the continuous optimum \eqref{eq:MFMC_RealValued_Sample_Size}, the marginal variance reduction per unit cost $\Delta_k/(C_k N_k^2)$ is identical across all active models, establishing a balanced resource allocation that characterizes the optimal allocation.
-
-While Theorem~\ref{thm:Sample_size_est} provides real-valued optimal allocations $N_k^*$, practical implementation requires integer sample sizes. The standard approach \cite{PeWiGu:2016} applies the floor function $\lfloor N_k^* \rfloor$ to ensure budget feasibility. The realized variance and cost are
-%
-\[
-f\left(\left\lfloor N_k^* \right\rfloor\right) = \sum_{k=1}^K\frac{\Delta_{k}}{\left\lfloor N_k^* \right\rfloor}, \qquad \mathcal{W}^{\text{MF}}\left(\left\lfloor N_k^* \right\rfloor\right) = \sum_{k=1}^K C_k\left\lfloor N_k^* \right\rfloor.
-\]
-%
-Since $N_k^*-1 < \lfloor N_k^*\rfloor \le N_k^*$, the floor operation induces bounded sub-optimality, producing the bounds
-%
-\begin{equation}\label{eq:bounds_for_floor}
-\begin{aligned}
-    % f\left(\left\lfloor N_k^* \right\rfloor\right)&\in \left[\sum_{k=1}^K\frac{\Delta_{k}}{N_k^*},\; \sum_{k=1}^K\frac{\Delta_{k}}{N_k^*-1}\right) = \left[\frac{1}{p}\left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2, \sum_{k=1}^K\frac{\Delta_{k}}{\frac{p}{\sum_{j=1}^K \sqrt{C_j\Delta_j}}\sqrt{\frac{\Delta_k}{C_k}}-1}\right)\\
-    % &=\left[\frac{1}{p}\left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2, \sum_{k=1}^K \sqrt{C_k\Delta_k}\sum_{k=1}^K\frac{\sqrt{C_k\Delta_{k}}}{p-\sqrt{\frac{C_k}{\Delta_k}}\sum_{j=1}^K \sqrt{C_j\Delta_j}}\right)\\
-    % &=\sum_{k=1}^K \sqrt{C_k\Delta_k}\left[\frac{\sum_{k=1}^K \sqrt{C_k\Delta_k}}{p},\sum_{k=1}^K\frac{\sqrt{C_k\Delta_{k}}}{p-\sqrt{\frac{C_k}{\Delta_k}}\sum_{j=1}^K \sqrt{C_j\Delta_j}}\right)\\
-    % \mathcal{W}^{\text{MF}}\left(\left\lfloor N_k^* \right\rfloor\right) &\in \left(\sum_{k=1}^KC_kN_k^*-\sum_{k=1}^K C_k, \sum_{k=1}^KC_kN_k^*\right]=\left( p-\sum_{k=1}^K C_k,p\right].
-    f\left(\left\lfloor N_k^* \right\rfloor\right) \in \left[\frac{1}{p}\left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2, \sum_{k=1}^K\frac{\Delta_{k}}{N_k^*-1}\right), \qquad
-\mathcal{W}^{\text{MF}}\left(\left\lfloor N_k^* \right\rfloor\right)\in \left( p-\sum_{k=1}^K C_k, p\right].
-\end{aligned}
-\end{equation}
-%
-The term $\sum_{k=1}^K C_k$ represents the rounding-induced slack in the budget, which becomes negligible asymptotically as $p \to \infty$. However, in the pre-asymptotic regime -- where the total budget $p$ is moderate -- this  slack can lead to significant under-utilization of the computational resources. This observation naturally motivates \textit{the development of  alternative integer-valued allocation strategies that reduce slack and achieve tighter budget utilization.}
-
-
-
-
-
-% This quantity is the marginal variance reduction rate — how much the total variance decreases when you spend more samples at level by taking one more sample cost $C_k$. So the marginal variance reduction per unit cost
-% \[
-% \frac{-\frac{\partial f}{\partial N_k}}{C_k} = \frac{\Delta_k}{C_kN_k^2}
-% \]
-% It quantifies that How much variance reduction we get per unit cost at level $k$.
-% At the optimum, the system reaches equilibrium where every active model yields the same return per cost unit,
-% \[
-% \frac{\Delta_k}{C_kN_k^2} = \text{Constant}=\frac{1}{p^2}\left(\sum_{k=1}^K \sqrt{C_k \Delta_k}\right)^{\!2}, \quad \text{for all active}\;\; k.
-% \]
-
-
-
-
-
 
 
 

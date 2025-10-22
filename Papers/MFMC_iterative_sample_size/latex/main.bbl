@@ -17,6 +17,12 @@ H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
   quantification in the {G}rad-{S}hafranov free boundary problem.
 \newblock {\em Arxiv}, 2025.
 
+\bibitem{AGruber_MGunzburger_LJu_ZWang_2023a}
+A.~Gruber, M.~Gunzburger, L.~Ju, and Z.~Wang.
+\newblock A multifidelity {M}onte {C}arlo method for realistic computational
+  budgets.
+\newblock {\em J. Sci. Comput.}, 94(1):Paper No. 2, 18, 2023.
+
 \bibitem{GrGuJuWa:2023}
 A.~Gruber, M.~Gunzburger, L.~Ju, and Z.~Wang.
 \newblock A multifidelity {M}onte {C}arlo method for realistic computational
