@@ -29,4 +29,10 @@ B.~Peherstorfer, K.~Willcox, and M.~Gunzburger.
   estimation.
 \newblock {\em SIAM Journal on Scientific Computing}, 38(5):A3163--A3194, 2016.
 
+\bibitem{BPeherstorfer_KWillcox_MDGunzburger_2016a}
+B.~Peherstorfer, K.~Willcox, and M.~D. Gunzburger.
+\newblock Optimal model management for multifidelity {M}onte {C}arlo
+  estimation.
+\newblock {\em SIAM J. Sci. Comput.}, 38(5):A3163--A3194, 2016.
+
 \end{thebibliography}
