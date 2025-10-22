@@ -1,0 +1,66 @@
+%!TEX root = main.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% ============================================================
+\section{Sparse grid stochastic collocation}\label{sec:SC}
+% ============================================================
+We present the sparse grid stochastic collocation (SC) framework \cite{BaNoRi:2000, KlBa:2005, MaNi:2009, Sm:1963} for approximating a generic solution $u(\boldsymbol{x})$ where $\boldsymbol{x} \in [-1,1]^d$ is a $d$-dimensional random vector. The method constructs multivariate interpolants through hierarchical univariate approximations. 
+
+For each dimension $i=1,\ldots,d$, define a sequence of univariate interpolation operators
+%
+\[
+I_{X^{i}}[u]:=\sum_{j=1}^{m_{i}} u(\cdot, x_j^i)\phi_j,
+\]
+%
+where $X^i = \{x_1^i,\ldots, x_{m_i}^i\}$ are $m_i$ collocation nodes in $[-1,1]$ and $\{\phi_j\}$ form a Lagrange basis satisfying $\phi_j(x_k^i) = \delta_{jk}$. To extend to $d$-dimensional multivariate interpolant while avoiding the curse of dimensionality, we use the {\it Smolyak sparse grid} construction. For approximation {\it level} $q \geq d$, the {\it sparse grid operator} combines tensor products as
+%
+\begin{equation}\label{eq: Smolyak_Quad_formula}
+\mathcal{S}_{q,d}[u] := \sum_{q+1 \leq |\boldsymbol{i}| \leq q+d} (-1)^{q+d-|\boldsymbol{i}|} \binom{d-1}{q+d-|\boldsymbol{i}|} \bigotimes_{k=1}^d I_{X^{i_k}}[u],
+\end{equation}
+%
+where $\boldsymbol{i} = (i_1,\ldots,i_d) \in \mathbb{N}^d$ with $|\boldsymbol{i}| = \sum_{k=1}^d i_k$. The corresponding set of {\it sparse grid nodes} is
+%
+\begin{equation}\label{eq:sparse_grid_nodes}
+\mathcal{H}_{q,d} := \bigcup_{q-d+1 \leq |\boldsymbol{i}| \leq q} \left( X^{i_1} \times \cdots \times X^{i_d} \right)\in [-1,1]^d.
+\end{equation}
+%
+% This adaptive selection of tensor products achieves approximation rates comparable to full tensor grids while reducing the node count from $\mathcal{O}(m^d)$ to $\mathcal{O}(m (\log m)^{d-1})$.
+Using \textit{nested} Clenshaw-Curtis nodes defined by Chebyshev extrema \cite{BaNoRi:2000, ClCu:1960}, $x_j^i = -\cos(\pi(j-1)/(m_i-1))$ for $j=1,\ldots,m_i$ with $m_i = (1-\delta_{i1})(2^{i-1}+1)+\delta_{i1}$ for $i\ge 1$, we obtain the nesting property $X^i \subset X^{i+1}$ along a single dimension. This implies the hierarchical containment of the grid nodes
+%
+\begin{equation}\label{eq:nested_grids}
+\mathcal{H}_{q,d} \subset \mathcal{H}_{q+1,d}, \quad \forall q \geq d, \quad \text{and}\quad \mathcal{H}_{q,d} = \bigcup_{|\boldsymbol{i}|=q} \left(X^{i_1}\times \cdots\times X^{i_d}\right).
+\end{equation}
+%
+This hierarchical structure enables efficient reuse of model evaluations across refinement levels, making sparse collocation particularly effective for high-dimensional uncertainty quantification.
+
+
+
+% Let $N$ denote the number of sparse grid nodes. The sparse grid stochastic collocation method is equivalent to solving $N$ deterministic parametrized problems \eqref{eq:FreeBoundary} at each nodal point in $H(q,d)$.
+
+% For our model problem, the sparse grid stochastic collocation method constructs the surrogate function $ \mathcal{S}_{q,d}(u)$ as per \eqref{eq: Smolyak_Quad_formula} by computing the direct solution of the discrete version of \eqref{eq:FreeBoundary} at isotropic sparse grid nodes \eqref{eq:NestedColPts} with the Clenshaw-Curtis quadrature abscissa  \cite{BaNoRi:2000,ClCu:1960}. 
+
+% As discussed in \cite{NoTeWe:2008,TeJaWe:2015}, consider the function $u \in C^0(W,Z)$, where the parameter space $W$ and the solution space $Z$ are defined in \eqref{eq:ParameterSpace} and \eqref{eq:Soln_space} respectively. Let the interval in the $k$-th dimension be defined as $W_k = \left[\widetilde{\omega}_k-\tau \left\vert \widetilde{\omega}_k\right\vert, \widetilde{\omega}_k+\tau \left\vert \widetilde{\omega}_k\right\vert\right]$. The complementary multi-dimensional parameter space that excludes the $k$-th dimension is
+% %
+% \[
+% W_k^c = \prod_{i=1, i\neq k}^d W_i.
+% \]
+% %
+% Now, for any fixed element $\omega_k^c \in W_k^c$, and for each $\omega_k\in W_k$, we assume the function $u(\cdot,\omega_k,\omega_k^c): W_k \rightarrow C^0(W_k^c;Z)$ admits an analytic extension  $u(\cdot, z,\omega_k^c)$ in the complex plane, specifically in the region 
+% %
+% \[
+% W_k^{*}:=\{z\in \mathbb{C}: \text{dist} (z,W_k)\le \iota_k \;\text{ for some } \iota_k>0\},
+% \]
+% %
+% where $\iota_k$ denotes the proximity of the analytic extension to the real interval $W_k$. Under these assumptions, the interpolation error associated with the sparse grid method demonstrates an algebraic convergence rate
+% %
+% \begin{equation} \label{eq:coll-error-bound_2}
+%   \big\|u-\mathcal{S}_{q, d} (u)\big\|_\infty = C P^{-\mu},
+% \end{equation}
+% %
+% where $P$ denotes the sparse grid node count, $C$ is a constant dependent on dimension $d$ and analytic extension proximity to the interval $W_k$, and $\displaystyle \mu$ is related to the dimension of parameter space and function's analytic extension in the complex plane.
+
+
+
+
+% Compared to the regularity assumption of $u$ in \cite{ElLiSa:2022}, the assumption for \eqref{eq:coll-error-bound_2} is stronger in the sense that the solution $u$ with respect to the random variable $\boldsymbol{\omega}$ can be analytically extended into the complex plane region by varying with one dimension of the random variable while keeping the other dimensions fixed.  This enhancement allows for a tighter interpolation error bound compared to the regularity assumption in \cite{ElLiSa:2022}.

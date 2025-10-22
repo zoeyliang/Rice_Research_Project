@@ -1,0 +1,32 @@
+\begin{thebibliography}{1}
+
+\bibitem{Be:1957}
+R.~Bellman.
+\newblock {\em Dynamic programming}.
+\newblock Princeton University Press, Princeton, NJ, 1957.
+
+\bibitem{ElLiSa:2023}
+H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
+\newblock Multilevel {M}onte {C}arlo methods for the {G}rad-{S}hafranov free
+  boundary problem.
+\newblock {\em Computer Physics Communications}, 298:109099, 2024.
+
+\bibitem{ElLiSa:2025}
+H.~C. Elman, J.~Liang, and T.~S\'{a}nchez-Vizuet.
+\newblock Surrogate-based multilevel {M}onte {C}arlo methods for uncertainty
+  quantification in the {G}rad-{S}hafranov free boundary problem.
+\newblock {\em Arxiv}, 2025.
+
+\bibitem{GrGuJuWa:2023}
+A.~Gruber, M.~Gunzburger, L.~Ju, and Z.~Wang.
+\newblock A multifidelity {M}onte {C}arlo method for realistic computational
+  budgets.
+\newblock {\em Journal of Scientific Computing}, 94(1):Paper No. 2, 18, 2023.
+
+\bibitem{PeWiGu:2016}
+B.~Peherstorfer, K.~Willcox, and M.~Gunzburger.
+\newblock Optimal model management for multifidelity {M}onte {C}arlo
+  estimation.
+\newblock {\em SIAM Journal on Scientific Computing}, 38(5):A3163--A3194, 2016.
+
+\end{thebibliography}

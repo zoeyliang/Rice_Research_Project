@@ -1,0 +1,358 @@
+%!TEX root = main.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{Model selection}\label{sec:Model_Selection}
+
+
+During parameter estimation in Algorithm~\ref{algo:enhanced_mfmc_selection}, we are given $K_c$ candidate models $\mathcal{S}_c = \{ u_{h,k} \}_{k=1}^{K_c}$ and seek an optimal subset $\mathcal{S} \subseteq \mathcal{S}_c$ that minimizes the total computational cost $\mathcal{W}^{\text{MF}}$ while satisfying the two conditions specified in Theorem~\ref{thm:Sample_size_est} \cite{PeWiGu:2016}. Model selection is based on the estimated correlation coefficients $\widehat{\rho}_{1,k}$ obtained from the pilot sampling. Accurate correlation estimation ensures that models are reliable, enabling robust model selection for multifidelity Monte Carlo estimation.  
+
+The first condition requires that the selected models preserve correlation monotonicity and satisfy the cost-correlation ratio required by Theorem~\ref{thm:Sample_size_est}. The second condition seeks to minimize the cost-efficiency metric $\xi(\boldsymbol{\rho},\mathcal{I}) = \frac{1}{C_1}(\sum_{k \in \mathcal{I}} \sqrt{C_k \Delta_k})^2$, where $\mathcal{I} \subseteq \{1, \ldots, K_c\}$ denotes the ordered index set of selected models, always including the high-fidelity model ($1 \in \mathcal{I}$), with cardinality $K = |\mathcal{I}| \leq K_c$.
+
+While exhaustive search over all $2^{K_c}$ subsets \cite{PeWiGu:2016} becomes computationally intractable for $K_c \geq 9$, particularly in adaptive settings requiring frequent reselection, we overcome this limitation by developing an efficient backtracking algorithm that incrementally constructs candidate subsets while pruning infeasible branches. The algorithm exploits three structural properties: First, model indices are pre-sorted in descending order of $|\widehat{\rho}_{1,k}|$  to enforce correlation monotonicity by construction. Second, the cost-correlation ratio condition in Theorem~\ref{thm:Sample_size_est} provides a pruning criterion: if $C_{k-1}/\widehat{\Delta}_{k-1} \leq C_k/\widehat{\Delta}_k$, further expansion of the subset is terminated. Third, the best efficiency achieved so far, $\xi_{\min}$, is used as an upper bound to prune branches where partial sums already exceed this threshold. Although the worst-case complexity remains $\mathcal{O}(2^{K_c})$, the algorithm typically achieves near-linear performance when correlations decays more rapidly than the cost, as the pruning conditions are frequently triggered.
+
+% Algorithm~\ref{algo:enhanced_mfmc_selection} returns the optimal index set $\mathcal{I}^*$, estimated correlations $\widehat {\boldsymbol{\rho}}$, model costs $\widehat{\boldsymbol{C}}$, minimal efficiency $\widehat\xi$, and corresponding control variate weights $\widehat{\boldsymbol{\alpha}}$.
+
+
+% When pilot sample size $\delta$ yields sufficiently small confidence intervals, these estimates reliably rank models by their true correlation strength $\rho_{1,k}$. This precise ranking is essential for identifying cost-efficient model combinations while satisfying the theoretical requirements of Theorem~\ref{thm:Sample_size_est}.
+
+
+
+
+
+
+
+ 
+
+% %
+% \begin{equation*}\label{eq:Optimization_pb_model_selection}
+%     \begin{array}{lll}
+%     \displaystyle\min_{S^*} &\displaystyle \xi,\\
+%        \text{s.t.} &\displaystyle |\rho_{1,1}|>\ldots>|\rho_{1,K^*}|,\\
+%        &\displaystyle \frac{C_{i-1}}{C_i}>\frac{\rho_{1,i-1}^2-\rho_{1,i}^2}{\rho_{1,i}^2-\rho_{1,i+1}^2}, \quad i=1,\ldots,{K^*}, \quad \rho_{1,K^*+1}=0,\\
+%     \end{array}
+% \end{equation*}
+% %
+
+% \normalem
+% \begin{algorithm}[!ht]
+% \label{algo:MFMC_Algo_model_selection}
+% \DontPrintSemicolon    
+%    \KwIn{$K$ candidate models $\widehat  u_{h, k}$ with coefficients $\rho_{1,k}$, $\sigma_1$, $\sigma_k$ and cost per sample $C_k$.}\vspace{1ex}
+    
+%     \KwOut{Selected $K^*$ models $\widehat u_{h, i}$ in $\mathcal{S}^*$, with coefficients $\rho_{1,i}$, $\alpha_i$ and $C_i$ for each model $\widehat u_{h, i}$.}\vspace{1ex}
+%     \hrule \vspace{1ex}
+
+%    % Estimate $\rho_{1,k}$ and $C_k$ for each model $u_{h, k}$ using $N_0$ samples.
+   
+   
+%    Sort $u_{h, k}$ by decreasing $\rho_{1,k}$ to create $\mathcal{S}=\{\widehat u_{h, k}\}_{k=1}^K$. 
+   
+%    Initialize $w^*=C_1$, $\mathcal{S}^*=\{\widehat u_{h, 1}\}$. Let $ \mathcal{\widehat S}$ be all $2^{K-1}$ ordered subsets of $\mathcal{S}$, each containing $\widehat u_{h, 1}$. 
+%    % Set $ \mathcal{\widehat S}_1=\mathcal{S}^*$.
+
+%     % $(2 \le j \le 2^{K-1})$
+%     \For{each subset $\mathcal{\widehat S}_j$\,}{
+
+%     {
+%     \If{ condition $(ii)$ from Theorem \ref{thm:Sample_size_est} is satisfied}{
+%     Compute the objective function value $w$ using \eqref{eq:MFMC_sampling_cost_efficiency}.
+    
+%     \If{$w<w^*$}{
+%     {
+%     Update $\mathcal{S}^* = \mathcal{\widehat S}_j$ and $w^* = w$.
+%     }
+%     } 
+%     }
+%     }
+%     $j=j+1$.
+%     }
+%     Compute $\alpha_i$ for $\mathcal{S}^*$, $i=2,\dots, K^*$ by \eqref{eq:MFMC_coefficients}.
+% \caption{Multi-fidelity Model Selection--\JLcolor{\cite[Algorithm~1]{PeWiGu:2016}}}
+% \end{algorithm}
+% \ULforem
+
+\normalem
+\begin{algorithm}[!ht]
+\label{algo:enhanced_mfmc_selection}
+\DontPrintSemicolon
+\SetAlgoVlined
+\SetKwProg{Fn}{Function}{}{}
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+\Input{%
+  Correlation vector $\widehat{\boldsymbol{\rho}} = [\widehat{\rho}_{1,k}]_{k=1}^{K_c}$, cost vector $\boldsymbol{C} = [C_k]_{k=1}^{K_c}$.
+  % standard deviation vector $\widehat{\boldsymbol{\sigma}} = [\widehat{\sigma}_k]_{k=1}^K$.
+}
+\Output{%
+  Selected model index $\mathcal{I}$, minimal efficiency ratio $\widehat{\xi}_{\min}$.
+}
+\hrule
+
+\Fn{[$\mathcal{I}$,  $\xi_{\min}$] = $\textsc{ModelSelectionBacktrack}(\widehat{\boldsymbol{\rho}}, \boldsymbol{C},K)$}{
+  Sort models by non-increasing $|\widehat \rho_{1,k}|$ with permutation order $\boldsymbol{r}$. \;
+  Relabel $\widehat{\boldsymbol{\rho}} \gets \widehat{\boldsymbol{\rho}}[\boldsymbol{r}]$, $\boldsymbol{C} \gets \boldsymbol{C}[\boldsymbol{r}]$. \;
+  Initialize: $\text{idx}^{\text{cur}}$ $\gets [1]$, $\xi_{\min} \gets 1$, $\text{idx}^{\text{glb}}$ $\gets [1]$. \;
+  $\left[\text{idx}^{\text{glb}}, \xi_{\text{min}}\right] = \textsc{Backtrack}\left(\text{idx}^{\text{cur}}, \xi_{\min}, 2,\widehat{\boldsymbol{\rho}}, \boldsymbol{C},K\right)$. \;
+  $\mathcal{I}\gets \boldsymbol{r}\left[\text{idx}^{\text{glb}}\right]$. \;
+  % \Return{idx$\_$for$\_$model, $\xi_{\min}$}
+}
+
+\vspace{3mm}
+\Fn{$\left[\text{idx}^{\text{glb}}, \xi_{\text{min}}\right] = \textsc{Backtrack}\left(\text{idx}^{\text{cur}}, \xi, k_{\text{next}}, \widehat{\boldsymbol{\rho}}, \boldsymbol{C},K\right)$}{
+  \If{$\xi < \xi_{\min}$}{
+    $\xi_{\min} \gets \xi$. \;
+    $\text{idx}^{\text{glb}} \gets \text{idx}^{\text{cur}}$. \;
+  }
+  
+  \If{$k_{\text{next}} > K$}{ 
+    \Return\;
+  }
+  
+  \For{$k \gets k_{\text{next}}$ \KwTo $K$}{ 
+    $\rho_{\text{prev}} \gets \widehat{\boldsymbol{\rho}}\left[\text{idx}^{\text{cur}}\left(\text{end}\right)\right]$.  \tcc*{$\text{idx}^{\text{cur}}(\text{end})$: Last entry of $\text{idx}^{\text{cur}}$ }
+    $C_{\text{prev}} \gets \boldsymbol{C}\left[\text{idx}^{\text{cur}}\left(\text{end}\right)\right]$. \;
+    
+    \If{$\frac{C_{\text{prev}}}{C_k} \leq \frac{\rho_{\text{prev}}^2 - \rho_k^2}{\rho_k^2}$}{ 
+      \textbf{continue} \tcc*{Condition (ii) violation}
+    }
+    
+    Compute $\xi$ via \eqref{eq:MFMC_sampling_cost_efficiency} for indices  
+      $\left[\text{idx}^{\text{cur}}, k\right]$. \;
+    
+    \If{$\xi \geq \xi_{\min}$ \textbf{or} $\xi > 1$}{
+      \textbf{continue} \tcc*{No efficiency gain}
+    }
+    
+    \textsc{Backtrack}$\left([\text{idx}^{\text{cur}}, k], \xi, k+1,\widehat{\boldsymbol{\rho}}, \boldsymbol{C},K \right)$. \;
+  }
+}
+
+\vspace{3mm} 
+$\left[\mathcal{I},  \widehat{\xi}_{\min} \right] \gets \textsc{ModelSelectionBacktrack}\left(\widehat{\boldsymbol{\rho}}, \boldsymbol{C},K_c \right)$. \;
+% $\boldsymbol{\rho}^* \gets \boldsymbol{\rho}[\mathcal{I}]$, $\boldsymbol{C}^* \gets \boldsymbol{C}[\mathcal{I}]$, $\boldsymbol{\sigma}^* \gets \boldsymbol{\sigma}[\mathcal{I}]$, $\alpha_i^* \gets \dfrac{\rho_{1,i}^* \sigma_1^*}{\sigma_i^*}$ for $i = 2,\dots,|\mathcal{I}|$
+% $\mathcal{S}^* \gets \{u_{h,i}\}_{i \in \mathcal{I}}$ \;
+
+\caption{Multi-fidelity Model Selection with Backtracking Pruning}
+\end{algorithm}
+\ULforem
+
+
+
+
+
+\normalem
+\begin{algorithm}[!ht]
+\label{algo:MFMC_Algo}
+\DontPrintSemicolon
+
+    
+   \KwIn{Selected model set $\mathcal{S} = \{u_{h,k}\}_{k=1}^{K}$, parameters $\rho_{1,k}$, $\alpha_k$ and $C_k$ for each $u_{h, k}$,  tolerance $\epsilon$. }\vspace{1ex}
+    
+    \KwOut{Sample sizes $N_k$ for $K$ models, MFMC estimator $A^{\text{MF}}$.}\vspace{1ex}
+    \hrule \vspace{1ex}
+    
+
+    Compute the sample size $N_k$ for $1\leq k\leq K$ by \eqref{eq:MFMC_SampleSize} and generate i.i.d. $N_1$ and $N_k-N_{k-1}$ samples for $k=2,\ldots, K$.
+
+    Evaluate $u_{h, 1}$ to obtain $u_1^{(i)}$ for $i = 1,\ldots,N_1$ and compute $A_{1,N_1}^{\text{MC}}$ by \eqref{eq:MC_estimator}.
+
+    Initialize $A^{\text{MF}} \gets A_{1,N_1}^{\text{MC}}$.
+    
+    \For{$k = 2,\ldots,K $\,}{
+
+    Evaluate $u_{h, k}$ to obtain $ u_k^{(i)}$ for $i = 1,\ldots,N_{k-1}$ and compute $A_{k,N_{k-1}}^{\text{MC}}$ by \eqref{eq:MC_estimator}.
+
+    Evaluate $ u_{h, k}$ to obtain $ u_k^{(i)}$ for $i = 1,\ldots,N_k-N_{k-1}$ and compute $A_{k,N_k\backslash N_{k-1}}^{\text{MC}}$ by \eqref{eq:MC_estimator}.
+
+    Update estimator $A^{\text{MF}}\gets A^{\text{MF}}+ \alpha_k\left(1-\frac{N_{k-1}}{N_k}\right)\left(A_{k,N_k\backslash N_{k-1}}^{\text{MC}}-A_{k,N_{k-1}}^{\text{MC}}\right)$.
+
+    % Store $N_{k-1}$ and $N_{k}-N_{k-1}$ samples as $N_k$ samples.
+    }
+
+    % Compute $A^{\text{MF}}$ by \eqref{eq:MFMC_esti .mator_independent}.
+    
+\caption{Multifidelity Monte Carlo Simulation}
+\end{algorithm}
+\ULforem
+
+% \normalem
+% \begin{algorithm}[!ht]
+% \label{algo:MFMC_Algo}
+% \DontPrintSemicolon
+
+    
+%    \KwIn{Models $f_k$ in $\mathcal{S}^*$, parameters $\rho_k$, $\alpha_k$ and $C_k$ for each $f_k$ in $\mathcal{S}^*$,  tolerance $\epsilon$. }\vspace{1ex}
+    
+%     \KwOut{Sample sizes $N_k$ for $K^*$ models, expectation 
+%     estimate $A^{\text{MFMC}}$.}\vspace{1ex}
+%     \hrule \vspace{1ex}
+%     Compute initial sample sizes $\boldsymbol{N}=[N_1,\ldots, N_{K^*}]$ using \eqref{eq:MFMC_SampleSize}. Set $\boldsymbol{N}_{\text{old}} = \boldsymbol{0}$ and $\boldsymbol{dN} = \boldsymbol{N}$. 
+    
+%     Initialize sample means $A_{1,N_1}^{\text{MC}}, A_{k,N_{k-1}}^{\text{MC}}, A_{k,N_k\backslash N_{k-1}}^{\text{MC}}=0. $
+    
+%     \While{$\sum_k dN_k>0$\,}{
+
+%     Evaluate $dN_{1}$ samples for $f_1$ to obtain $f_1(\boldsymbol{\omega}^i)$. Update $A_{1,N_1}^{\text{MC}} = \frac{\boldsymbol{N}_{\text{old}}^1 A_{1,N_1}^{\text{MC}}+\sum_i f_1(\boldsymbol{\omega}^i)}{\boldsymbol{N}_{\text{old}}^1+dN_1}$ and $\sigma_1$.
+
+%     Store $dN_1$ samples.
+    
+%     \For{$2\le k\le K^*$\,}{
+    
+%         % \For{$i = 1,\ldots,dN_k $\,}
+%     % {
+%     Evaluate previously stored $dN_{k-1}$ samples for $f_k$ to obtain $f_k(\boldsymbol{\omega}^i)$. Update $A_{k,N_{k-1}}^{\text{MC}} = \frac{\boldsymbol{N}_{\text{old}}^k A_{k,N_{k-1}}^{\text{MC}}+\sum_i f_k(\boldsymbol{\omega}^i)}{\boldsymbol{N}_{\text{old}}^k+dN_{k-1}}$. 
+    
+%     Collect new $dN_{k}-dN_{k-1}$ samples. Evaluate $f_k$ to obtain $f_k(\boldsymbol{\omega}^i)$. Update $A_{k,N_k\backslash N_{k-1}}^{\text{MC}} = \frac{\boldsymbol{N}_{\text{old}}^k A_{k,N_k\backslash N_{k-1}}^{\text{MC}}+\sum_i f_k(\boldsymbol{\omega}^i)}{\boldsymbol{N}_{\text{old}}^k+dN_{k}-dN_{k-1}}$. 
+
+    
+%     Compute $\sigma_k, \rho_{1,k}$.
+
+%     Store $dN_{k-1}$ and $dN_{k}-dN_{k-1}$ samples as $dN_k$ samples.
+    
+%     \If{Condition (i) \& (ii) in Theorem \ref{thm:Sample_size_est} is not satisfied \,}{
+%     Reselect models via Algorithm \ref{algo:MFMC_Algo_model_selection} with a larger sample size and restart.
+
+%     Break. 
+%     }
+
+%     }
+    
+    
+    
+%     \vspace{4mm}
+%     $\boldsymbol{N}_{\text{old}} \leftarrow \boldsymbol{N}$
+    
+%     Update $\alpha_k$ and the sample size $\boldsymbol{N}$ by \eqref{eq:MFMC_coefficients} 
+%  and \eqref{eq:MFMC_SampleSize}.
+
+%     $\boldsymbol{dN} \leftarrow \max \left\{\boldsymbol N-\boldsymbol N_{\text{old}}, \boldsymbol{0}\right\}.$
+
+    
+%     }
+%     Compute $A^{\text{MFMC}}$ using $A_{1,N_1}^{\text{MC}}, A_{k,N_{k-1}}^{\text{MC}}, A_{k,N_k\backslash N_{k-1}}^{\text{MC}}$ and $\alpha_k$ from step 4, 7, 8, 15, by \eqref{eq:MFMC_estimator_independent}.
+% \caption{Multi-fidelity Monte Carlo}
+% \end{algorithm}
+% \ULforem
+
+
+% \begin{theorem}
+% \label{thm:Sampling_cost_est}
+% Let $f_k$ be $K$ models that satisfy the following conditions
+% %
+% \begin{alignat*}{8}
+%     &(i)\;\; |\rho_{1,1}|>\ldots>|\rho_{1,K}|& \qquad \qquad
+%     &(ii)\;\; \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2},\;\;k=2,\ldots,K.
+% \end{alignat*}
+% %
+% Suppose there exists $0<s<q<1$ such that 
+% $C_k = c_s s^{k}$, $\rho_{1,k}^2 = q^{ k-1}$, then 
+% \begin{equation*}
+%     \mathcal{W}_\text{MFMC} = 
+% \end{equation*}
+
+% \end{theorem}
+% \begin{proof}
+% Since $q>s$, condition (ii) is satisfied.
+% \begin{align*}
+% \rho_{1,k}^2 - \rho_{1,k+1}^2&=q^k\left(\frac1 q-1\right),\quad \rho_{1,k-1}^2 - \rho_{1,k}^2=q^k\frac 1 q\left(\frac1 q-1\right)\\
+%     \mathcal{W}_\text{MFMC} &= \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2,\\
+%     &=\frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{Z}^2\epsilon^2} \sum_{k=1}^K\sqrt{q^{k}s^{ k}}\left(\sqrt{\frac{s(1-q)}{1-\rho_{1,2}^2}} + \sum_{k=2}^K\left(\sqrt{\frac{s^{k}}{q^{ k}}} - \sqrt{\frac{q s^{ k}}{s q^{ k}}}\right)q^{k} + \left(\sqrt{\frac{s^{ K}(1-q)}{q^{K}}}-\sqrt{\frac{q s^{ K}}{s q^{K}}}\right)q^{K}\right)\\
+%     &\propto \frac{1}{\epsilon^2} \sum_{k=1}^K\left(q^{\frac{1}{2}}s^{\frac{1}{2}}\right)^k
+% \end{align*}
+    
+% \end{proof}
+
+
+
+\section{Cost of multi-fidelity Monte Carlo with stochastic collocation}
+\label{sec:Cost_MFMC_with_SC}
+To ensure that the discretization error meets the required tolerance $\theta \epsilon^2$ for MFMC, we consider a geometrically uniformly refined hierarchy of spatial discretizations $\{\mathcal{T}_\ell\}_{0\le \ell \le L_{\max}}$ with the corresponding spatial grid sizes $\{M_\ell\}_{0\le \ell \le L_{\max}}$ satisfying 
+
+%
+\begin{equation}
+\label{eq:MeshGrowth}
+M_\ell = s M_{\ell-1} \qquad \text{ for }\quad  s>1,
+\end{equation}
+%
+where $L_{\max}$  represents computationally feasible mesh refinement limit of spatial level. Given a target accuracy $\epsilon$, the required spatial resolution level $L \leq L_{\max}$ and grid size $M_L$ \eqref{eq:SLSGC_MLS_SpatialGridsNo} must satisfy the bias constraint in the nMSE splitting. Within this framework, we consider a set of $K_c = L+1$ computational models before model selection: the high-fidelity model $u_{L,1}$ at level $L$, and low-fidelity counterparts $\{u_{\ell(k),k}\}_{k=2}^{K_c}$ constructed via sparse grid stochastic collocation on coarser grids $\mathcal{T}_{\ell(k)}$ with $\ell(k) = L + 1 - k$ (thus $\ell(k) < L$). Through optimal model selection, we identify a subset $\{u_{\ell(k),k}\}_{k \in \mathcal{I}}$ of the low-fidelity models. The following theorem establishes the fundamental asymptotic computational cost complexity for the multi-fidelity sampling with the stochastic collocation approach.
+
+%
+\begin{theorem}[Asymptotic Cost for MFMC-SC Estimator]\label{thm:Sample_cost_est}
+Consider a hierarchy of models $\{u_{\ell(k),k}\}_{k=1}^{K_c}$, where $u_{L,1}$ denotes the high-fidelity model on the finest mesh $\mathcal{T}_L$ with $M_L$ degrees of freedom, and the low-fidelity models $\{u_{\ell(k),k}\}_{k=2}^{K_c}$ are constructed via sparse grid stochastic collocation on coarser meshes $\mathcal{T}_{\ell(k)}$ with $\ell(k) = L + 1 - k$. Let $\mathcal{I} = \{i_k \mid k = 1, \dots, K\}$ denote the index set of selected models, ordered by decreasing correlation $\rho_{1,i_k}$ and associated costs $C_{i_k}$. For the family of high-fidelity models $\{u_{L,1}\}_{L\le L_{\max}}$ with $M_L$ degrees of freedom, assume  there exist positive constants $\alpha, \beta, \gamma$ such that
+%
+\begin{alignat*}{8}
+    \text{(i)}\quad & \left\Vert \mathbb{E}[u] - \mathbb{E}[u_{L,1}] \right\Vert_U \simeq M_L^{-\alpha}, \qquad
+    \text{(ii)}\quad & 1 - \rho_{1,i_2}^2 \simeq M_L^{-\beta}, \qquad
+    \text{(iii)}\quad & C_1 \simeq M_L^{\gamma},
+\end{alignat*}
+%
+For each low-fidelity model $u_{\ell(i_k),i_k}$ with $k = 2, \dots, K$, assume there exist positive constants $\beta_1, \gamma_1$ such that the correlation decay and cost growth follow
+%
+\begin{alignat*}{8}
+    % &(i)\;\; |\rho_{1,1}|>\ldots>|\rho_{1,K}|,& \quad \quad
+    % &(ii)\;\; \frac{C_{k-1}}{C_k}>\frac{\rho_{1,k-1}^2-\rho_{1,k}^2}{\rho_{1,k}^2-\rho_{1,k+1}^2},\;\;k=2,\ldots,K, \quad \rho_{1,K+1}=0,\\
+    % &(iii)\;\; 1-\rho_{1,i_2}^2 \simeq M_{L}^{-\beta},
+    % \qquad
+    &(iv)\quad \rho_{1,i_k}^2-\rho_{1,i_{k+1}}^2 \simeq M_{\ell(i_k)}^{-\beta_1},
+    \qquad
+&(v)\quad C_{i_k} \simeq M_{\ell(i_k)}^{\gamma_1},
+\end{alignat*}
+%
+with $\rho_{1,i_{K^*+1}}^2 := 0$. Then, for any tolerance $\epsilon \in (0, e^{-1})$, there exists a finest mesh level $L \le L_{\max}$ and sample allocation $\{N_{i_k}\}_{i_k \in \mathcal{I}^*}$ such that the multifidelity estimator $A^{\mathrm{MF}}$ achieves nMSE  with
+%
+\[
+\frac{\left\Vert \mathbb{E}[u] - A^{\mathrm{MF}} \right\Vert_{L^2(\boldsymbol{W},U)}}{\left\Vert \mathbb{E}[u] \right\Vert_{L^2(\boldsymbol{W},U)}} < \epsilon,
+\]
+%
+with total computational cost bounded by
+%
+\begin{equation}\label{eq:lfm_scaling}
+\mathcal{W}^{\mathrm{MF}} \lesssim \epsilon^{-2} \left( c_1 \epsilon^{-\frac{\gamma-\beta}{2\alpha}} + c_2 \Phi(\epsilon) \right)^2,\qquad 
+\Phi(\epsilon) \lesssim \begin{cases} 
+1 & \beta_1 > \gamma_1, \\
+|\log \epsilon| & \beta_1 = \gamma_1, \\
+\epsilon^{-\frac{\gamma_1 - \beta_1}{2\alpha}} & \beta_1 < \gamma_1.
+\end{cases}
+\end{equation}
+%
+where the term $\Phi(\epsilon)$ depends on the low-fidelity models, $c_1$ and $c_2$ are the constants that reflect the per-sample cost for the high- and low-fidelity terms. In the regime where the high-fidelity contribution dominates, the total cost reduces to
+%
+\[
+\mathcal{W}^{\mathrm{MF}} \lesssim \epsilon^{-2 - \frac{\gamma-\beta}{\alpha}}.
+\]
+%
+\end{theorem}
+
+
+
+% The cancellation of the two successive terms in the ratio representation on both sides of \eqref{eq:Theorem_cond_ii} indicates that 
+% \[
+% \frac{B_1}{C_1^2}C_k^2\le B_k\le \frac{B_K}{C_K^2}C_k^2, \quad k=1,\ldots,K.
+% \]
+% This indicates that
+% \[
+% \sqrt{\frac{1-\rho_{1,2}^2}{C_1}}\sum_{k=1}^K C_k\le \sum_{k=1}^K\sqrt{B_k}\le \sqrt{\frac{\rho_{1,K}^2}{C_K}}\sum_{k=1}^K C_k, \quad \text{or} \quad \sum_{k=1}^K
+% \sqrt{B_k}\simeq \sum_{k=1}^K C_k,
+% \]
+% where $A\simeq B$ represents $a_1 B\le A\le a_2 B$ for positive $A$ and $B$, with constants $a_1, a_2$ independent of sample size $N_k$ but depends on model number $K$. This indicates that the sum in \eqref{eq:sampling_cost_bound} behaves in a similar style as $\sum_{k=1}^K C_k$. If $\epsilon$ is chosen sufficiently small, we can ignore the small term $\sum_{k=1}^K C_k$ in  \eqref{eq:sampling_cost_bound}. 
+
+
+
+
+
+% Since $K$ is independent of $\epsilon$,  the total sampling cost behaves like $\epsilon^{-2}$. 
+
+% Moreover, the inequality \eqref{eq:Theorem_cond_ii} also indicates that
+% \[
+% 0<\frac{C_L}{\sqrt{B_L}}\le \frac{C_k}{\sqrt{B_k}}<\frac{C_{k-1}}{\sqrt{B_{k-1}}}\le\frac{C_1}{\sqrt{B_1}},\quad k=2,\dots, L
+% \]
+% Therefore, the sequence $\frac{C_k}{\sqrt{B_k}} - \frac{C_{k-1}}{\sqrt{B_{k-1}}}\in (\frac{C_L}{\sqrt{B_L}} - \frac{C_{1}}{\sqrt{B_{1}}},0)$  is bounded. 
+
+% Note that
+% \[
+% H_1:=\sum_{k=1}^L\sqrt{B_k}, \quad \sqrt{\frac{1-\rho_{1,2}^2}{C_1}}\sum_{k=1}^L C_k\le \sum_{k=1}^L\sqrt{B_k}\le \sqrt{\frac{\rho_{1,L}^2}{C_L}}\sum_{k=1}^L C_k, \quad H_1\uparrow \sqrt{\frac{\rho_{1,L}^2}{C_L}}\sum_{k=1}^L C_k \;\;\text{as}\;\; L\rightarrow \infty
+% \]
+% \[
+% H_2:=\sum_{j=1}^L\left(\frac{C_j}{\sqrt{B_j}} - \frac{C_{j-1}}{\sqrt{B_{j-1}}}\right)\rho_{1,j}^2, \quad  0<H_2\le \sqrt{\frac{C_1}{1-\rho_{1,2}^2}}, \quad H_2\downarrow 0 \;\;\text{as}\;\; L\rightarrow \infty.
+% \]

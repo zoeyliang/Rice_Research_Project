@@ -1,81 +1,11 @@
 %!TEX root = ../main.tex
 % ====================================================
-\section{Multi-fidelity Monte Carlo}\label{sec:MFMC}
+\section{Optimal Sample Size Allocation}\label{sec:MFMC_Nk_optimize}
 % ====================================================
-This section reviews the multi-fidelity Monte Carlo (MFMC) method, following the foundational formulation in \cite{PeWiGu:2016}. The MFMC framework uses an ensemble of models with varying computational cost and accuracy to construct a variance-reduced estimator for high-fidelity expectation. Let $u_1:\Omega \to U$ denote the high-fidelity (HF) model that provides accurate but expensive evaluations, and let $\{u_k\}_{k=2}^K$ denote low-fidelity (LF) models that offer cheaper approximations. The central goal of MFMC is to allocate a fixed computational budget across these models to minimize estimator variance while maintaining unbiasedness.
-
-We introduce some key statistical quantities that describe the model. We represent the random output of model $u_k$ on the probability space $(\Omega,\mathcal{F},\mathbb{P})$ by $u_k(\boldsymbol{\omega})$, abbreviated as $u_k$. For each pair of models $u_k,u_j$, define the variance and correlation coefficient
-%
-\begin{equation*}
-    \sigma_k^2 = \mathbb{V}\!\left[u_k\right],\qquad 
-    \rho_{k,j} = \frac{\text{Cov}\!\left[u_k,u_j\right]}{\sigma_k\sigma_j}, 
-    \quad k,j=1,\dots,K,
-\end{equation*}
-%
-where the covariance is defined as $\text{Cov}[u_k,u_j] := \mathbb{E}[\langle u_k - \mathbb{E}[u_k], u_j - \mathbb{E}[u_j]\rangle_U]$ and $\rho_{k,k}=1$. The pairwise correlations between fidelity levels quantify the statistical dependence that drives variance reduction through effective control variates.
-
-The MFMC estimator adopts a nested sampling strategy, reusing samples from lower-fidelity models to enhance correlation with the high-fidelity model and reduce overall variance. Let $A_{1,N_1}^{\text{MC}}$ denote the standard Monte Carlo estimator of $\mathbb{E}[u_1]$ based on $N_1$ HF samples. The MFMC estimator augments this baseline with corrections from lower-fidelity models through a hierarchy of control variates
-%
-\begin{equation}\label{eq:MFMC_estimator}
-A^{\text{MF}} := A^{\text{MC}}_{1,N_1} + \sum_{k=2}^K \alpha_k\left(\overline{A}_{k,N_k} - \overline{A}_{k,N_{k-1}}\right),
-\end{equation}
-%
-where $\alpha_k \in \mathbb{R}$ are control-variate weights, and $\overline{A}_{k,N}$ denotes the sample average of $N$ evaluations of model $u_k$. The nested structure ensures that $\overline{A}_{k,N_k}$ reuses all $N_{k-1}$ samples from $\overline{A}_{k,N_{k-1}}$, supplemented by additional $N_k - N_{k-1}$ samples. This reuse significantly enhances computational efficiency but introduces statistical dependencies among terms, complicating the variance analysis of the estimator.
-
-To enable a tractable analytical treatment, we reformulate the estimator so that its constituent terms are statistically independent. Partitioning the $N_k$ samples of $u_k$ into disjoint subsets of sizes $N_{k-1}$ and $N_k - N_{k-1}$ yields an equivalent independent representation 
-%
-\begin{equation}\label{eq:MFMC_estimator_independent}
-    A^{\text{MF}} = A^{\text{MC}}_{1,N_1} +  \sum_{k=2}^K \alpha_k\!\left(1-\frac{N_{k-1}}{N_k}\right)\left(A^{\text{MC}}_{k,N_k\backslash N_{k-1}}-A^{\text{MC}}_{k,N_{k-1}}\right),
-\end{equation}
-%
-where $A^{\text{MC}}_{k,N_k \backslash N_{k-1}}$ denotes the Monte Carlo average over the $N_k - N_{k-1}$ newly drawn samples, defined to be zero when $N_k = N_{k-1}$. 
 
 
-The statistical properties of the MFMC estimator emerge clearly from its component-wise decomposition. Define
-%
-\begin{equation}\label{eq:MFMC_Yk}
-Y_1 := A^{\text{MC}}_{1,N_1},\quad 
-Y_k := \left(1-\frac{N_{k-1}}{N_k}\right)\!\left(A^{\text{MC}}_{k,N_k\backslash N_{k-1}} - A^{\text{MC}}_{k,N_{k-1}}\right), \;\; k=2\ldots, K,
-\end{equation}
-%
-then the MFMC estimator can be expressed into a compact form $A^{\text{MF}} = Y_1 + \sum_{k=2}^K \alpha_k Y_k$. Since each $Y_k$ for $k\ge2$ represents a difference of two independent estimators for the same $\mathbb{E}[u_k]$, we immediately obtain $\mathbb{E}[Y_k]=0$ and the MFMC estimator is unbiased: $\mathbb{E}[A^{\text{MF}}]=\mathbb{E}[u_1]$. The variances of the components are
-%
-\begin{equation}\label{eq:Var_Yk}
-    \mathbb{V}[Y_1] = \frac{\sigma_1^2}{N_1}, \qquad 
-    \mathbb{V}[Y_k] = \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\sigma_k^2, \;\; k=2\ldots, K.
-\end{equation}
-%
-A key statistical insight, formalized in Lemma~\ref{lemma:Y_k_Y_j}, establishes that the correction terms between the LF models are mutually uncorrelated despite sample reuse.
-%
-\begin{lemma}\label{lemma:Y_k_Y_j}
-For $2\le k<j\le K$, 
-% the correction terms $Y_k$ and $Y_j$ defined in \eqref{eq:MFMC_Yk} are uncorrelated, i.e., 
-$\operatorname{Cov} [Y_k,Y_j ]=0$.
-\end{lemma}
-%
-The proof is provided in the Appendix.
 
-However, each correction $Y_k$($k\ge2$) of LF is correlated with $Y_1$, with covariance
-\begin{equation}\label{eq:Cov_Yk}
-\operatorname{Cov}[Y_1,Y_k] = -\!\left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\rho_{1,k}\sigma_1\sigma_k,
-\end{equation}
-as shown in \cite[Lemma~3.2]{PeWiGu:2016}. Combining \eqref{eq:Var_Yk} and \eqref{eq:Cov_Yk} gives
-%
-\begin{equation}\label{eq:MFMC_variance}
-    \mathcal{V}^{\text{MF}}
-    =\frac{\sigma_1^2}{N_1} 
-    + \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)\!\left(\alpha_k^2\sigma_k^2 - 2\alpha_k\rho_{1,k}\sigma_1\sigma_k\right).
-\end{equation}
-%
 
-In order to determine optimal sample sizes $N_k$ and weights $\alpha_k$ in the MFMC estimator \eqref{eq:MFMC_estimator_independent}, an optimization problem is formulated \cite{PeWiGu:2016} by minimizing the estimator variance \eqref{eq:MFMC_variance} subject to a fixed budget $p$. Let $C_k$ denote the per-sample cost of model $u_k$, the total computational cost is 
-%
-\[
-\mathcal{W}^{\text{MF}} = \sum_{k=1}^K C_k N_k,
-\]
-%
-and the constrained optimization problem becomes
-%
 \begin{equation}\label{eq:Optimization_pb_sample_size}
     \begin{array}{ll}
     \min &\mathcal{V}^{\text{MF}}\left(\alpha_k,N_k\right),\\
