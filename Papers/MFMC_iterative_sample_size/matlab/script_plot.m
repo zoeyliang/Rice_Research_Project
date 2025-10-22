@@ -1,3 +1,28 @@
+% =========================================================================
+% This script performs a numerical comparison of several integer-valued 
+% sample size allocation schemes:
+%
+% Naive floor -- Peherstorfer
+% Modified -- ceil with floor -- Gruber
+% Iterative -- ceil with floor -- L & H
+%
+% relative to the continuous (real-valued) optimal allocation for the MFMC 
+% method under a fixed computational budget p.
+% -------------------------------------------------------------------------
+%         |=============================|
+%         |                             |
+%         |   /.  .\           /@  @\   |
+% Author: |     l      =-->      L      |
+%         |      o                X     |
+%         |   BEFORE            AFTER   |
+%         |=============================|_{*Jiaxing Liang*}
+%
+% -------------------------------------------------------------------------
+% |¬_¬|~_~|@_@|*_*|._.|-_-|G_G|×_×|/_\|w_w|Q_Q|>_>|=_=|+_+|#_#|z_z|>_<|6_9|
+% -------------------------------------------------------------------------
+% Last modified: Oct-22,2025
+% =========================================================================
+
 clear all
 close all
 
@@ -5,6 +30,7 @@ close all
 % Example 1
 rho = [1,   9.9977e-01   9.9925e-01  9.9728e-01   9.8390e-01]; %rho_k
 rho_p1 = [rho(2:end),0];%rho_{k}
+delta = rho.^2-rho_p1.^2; % dalta = rho_k^2-rho_{k+1}^2
 C = [7.30e+01,7.0318e-03,1.4018e-03,5.0613e-04,2.6803e-04]; %cost
 % sigma1 = 1.0840e-02; %standard deviation sigma
 p_max=1e4; % total cost
@@ -16,8 +42,11 @@ p_max=1e4; % total cost
 % % sigma1 = 0.03;
 % p_max=1e4; % total cost
 
+
+
+%% Initialization
 M=2e5;
-p_range = linspace(sum(C),p_max,M)';
+p_range = linspace(sum(C),p_max,M)'; % the min budget >= sum(C)
 f_real_value = zeros(M,1);
 f_floor = zeros(M,1);
 f_iterative = zeros(M,1);
@@ -27,73 +56,86 @@ Cost_real_value = zeros(M,1);
 Cost_floor = zeros(M,1);
 Cost_iterative = zeros(M,1);
 
-Efficiency_real_value = zeros(M,length(C));
-Efficiency_floor = zeros(M,length(C));
-Efficiency_iterative = zeros(M,length(C));
 
-for i=1:M
-    p=p_range(i);
+
+%% For each budget p, generate the relative difference of f and cost
+for i = 1:M
+
+    p = p_range(i);
+    % =====================================================================
     % --- Feasibility check ---
+    % =====================================================================
     if p < sum(C)
         error('Budget p is insufficient: must satisfy p >= sum(C).');
     end
 
-    delta = rho.^2-rho_p1.^2; % dalta = rho_k^2-rho_{k+1}^2
-
-    % real-valued sample size, using close-form solution
+    % =====================================================================
+    % --- Real-valued sample size: formula --- Peherstorfer
+    % =====================================================================
     N_star = sqrt(delta./C)*p/sum(sqrt(C.*delta));
 
     % =====================================================================
-    % Naive floor
+    % --- Integer-valued sample size: Naive floor --- Peherstorfer
+    % =====================================================================
     N_floor = floor(N_star); 
     
-    % Modified MFMC using naive floor
+    % =====================================================================
+    % --- Modified integer-valued sample size: Ceil & floor --- Gruber
+    % =====================================================================
     j=1;
     NN = N_floor;
     while N_floor(1)<1
         NN(j) = 1; % modify the corresponding entries
         N_floor = floor(sqrt(delta(j+1:end)./C(j+1:end))*(p-sum(C(1:j).*NN(1:j)))...
             /sum(sqrt(C(j+1:end).*delta(j+1:end)))); % remove the cost of the sample with size 1, and resample.
-        j=j+1;
+        j = j + 1;
     end
     NN(j:end) = N_floor; % the remaining sample size will be calculate using the close-form solution formula.
-    % =====================================================================
+    
 
     % =====================================================================
-    % Iterative strategy
+    % --- Integer-valued sample size: Ceil & floor --- L & H
+    % Iterative method with modified 
+    % =====================================================================
     N_iterative = zeros(size(N_star));
-    N_iterative(1) = max(NN(1),1);
+    N_iterative(1) = max(floor(N_star),1); % ceil if real-valued sample size falls below 1
 
-    % --- Iterative computation for k=2,...,K ---
+    
     for k=2:length(N_iterative)
 
         N_iterative(k) = floor(sqrt(delta(k)./C(k))*(p-sum(C(1:k-1).*N_iterative(1:k-1)))...
-            /sum(sqrt(C(k:end).*delta(k:end)))); % remove the cost of the sample with size 1, and resample.
-
-        N_iterative(k) = max(N_iterative(k),1); % modify the corresponding entries
+            /sum(sqrt(C(k:end).*delta(k:end))));
+        
+        N_iterative(k) = max(N_iterative(k),1); % modify the sample size in case of 0.
 
     end
-    % =====================================================================
 
+
+    % =====================================================================
+    % --- Calculate f and cost ---
+    % =====================================================================
+    % Real-valued
     f_real_value(i) = sum(delta./N_star);
     Cost_real_value(i) = sum(C.*N_star);
-    Efficiency_real_value(i,:) = delta./(C.*N_star.^2);
+    % upper bound of relative difference of f
+    f_diff_upper_bound(i) = sum(delta./(N_star-1))-f_real_value(i);
 
+    % Integer-valued, naive floor with modified
     f_floor(i) = sum(delta./NN);
     Cost_floor(i) = sum(C.*NN);
-    Efficiency_floor(i,:) = delta./(C.*NN.^2);
 
+    % Integer-valued, iterative with modified
     f_iterative(i) = sum(delta./N_iterative);
     Cost_iterative(i) = sum(C.*N_iterative);
-    Efficiency_iterative(i,:) = delta./(C.*N_iterative.^2);
-
-    f_diff_upper_bound(i) = sum(delta./(N_star-1))-f_real_value(i);
 
 end
 
 
-figure(1);hold on;
 
+%==========================================================================
+% Plots of relative difference of f and cost
+%==========================================================================
+figure(1);hold on;
 h_max = max(max((f_floor-f_real_value)./p_range,(f_iterative-f_real_value)./p_range));
 h_min = abs(min(min((f_floor-f_real_value)./p_range,(f_iterative-f_real_value)./p_range)));
 loglog([sum(C),sum(C)],[h_min,h_max], ':k','LineWidth',3,'MarkerSize',10);
@@ -113,12 +155,12 @@ grid on
 box on
 xlim([sum(C)/1.09 p_max*1.1])
 % ylim([1e-25 2])
-
 hold off;
 
 
+
+
 figure(2);hold on;
-% loglog(p_range,Cost_real_value)
 h_max = max(max((Cost_real_value-Cost_floor)./p_range,(Cost_real_value-Cost_iterative)./p_range));
 h_min = abs(min(min((Cost_real_value-Cost_floor)./p_range,(Cost_real_value-Cost_iterative)./p_range)));
 loglog([sum(C),sum(C)],[1e-13,h_max], ':k','LineWidth',3,'MarkerSize',10);
@@ -137,53 +179,4 @@ grid on
 box on
 xlim([sum(C)/1.09 p_max*1.1])
 ylim([1e-20 sum(C)*2])
-
 hold off;
-
-
-
-figure(3);hold on;
-loglog(p_range(1:end),Efficiency_real_value(:,1),'ro')
-loglog(p_range(1:end),Efficiency_floor(:,1),'bo')
-loglog(p_range(1:end),Efficiency_iterative(:,1),'g-')
-
-lgd.FontSize = 17;
-set(gca,'YScale', 'log', 'XScale', 'log','FontSize',20)
-grid on
-box on
-
-figure(4);hold on;
-loglog(p_range(1:end),Efficiency_real_value(:,2),'ro')
-loglog(p_range(1:end),Efficiency_floor(:,2),'bo')
-loglog(p_range(1:end),Efficiency_iterative(:,2),'g-')
-lgd.FontSize = 17;
-set(gca,'YScale', 'log', 'XScale', 'log','FontSize',20)
-grid on
-box on
-
-figure(5);hold on;
-loglog(p_range(1:end),Efficiency_real_value(:,3),'ro')
-loglog(p_range(1:end),Efficiency_floor(:,3),'bo')
-loglog(p_range(1:end),Efficiency_iterative(:,3),'g-')
-lgd.FontSize = 17;
-set(gca,'YScale', 'log', 'XScale', 'log','FontSize',20)
-grid on
-box on
-
-figure(6);hold on;
-loglog(p_range(1:end),Efficiency_real_value(:,4),'ro')
-loglog(p_range(1:end),Efficiency_floor(:,4),'bo')
-loglog(p_range(1:end),Efficiency_iterative(:,4),'g-')
-lgd.FontSize = 17;
-set(gca,'YScale', 'log', 'XScale', 'log','FontSize',20)
-grid on
-box on
-
-figure(7);hold on;
-loglog(p_range(1:end),Efficiency_real_value(:,5),'ro')
-loglog(p_range(1:end),Efficiency_floor(:,5),'bo')
-loglog(p_range(1:end),Efficiency_iterative(:,5),'g-')
-lgd.FontSize = 17;
-set(gca,'YScale', 'log', 'XScale', 'log','FontSize',20)
-grid on
-box on
