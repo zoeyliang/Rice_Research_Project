@@ -30,7 +30,6 @@ close all
 % Example 1
 rho = [1,   9.9977e-01   9.9925e-01  9.9728e-01   9.8390e-01]; %rho_k
 rho_p1 = [rho(2:end),0];%rho_{k}
-delta = rho.^2-rho_p1.^2; % dalta = rho_k^2-rho_{k+1}^2
 C = [7.30e+01,7.0318e-03,1.4018e-03,5.0613e-04,2.6803e-04]; %cost
 % sigma1 = 1.0840e-02; %standard deviation sigma
 p_max=1e4; % total cost
@@ -42,7 +41,7 @@ p_max=1e4; % total cost
 % % sigma1 = 0.03;
 % p_max=1e4; % total cost
 
-
+delta = rho.^2-rho_p1.^2; % dalta = rho_k^2-rho_{k+1}^2
 
 %% Initialization
 M=2e5;
