@@ -98,7 +98,7 @@ for i = 1:M
     % Iterative method with modified 
     % =====================================================================
     N_iterative = zeros(size(N_star));
-    N_iterative(1) = max(floor(N_star),1); % ceil if real-valued sample size falls below 1
+    N_iterative(1) = max(floor(N_star(1)),1); % ceil if real-valued sample size falls below 1
 
     
     for k=2:length(N_iterative)
