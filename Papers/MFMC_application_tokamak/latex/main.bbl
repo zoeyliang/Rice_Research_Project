@@ -275,6 +275,14 @@ P.~C. Mahalanobis.
 \newblock \href {https://doi.org/10.1007/s13171-019-00164-5}
   {\path{doi:10.1007/s13171-019-00164-5}}.
 
+\bibitem{AMaurais_TAlsup_BPeherstorfer_YMMarzouk_2005a}
+A.~Maurais, T.~Alsup, B.~Peherstorfer, and Y.~M. Marzouk.
+\newblock Multifidelity covariance estimation via regression on the manifold of
+  symmetric positive definite matrices.
+\newblock {\em SIAM J. Math. Data Sci.}, 7(1):189--223, 2025.
+\newblock \href {https://doi.org/10.1137/23M159247X}
+  {\path{doi:10.1137/23M159247X}}.
+
 \bibitem{PeGuWi:2018}
 B.~Peherstorfer, M.~Gunzburger, and K.~Willcox.
 \newblock Convergence analysis of multifidelity {M}onte {C}arlo estimation.

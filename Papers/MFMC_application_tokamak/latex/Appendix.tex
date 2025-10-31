@@ -45,7 +45,7 @@ This proof establishes: (A) feasibility of the closed-form solution, (B) local o
 
 First, we verify that the proposed solution $(\alpha_k^*, N_k^*)$ satisfies all constraints of \eqref{eq:Optimization_pb_sample_size}.
 \begin{enumerate}
-    \item \textit{Variance constraint}: $N_k^*$ satisfies the variance constraint $\mathbb{V}[A^{\text{MF}}] = \epsilon_{\text{tar}}^2$.
+    \item \textit{Variance constraint}: $N_k^*$ satisfies the variance constraint $\mathbb{V}[A^{\text{MF}}] = (1-\theta)\epsilon^2$.
     
     \item \textit{Monotonicity $N_k^* > N_{k-1}^*$ follows from assumption (ii)}:
     %
@@ -75,7 +75,7 @@ has constant sample size with increasing sample sizes across blocks satisfying
 We now establish local optimality for solutions with block-structured constant sample sizes for partition $\mathscr{B}$. The Lagrangian with multiplier $\lambda_0$ for the variance constraint and $\lambda_{\ell_i}$ for monotonicity is
 %
 \begin{equation*}
-L= \sum_{i=1}^q N_{\ell_i}\sum_{k\in B_i} C_k +\lambda_0 \left(\frac{\sigma_1^2}{N_{\ell_1}} + \sum_{i=2}^q \left(\frac{1}{N_{\ell_i-1}} - \frac{1}{N_{\ell_i}}\right)G_{\ell_i}- \epsilon_{\text{tar}}^2\right)-\lambda_{\ell_1} N_{\ell_1}+\sum_{i=2}^q\lambda_{\ell_{i}}(N_{\ell_{i-1}} - N_{\ell_{i}}),
+L= \sum_{i=1}^q N_{\ell_i}\sum_{k\in B_i} C_k +\lambda_0 \left(\frac{\sigma_1^2}{N_{\ell_1}} + \sum_{i=2}^q \left(\frac{1}{N_{\ell_i-1}} - \frac{1}{N_{\ell_i}}\right)G_{\ell_i}- (1-\theta)\epsilon^2\right)-\lambda_{\ell_1} N_{\ell_1}+\sum_{i=2}^q\lambda_{\ell_{i}}(N_{\ell_{i-1}} - N_{\ell_{i}}),
 \end{equation*}
 %
 where $G_k = \alpha_k^2\sigma_k^2 - 2\alpha_k\rho_{1,k}\sigma_1\sigma_k$, with $\alpha_{\ell_1} = 1$.
@@ -85,7 +85,7 @@ The KKT conditions includes
 \[
 \begin{array}{ll}
 \left[\text{Stationarity}\right]&\partial L/\partial \alpha_{\ell_i}=0,\quad \partial L/{\partial N_{\ell_i}}=0,\quad i=1\ldots,q,\\
-\left[\text{Primal feasibility}\right]&\mathbb{V}\left[A^{\text{MF}}\right]- \epsilon_{\text{tar}}^2 = 0, \\ 
+\left[\text{Primal feasibility}\right]&\mathbb{V}\left[A^{\text{MF}}\right]- (1-\theta)\epsilon^2 = 0, \\ 
 \left[\text{Primal feasibility}\right] &-N_{\ell_1}\le 0,\qquad N_{\ell_{i-1}}-N_{\ell_i} \le 0, \quad i=2\ldots,q,\\ 
 \left[\text{Dual feasibility}\right]  &\lambda_{\ell_i} \ge 0,\quad i=1\ldots,q, \\ 
 \left[\text{Complementary slackness}\right]  &\lambda_{\ell_1} N_{\ell_1}=0,\qquad\lambda_{\ell_i}(N_{\ell_{i-1}}-N_{\ell_i})=0,\quad i=2\ldots,q.
@@ -128,22 +128,22 @@ Substituting $N_{\ell_i}$ in \eqref{eq:sample_size_1} into the variance expressi
     \mathbb{V}\left[A^{\text{MF}}\right] = \frac{\sigma_1}{\sqrt{\lambda_0}}\sum_{i=1}^q\sqrt{\Delta_{\ell_i}\sum_{k\in B_i} C_k}.
 \end{equation*}
 %
-Enforcing the variance constraint $\mathbb{V}[A^{\text{MF}}] = \epsilon_{\text{tar}}^2$ determines 
+Enforcing the variance constraint $\mathbb{V}[A^{\text{MF}}] = (1-\theta)\epsilon^2$ determines 
 %
 \[
-\sqrt{\lambda_0}=\frac{\sigma_1}{\epsilon_{\text{tar}}^2} \sum_{i=1}^{q} \sqrt{\Delta_{\ell_i}\sum_{k\in B_i} C_{k}}.
+\sqrt{\lambda_0}=\frac{\sigma_1}{(1-\theta)\epsilon^2} \sum_{i=1}^{q} \sqrt{\Delta_{\ell_i}\sum_{k\in B_i} C_{k}}.
 \]
 %
 Substituting $\sqrt{\lambda_0}$ into \eqref{eq:sample_size_1} gives the sample sizes at each block start
 %
 \[
-N_{\ell_i}^* = \frac{\sigma_1^2}{\epsilon_{\text{tar}}^2}\sqrt{\frac{\Delta_{\ell_i}}{\sum_{k\in B_i} C_{k}}}  \sum_{j=1}^{q} \sqrt{\Delta_{\ell_j}\sum_{k\in B_j} C_{k}} \;\text{ for }\; i=1,\ldots,q.
+N_{\ell_i}^* = \frac{\sigma_1^2}{(1-\theta)\epsilon^2}\sqrt{\frac{\Delta_{\ell_i}}{\sum_{k\in B_i} C_{k}}}  \sum_{j=1}^{q} \sqrt{\Delta_{\ell_j}\sum_{k\in B_j} C_{k}} \;\text{ for }\; i=1,\ldots,q.
 \]
 %
 The total sampling cost for a given block partition $\mathscr{B} = \{B_i\}_{i=1}^q$ is
 %
 \begin{equation*}
-\mathcal{W}_{\mathscr{B}}^{\text{MF}} = \sum_{i=1}^q \sum_{k\in B_i} C_k N_k = \sum_{i=1}^q N_{\ell_i}\sum_{k\in B_i} C_k =\frac{\sigma_1^2}{\epsilon_{\text{tar}}^2}\left(\sum_{i=1}^{q} \sqrt{\Delta_{\ell_i}\sum_{k\in B_i} C_{k}}\right)^2.
+\mathcal{W}_{\mathscr{B}}^{\text{MF}} = \sum_{i=1}^q \sum_{k\in B_i} C_k N_k = \sum_{i=1}^q N_{\ell_i}\sum_{k\in B_i} C_k =\frac{\sigma_1^2}{(1-\theta)\epsilon^2}\left(\sum_{i=1}^{q} \sqrt{\Delta_{\ell_i}\sum_{k\in B_i} C_{k}}\right)^2.
 \end{equation*}
 %
 This solution is globally optimal within the fixed partition $\mathscr{B}$ due to convexity of the following transformed optimization problem, though not necessarily optimal across different  partitions.
@@ -157,7 +157,7 @@ For a fixed block partition $\mathscr{B}$ with optimal coefficients $\alpha_{\el
     \begin{array}{ll}
     \min \limits_{\begin{array}{c}\scriptstyle y_{\ell_1},\ldots, y_{\ell_q}\in \mathbb{R}
 \end{array}} &\displaystyle \sum_{i=1}^q \left(\sum_{k\in B_i}C_{k}\right)y_{\ell_i}^{-1},\\
-       \;\,\text{subject to} &\displaystyle \sum_{i=1}^q \Delta_{\ell_i} y_{\ell_i}= \epsilon_{\text{tar}}^2,\\[2pt]
+       \;\,\text{subject to} &\displaystyle \sum_{i=1}^q \Delta_{\ell_i} y_{\ell_i}= (1-\theta)\epsilon^2,\\[2pt]
        &\displaystyle -y_{\ell_1}\le 0,\quad \displaystyle y_{\ell_i}-y_{\ell_{i-1}}\le 0, \;\; k=2\ldots,K.
     \end{array}
 \end{equation}
@@ -173,7 +173,7 @@ Since the first-order KKT conditions yield a candidate local minimizer $N_{\ell_
 % The total cost $\mathcal{W}_{\text{block}}^{\text{MF}}$ associated with these optimal sample sizes in this block partition is
 % %
 % \begin{equation*}
-% \mathcal{W}_{\text{block}}^{\text{MF}} = \sum_{i=1}^q \sum_{k=\ell_i}^{\ell_{i+1}-1} C_k N_k = \sum_{i=1}^q N_{\ell_i}\sum_{k=\ell_i}^{\ell_{i+1}-1} C_k =\frac{1}{\epsilon_{\text{tar}}^2}\left(\sum_{i=1}^{q} \sqrt{\Delta_{\ell_i}\sum_{k=\ell_i}^{\ell_{i+1}-1} C_{k}}\right)^2.
+% \mathcal{W}_{\text{block}}^{\text{MF}} = \sum_{i=1}^q \sum_{k=\ell_i}^{\ell_{i+1}-1} C_k N_k = \sum_{i=1}^q N_{\ell_i}\sum_{k=\ell_i}^{\ell_{i+1}-1} C_k =\frac{1}{(1-\theta)\epsilon^2}\left(\sum_{i=1}^{q} \sqrt{\Delta_{\ell_i}\sum_{k=\ell_i}^{\ell_{i+1}-1} C_{k}}\right)^2.
 % \end{equation*}
 % %
 
@@ -208,7 +208,7 @@ This equality renders the correction terms for model $k$ in the MFMC estimator~\
 %     % \label{eq:MFMC_coefficients}
 %     % &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k},\\
 %     \label{eq:MFMC_SampleSize}
-%     &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k},\;\; \;N_k^*=\frac{1}{\epsilon_\text{tar}^2}\sqrt{\frac{\Delta_k}{C_k}}\sum_{j=1}^K\sqrt{C_j\Delta_j},\;\; \mathcal{W}^\text{MF} = \sum_{k=1}^K C_k N_k^* = \frac{1}{\epsilon_{\text{tar}}^2}\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2\quad \text{with}\;\;\rho_{K+1}=0.
+%     &\alpha_k^*=\frac{\rho_{1,k}\sigma_1}{\sigma_k},\;\; \;N_k^*=\frac{1}{\epsilon_\text{tar}^2}\sqrt{\frac{\Delta_k}{C_k}}\sum_{j=1}^K\sqrt{C_j\Delta_j},\;\; \mathcal{W}^\text{MF} = \sum_{k=1}^K C_k N_k^* = \frac{1}{(1-\theta)\epsilon^2}\left(\sum_{k=1}^K\sqrt{C_k\Delta_k}\right)^2\quad \text{with}\;\;\rho_{K+1}=0.
 % \end{align*}
 % %
 
@@ -318,14 +318,14 @@ The dominance condition \eqref{eq:high_greater_low} ensures this simplification 
 % %
 % This partitions the indices ${1,\dots,K}$ into $q$ contiguous blocks of constant sample sizes, increasing from one block to the next. 
 
-% Three special cases illustrate the structure of such feasible solutions. When $q=1$, all sample sizes are equal, i.e., $N_1=\ldots=N_K$. From \eqref{eq:MFMC_variance}, we then have $N_k=\sigma_1^2/\epsilon_{\text{tar}}^2$ for $k=1,\ldots, K$, $\alpha_k\in \mathbb{R}$, and the total cost is $\mathcal{W}^\text{MF} = \sigma_1^2/\epsilon_{\text{tar}}^2 \sum_{k=1}^K C_k$. When $q=K$, the sample sizes are strictly increasing, i.e., $N_1<\ldots<N_K$,  and we will show that this configuration yields the globally optimal solution. For intermediate values $1<q<K$, the sample sizes exhibit piecewise-constant blocks. In the following, to analyze this general regime, we formulate the corresponding Lagrangian and derive the associated Karush–Kuhn–Tucker (KKT) conditions.
+% Three special cases illustrate the structure of such feasible solutions. When $q=1$, all sample sizes are equal, i.e., $N_1=\ldots=N_K$. From \eqref{eq:MFMC_variance}, we then have $N_k=\sigma_1^2/(1-\theta)\epsilon^2$ for $k=1,\ldots, K$, $\alpha_k\in \mathbb{R}$, and the total cost is $\mathcal{W}^\text{MF} = \sigma_1^2/(1-\theta)\epsilon^2 \sum_{k=1}^K C_k$. When $q=K$, the sample sizes are strictly increasing, i.e., $N_1<\ldots<N_K$,  and we will show that this configuration yields the globally optimal solution. For intermediate values $1<q<K$, the sample sizes exhibit piecewise-constant blocks. In the following, to analyze this general regime, we formulate the corresponding Lagrangian and derive the associated Karush–Kuhn–Tucker (KKT) conditions.
 
 
 
 % The Lagrangian for the constrained problem, enforcing the variance constraint with multiplier $\lambda_0$ and monotonicity with $\lambda_1,\ldots, \lambda_k$, is
 % %
 % \begin{equation*}
-% L =\sum_{k=1}^K C_kN_k +\lambda_0 \left(\frac{\sigma_1^2}{N_1} + \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)G_k- \epsilon_{\text{tar}}^2\right)-\lambda_1 N_1+\sum_{k=2}^K\lambda_k(N_{k-1} - N_k),
+% L =\sum_{k=1}^K C_kN_k +\lambda_0 \left(\frac{\sigma_1^2}{N_1} + \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right)G_k- (1-\theta)\epsilon^2\right)-\lambda_1 N_1+\sum_{k=2}^K\lambda_k(N_{k-1} - N_k),
 % \end{equation*}
 % %
 % with $\alpha_1 = 1, \alpha_{K+1} = 0$, $\lambda_{K+1} = 0$ and $G_k = \alpha_k^2\sigma_k^2 - 2\alpha_k\rho_{1,k}\sigma_1\sigma_k$.  
@@ -334,7 +334,7 @@ The dominance condition \eqref{eq:high_greater_low} ensures this simplification 
 % Within each constant block, complementary slackness implies $\lambda_{\ell_i}= 0$ all $i\ge 1$, since the sample sizes within each block are equal. Under the blockwise structure $N_{\ell_i}=N_{\ell_i+1}=\ldots=N_{\ell_{i+1}-1}< N_{\ell_{i+1}}$ for $i=1,\ldots,q$, the Lagrangian simplifies to
 % %
 % \begin{equation*}
-% L= \sum_{i=1}^q N_{\ell_i}\sum_{k=\ell_i}^{\ell_{i+1}-1} C_k +\lambda_0 \left(\frac{\sigma_1^2}{N_{\ell_1}} + \sum_{i=2}^q \left(\frac{1}{N_{\ell_i-1}} - \frac{1}{N_{\ell_i}}\right)G_{\ell_i}- \epsilon_{\text{tar}}^2\right)-\lambda_{\ell_1} N_{\ell_1}+\sum_{i=2}^q\lambda_{\ell_{i}}(N_{\ell_{i-1}} - N_{\ell_{i}}),
+% L= \sum_{i=1}^q N_{\ell_i}\sum_{k=\ell_i}^{\ell_{i+1}-1} C_k +\lambda_0 \left(\frac{\sigma_1^2}{N_{\ell_1}} + \sum_{i=2}^q \left(\frac{1}{N_{\ell_i-1}} - \frac{1}{N_{\ell_i}}\right)G_{\ell_i}- (1-\theta)\epsilon^2\right)-\lambda_{\ell_1} N_{\ell_1}+\sum_{i=2}^q\lambda_{\ell_{i}}(N_{\ell_{i-1}} - N_{\ell_{i}}),
 % \end{equation*}
 % %
 % Stationarity of the Lagrangian with respect to $\alpha_{\ell_i}$ yields
@@ -365,7 +365,7 @@ The dominance condition \eqref{eq:high_greater_low} ensures this simplification 
 % Substituting the optimal coefficients into the Lagrangian and using the block-wise sample size notation, we obtain
 % %
 % \begin{equation*}
-% L= \sum_{i=1}^q N_{\ell_i}\sum_{k=\ell_i}^{\ell_{i+1}-1} C_k +\lambda_0 \left( \sum_{i=1}^{q} \frac{\Delta_{\ell_i}}{N_{\ell_i}}- \epsilon_{\text{tar}}^2\right)-\lambda_{\ell_1} N_{\ell_1}+\sum_{i=2}^q\lambda_{\ell_{i}}(N_{\ell_{i-1}} - N_{\ell_{i}}).
+% L= \sum_{i=1}^q N_{\ell_i}\sum_{k=\ell_i}^{\ell_{i+1}-1} C_k +\lambda_0 \left( \sum_{i=1}^{q} \frac{\Delta_{\ell_i}}{N_{\ell_i}}- (1-\theta)\epsilon^2\right)-\lambda_{\ell_1} N_{\ell_1}+\sum_{i=2}^q\lambda_{\ell_{i}}(N_{\ell_{i-1}} - N_{\ell_{i}}).
 % \end{equation*}
 % %
 % The stationarity condition for $N_{\ell_i}$ yields
