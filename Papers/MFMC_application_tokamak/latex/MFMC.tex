@@ -177,14 +177,15 @@ and the corresponding variance is
 \[
       \sigma_1^2 \left(  \frac{1}{N_1}  -  \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right) \rho_{1,k}^2 \right).
 \]
-If $N_1,\ldots, N_K\in \mathbb{R}$ and $\alpha_2,\ldots,\alpha_K\in \mathbb{R}$ is feasible for 
+If $N_1,\ldots, N_K\in \mathbb{R}$ and $\alpha_2,\ldots,\alpha_K\in \mathbb{R}$ are feasible for 
 \eqref{eq:Optimization_pb_sample_size0}, then $N_1,\ldots, N_K\in \mathbb{R}$ and 
-$\alpha_2^*,\ldots,\alpha_K^*\in \mathbb{R}$ given by \eqref{eq:MFMC_SampleSize} is also feasible for
+$\alpha_2^*,\ldots,\alpha_K^*\in \mathbb{R}$ given by \eqref{eq:MFMC_SampleSize} are also feasible for
 \eqref{eq:Optimization_pb_sample_size0}.
 Therefore, the optimization problem \eqref{eq:Optimization_pb_sample_size0} is equivalent to
 \begin{subequations}\label{eq:Optimization_pb_sample_size}
     \begin{align}
     \min  \; &\sum\limits_{k=1}^K C_kN_k,\\
+        \label{eq:Optimization_pb_sample_size_var}
        \text{subject to } \; & \sigma_1^2 \left(  \frac{1}{N_1} 
                       -  \sum_{k=2}^K \left(\frac{1}{N_{k-1}} - \frac{1}{N_k}\right) \rho_{1,k}^2 \right) \le  (1-\theta)\epsilon^2,\\[2pt]
        & -N_1\le 0,\quad  N_{k-1}-N_k\le 0, \quad  k=2\ldots,K.
@@ -193,9 +194,10 @@ Therefore, the optimization problem \eqref{eq:Optimization_pb_sample_size0} is e
 
 
 
-
-%
-Since the finite variance implicitly indicates $N_1 > 0$, the problem remains well-posed. The solution to this problem, which yields explicit expressions for the optimal real-valued sample sizes and weights, is presented in Theorem~\ref{thm:Sample_size_est}. The proof of Theorem~\ref{thm:Sample_size_est} is provided in the appendix.
+The variance constraint  \eqref{eq:Optimization_pb_sample_size_var} implies $N_1 > 0$.
+Under suitable conditions, \eqref{eq:Optimization_pb_sample_size_var} has an analytical solution.
+This is presented in the followingTheorem~\ref{thm:Sample_size_est}. 
+The proof of Theorem~\ref{thm:Sample_size_est} is provided in the appendix.
 
 
 
@@ -243,30 +245,7 @@ This approach guarantees $\mathbb{V}[A^{\mathrm{MF}}] \leq (1-\theta)\epsilon^2$
 %
 where the additive overhead $\sum_{k=1}^K C_k$ arises from the bound $N_k^*\le \lceil N_k^*\rceil< N_k^*+1$. Under Theorem~\ref{thm:Sample_size_est}'s cost-correlation ratio assumption, optimal sample sizes exhibit strict monotonicity $N_1^* < \cdots < N_K^*$. We impose the feasibility condition $\sum_{k=1}^K C_k N_k^* \geq \sum_{k=1}^K C_k$ to exclude degenerate cases where $N_k^* < 1$ for all $k$ models; in such cases, the additive rounding overhead is asymptotically dominated by $\sum_{k=1}^K C_k N_k^*$. Consequently, integer-rounded cost preserve the asymptotic scaling of \eqref{eq:MFMC_sampling_cost}.
 
-% define $B_k := C_k(\rho_{1,k}^2 - \rho_{1,k+1}^2)$ for $k=1,\dots,K$ with $\rho_{1,K+1} = 0$. Condition (ii) of Theorem~\ref{thm:Sample_size_est} implies
-% % Substituting into the sampling cost expression,  \eqref{eq:MFMC_sampling_cost} becomes
-% % %
-% % \begin{equation*}\label{eq:MFMC_sampling_cost_2}
-% %     \mathcal{W}^{\text{MF}} = \sum_{k=1}^K C_k N_k^* = \frac{\sigma_1^2}{(1-\theta)\epsilon^2}\left(\sum_{k=1}^K\sqrt{B_k} \right)^2.
-% % \end{equation*}
-% %
-% % The quantity $B_k$ depends on the product of the cost per sample $C_k$ and the difference between two successive correlations $(\rho_{1,k}^2 - \rho_{1,k+1}^2)$. Depending on how these components interact, $B_k$ may decay, grow, or remain constant as $k$ increases.
-% %
-% \begin{equation}
-% \label{eq:Bk_Ck_decay_rate}
-%     \frac{\sqrt{B_k}}{\sqrt{B_{k-1}}}>\frac{C_k}{C_{k-1}}, \quad k=2,\ldots,K.
-% \end{equation}
-% %
-% This inequality induces a strictly increasing sequence $\{\sqrt{B_k}/C_k\}_{k=1}^K$. Consequently, as $K \to \infty$, the sequence $\sqrt{B_k}$ decays slower (or grows faster) than $C_k$ in relative terms. Combined with the feasibility condition ($\sum_{k=1}^K C_kN_k^*\ge \sum_{k=1}^K C_k$), this ensures the overhead $\sum_{k=1}^K C_k$ is asymptotically negligible compared to $\sum_{k=1}^K C_k N_k^* \propto \left( \sum_{k=1}^K \sqrt{B_k} \right)^2$. 
 
-
-% This inequality implies that, in the asymptotic regime where $K$ is large,  the sequence $\sqrt{B_k}$ decays more slowly -- or grows more rapidly -- than the cost sequence $C_k$, regardless of the specific trend of $\sqrt{B_k}$. \JLcolor{Using this fact and the assumption that $\sum_{k=1}^K C_kN_k^*\ge \sum_{k=1}^K C_k$}, the additive overhead term $\sum_{k=1}^K C_k$ in the cost bounds becomes asymptotically negligible relative to the leading-order term $\sum_{k=1}^K C_kN_k^*$. 
-
-
-% Using the fact that $N_k$ increases and the value of $\alpha_k$, we observe that the MFMC estimator variance $\mathbb{V}\left(A^{\text{MFMC}}\right)$ in \eqref{eq:MFMC_variance2} always decreases as the model number $K$ increases. This reflects the fact that the low fidelity models are used as control variates to reduce the variance of the high fidelity model. However, this $K$ cannot be arbitrarily large, since the first summation term in \eqref{eq:MFMC_sampling_cost} grows, the second summation reflect the variance decay of the MFMC estimator. Thus this is a tie between these two terms. If $K$ is sufficiently large,  in order to achieve an optimal sampling cost, we need to study the decay and growth of these two terms. We will choose the $K$ such that the product of two summation terms in \eqref{eq:MFMC_sampling_cost} is minimum, i.e. If $K$ is sufficiently large, we need to find $K\in \mathbb{N}$ such that 
-% \begin{equation}\label{eq:Optimal_K}
-%    K = \text{argmin} \sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2. 
-% \end{equation}
 The efficiency gain relative to standard Monte Carlo is quantified through the cost ratio
 %
 \begin{equation}\label{eq:MFMC_sampling_cost_efficiency}
@@ -274,12 +253,4 @@ The efficiency gain relative to standard Monte Carlo is quantified through the c
 \end{equation}
 %
 where $\boldsymbol{\rho} = (\rho_{1,1},\ldots, \rho_{1,K})$ is the correlation coefficient vector and smaller $\xi$ indicates greater efficiency gains for the MFMC estimator.
-
-
-% Further more, we observe that
-% \begin{align*}
-%     \mathcal{W}_\text{MC}\mathbb{V}\left(A^{\text{MC}}\right) &=\frac{C_1\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{U}^2},\\
-%  \mathcal{W}_\text{MFMC}\mathbb{V}\left(A^{\text{MFMC}}\right) &=  \frac{\sigma_1^2}{\left\Vert\mathbb{E}(f_1) \right\Vert_{U}^2}\sum_{k=1}^K\sqrt{\left(\rho_{1,k}^2 - \rho_{1,k+1}^2\right)C_k}\sum_{k=1}^K\left(\sqrt{\frac{C_k}{\rho_{1,k}^2 - \rho_{1,k+1}^2}} - \sqrt{\frac{C_{k-1}}{\rho_{1,{k-1}}^2 - \rho_{1,k}^2}}\right)\rho_{1,k}^2.
-% \end{align*}
-% This implies that if both Monte Carlo and multifidelity Monte Carlo have  a same sampling cost, then $\mu=  \mathbb{V}\left(A^{\text{MFMC}}\right)/\mathbb{V}\left(A^{\text{MC}}\right)$. Therefore, 
 
