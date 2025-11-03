@@ -173,6 +173,14 @@ V.~Grandgirard.
 \newblock URL:
   \url{https://inis.iaea.org/search/search.aspx?orig_q=RN:31051229}.
 
+\bibitem{AGruber_MGunzburger_LJu_ZWang_2023a}
+A.~Gruber, M.~Gunzburger, L.~Ju, and Z.~Wang.
+\newblock A multifidelity {M}onte {C}arlo method for realistic computational
+  budgets.
+\newblock {\em J. Sci. Comput.}, 94(1):Paper No. 2, 18, 2023.
+\newblock \href {https://doi.org/10.1007/s10915-022-02051-y}
+  {\path{doi:10.1007/s10915-022-02051-y}}.
+
 \bibitem{GrGuJuWa:2023}
 A.~Gruber, M.~Gunzburger, L.~Ju, and Z.~Wang.
 \newblock A multifidelity {M}onte {C}arlo method for realistic computational

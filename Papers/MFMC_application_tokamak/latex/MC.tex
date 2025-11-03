@@ -41,19 +41,17 @@ The MSE decomposes into two contributions: a {\it bias error} from  discretizati
 
 
 
-The bias error $\big\| \mathbb{E}[u]-\mathbb{E}[u_h ]  \big\| _{U}^2$
-is determined by the discretization and the statistical error is determined by the sampling.
+
 Given a user-specified threshold $\epsilon^2$  for the MSE and  a {\it splitting ratio} $\theta \in (0,1)$,
 we require that the bias error satisfies  $\big\| \mathbb{E}[u]-\mathbb{E}[u_h ]  \big\| _{U}^2 \le \theta\epsilon^2$
 and the statistical error satisfies $N^{-1} \mathbb{V}\left[u_h \right]  \le (1-\theta)\epsilon^2$.
-
 If  the sample-wise discretization error satisfies
 \begin{subequations}   \label{eq:bias-error}
 \begin{equation} 
        \left\| u\big(\omega^{(i)}\big) - u_h\big(\omega^{(i)}\big)\right\|_U
        \leq c_u h^\alpha,
 \end{equation}
-then
+then the bias error  obeys
 \begin{equation}  \label{eq:bias-error}
      \big\| \mathbb{E}[u]-\mathbb{E}[u_h ]  \big\| _{U}^2  
      \le  \|u-u_h\|_{L^2(W,\cU)}^2   
