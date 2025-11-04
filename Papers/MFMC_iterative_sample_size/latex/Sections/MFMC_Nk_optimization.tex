@@ -68,8 +68,6 @@ provide variance reduction, but it's cost is included.
 However, under conditions specified in the following Theorem~\ref{thm:Sample_size_real}, the solution
 of \eqref{eq:Optimization_sample_size_m_relaxed} can be computed analytically, and it satisfies
 $0  < m_1^* < m_2^* <  \ldots < m_K^*$.
-
-
 The following theorem is proven in \cite[Th.~3.4]{BPeherstorfer_KWillcox_MDGunzburger_2016a}.
 
 \begin{theorem}[Optimal MFMC Real-Valued Sample Allocation]   \label{thm:Sample_size_real}
@@ -106,7 +104,8 @@ satisfies $0  < m_1^* < m_2^* <  \ldots < m_K^*$.
 To obtain integer samples,  \cite[p.~A3171]{BPeherstorfer_KWillcox_MDGunzburger_2016a}
 round down, i.e., use $\lfloor m_1^* \rfloor, \ldots, \lfloor m_K^* \rfloor$. 
 Rounding down will reduce the cost, i.e., the rounded down sample sizes are still feasible for
-\eqref{eq:Optimization_sample_size_m_relaxed}. Rounding down increases the variance.
+\eqref{eq:Optimization_sample_size_m_relaxed}. 
+Rounding down increases the variance.
 Rounding may lead to $\lfloor m_1^* \rfloor = 0$, which introduces bias,  
 $\mathbb{E}[A^{\text{MF}}] \not=  \mathbb{E}[u_1]$,
 or may lead to $\lfloor m_k^* \rfloor = \lfloor m_{k-1}^* \rfloor$ for some $k \in \{ 2, \ldots, K\}$, 
