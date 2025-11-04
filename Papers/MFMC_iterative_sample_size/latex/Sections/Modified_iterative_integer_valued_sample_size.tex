@@ -281,6 +281,42 @@ The left inequality reflects the optimal continuous variance as a lower bound. T
 This iterative extension establishes a unified computational framework that preserves the robustness guarantees of modified allocation strategies while systematically leveraging the computational advantages and theoretical foundations of dynamic programming. By maintaining mathematical consistency with the original MFMC optimality principles, the approach ensures that fundamental variance-cost balancing properties are retained throughout the allocation process, even under practical integer constraints. The sequential decomposition transforms complex integer-constrained optimization into a series of tractable subproblems, enabling efficient implementation with linear computational complexity in the number of fidelity levels. Simultaneously, the minimum sample enforcement mechanism prevents pathological allocations that could compromise estimator stability, while iterative budget redistribution ensures full utilization of computational resources. The framework's unified structure further permits seamless integration of various constraint handling strategies and domain-specific requirements, offering both theoretical rigor and practical utility for robust multifidelity estimation under realistic computational constraints.
 
 
+% \begin{algorithm}[!ht]
+% \caption{Iterative Integer-Valued Sample Size Allocation for Multi-Fidelity Monte Carlo}
+% \label{algo:Iterative_MFMC_Algo}
+% \DontPrintSemicolon
+
+% \KwIn{Correlation coefficients $\rho_{1,k}$, standard deviations $\sigma_k$, computational costs $C_k$, total budget $p$.}
+% \KwOut{Integer-valued sample sizes $\lfloor M_k^* \rfloor$ for $k=1,\dots,K$.}
+% \hrule\vspace{1ex}
+
+% \If{$p < \sum_{j=1}^K C_j$}{
+%     \textbf{return} ``Insufficient budget: requires at least $\sum_{j=1}^K C_j$''.
+% }
+
+% Compute variance terms: $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k = 1, \dots, K$ with $\rho_{1,K+1}=0$.
+
+% % Compute normalization constant: $S = \sum_{i=1}^K \sqrt{C_i \Delta_i}$\;
+
+% Initialize with first fidelity level:
+% \[
+% M_1^* = \sqrt{\frac{\Delta_1}{C_1}} \frac{p}{ \sum_{j=1}^K \sqrt{C_j \Delta_j}}.
+% \]
+
+% \For{$k = 2$ \KwTo $K$}{
+%     Update residual budget: $R_k = p - \sum_{j=1}^{k-1} C_j \lfloor M_j^* \rfloor$.\;
+%     Compute current allocation:
+%     \[
+%     M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{R_k}{\sum_{j=k}^K \sqrt{C_j \Delta_j}}.
+%     \]
+%     \If{$\lfloor M_k^* \rfloor < 1$}{
+%         Enforce minimum sample: $\lfloor M_k^* \rfloor = 1$.
+%     }
+% }
+% \textbf{return} $\lfloor M_1^* \rfloor, \dots, \lfloor M_K^* \rfloor$.
+% \end{algorithm}
+
+
 \begin{algorithm}[!ht]
 \caption{Iterative Integer-Valued Sample Size Allocation for Multi-Fidelity Monte Carlo}
 \label{algo:Iterative_MFMC_Algo}
@@ -312,10 +348,34 @@ M_1^* = \sqrt{\frac{\Delta_1}{C_1}} \frac{p}{ \sum_{j=1}^K \sqrt{C_j \Delta_j}}.
     \If{$\lfloor M_k^* \rfloor < 1$}{
         Enforce minimum sample: $\lfloor M_k^* \rfloor = 1$.
     }
-}
 
+
+\If{$\lfloor M_{k-1}^* \rfloor=\lfloor M_k^* \rfloor$}{
+    Let $\boldsymbol{\rho} = [\rho_{1,1}, \ldots, \rho_{1,K}], \boldsymbol{C} = [C_{1}, \ldots, C_{K}]$
+    
+    
+    Check condition (2):
+    
+    
+    $\widetilde\Delta_{k-1}=\rho_{1,k-1}^2 - \rho_{1,k+1}^2, \widetilde\Delta_k = \rho_{1,k+1}^2-\rho_{1,k+2}^2$
+
+    
+    calculate condition (2) $\frac{\widetilde\Delta_{k-1}}{C_{k-1}}<\frac{\widetilde\Delta_{k}}{C_{k+1}}$
+    
+    \If{condition (2) holds without model $k$}{ 
+    $\lfloor M_k^* \rfloor=0$.
+    
+    delete model $k$, $\boldsymbol{\rho}(k)=[], \boldsymbol{C}(k)=[]$
+    
+    update $\boldsymbol{\rho}$ and $\boldsymbol{C}$,
+    $K=K-1$,
+    
+    $k=2$, start from beginning of the for loop with the update $\boldsymbol{\rho}$ and $\boldsymbol{C}$.
+    }
+    
+    \Else{otherwise keep model $k$.}
+    
+}
+}
 \textbf{return} $\lfloor M_1^* \rfloor, \dots, \lfloor M_K^* \rfloor$.
 \end{algorithm}
-
-
-
