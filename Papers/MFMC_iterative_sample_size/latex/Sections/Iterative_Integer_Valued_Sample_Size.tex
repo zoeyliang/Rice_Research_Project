@@ -1,7 +1,7 @@
 % ====================================================
 \section{Iterative sample size estimation for MFMC}\label{sec:Iterative_IntegerValued_Sample_Size}
 % ====================================================
-To overcome the budget under-utilization inherent in direct rounding strategies, we develop an iterative sample size estimation scheme for MFMC grounded in dynamic programming principles. The approach applies Bellman’s principle of optimality \cite{Be:1957} to decompose the global optimization into a sequence of tractable subproblems. Each subproblem preserves the analytical structure of the continuous optimum and maintains the essential variance–cost trade-offs of the original formulation. The resulting recursion yields an integer-compatible allocation strategy that achieves better variance reduction in trade of budget under-utilization.
+To overcome the budget under-utilization using the direct rounding strategies as mentioned in \eqref{eq:bounds_for_floor}, we develop an iterative sample size estimation scheme for MFMC grounded in dynamic programming principles. The approach applies Bellman’s principle of optimality \cite{Be:1957} to decompose the global optimization into a sequence of tractable subproblems. Each subproblem preserves the analytical structure of the continuous optimum and maintains the essential variance–cost trade-offs of the original formulation. The resulting recursion yields an integer-compatible allocation strategy that achieves better variance reduction in trade of budget under-utilization.
 
 
 
@@ -133,19 +133,18 @@ where the inequality follows from assumption (ii) of Theorem~\ref{thm:Sample_siz
 The absence of explicit monotonicity constraints between $H_k$ and previously determined allocations $H_1, \ldots, H_{k-1}$ in formulation \eqref{eq:Sequential_Optimization} is mathematically justified by the problem structure. While the global optimization requires $H_{j-1} \le H_j$ for all $j=k+1,\ldots,K$, the sequential decomposition naturally preserves this property through the budget propagation mechanism. The recursive relationship $R_k = p - \sum_{j=1}^{k-1} C_j H_j$ ensures that the residual budget decreases monotonically, while the allocation formula $H_k^* = \sqrt{\Delta_k/C_k} \cdot R_k / \sum_{j=k}^K \sqrt{C_j\Delta_j}$ maintains the relative weighting $R_k / \sum_{j=k}^K \sqrt{C_j\Delta_j}$ across fidelity levels. Crucially, under the assumptions of Theorem~\ref{thm:Sample_size_real}, the optimal solution automatically satisfies $H_k^* > H_{k-1}^*$ without explicit enforcement, as established in Theorem~\ref{thm:Monotonicity_H_k}. Consequently, the constraint $H_k \ge 0$ suffices in the sequential formulation, as the more restrictive monotonicity conditions are inherently satisfied by the optimal solution. This structural insight significantly simplifies the recursive optimization while preserving all essential properties of the MFMC framework.
 
 \subsection{Equivalence with Continuous MFMC Solution}
-
-The following theorem establishes the fundamental equivalence between the iterative formulation and the standard MFMC allocation, ensuring that the sequential approach preserves all optimality properties of the original continuous solution.
+The following theorem establishes the fundamental equivalence between the iterative formulation and the standard MFMC sample allocation. This result guaranties that the sequential procedure exactly reproduces the optimal continuous allocation, thereby preserving both the total computational budget and the minimal achievable variance of the estimator.
 
 %
 \begin{theorem}[Equivalence of iterative and standard MFMC formulations]\label{thm:MFMC_Iterative_RealValued_Sample_Size}
 Under the assumptions of Theorem \ref{thm:Sample_size_real},
-The iteratively defined sample sizes $H_k^*$ in \eqref{eq:MFMC_New_RealValued_Sample_Size} are identical to the continuous MFMC solution $N_k^*$ in \eqref{eq:MFMC_RealValued_Sample_Size}, i.e.,
+the iteratively defined sample sizes $H_k^*$ in \eqref{eq:MFMC_New_RealValued_Sample_Size} are identical to the continuous MFMC solution $N_k^*$ in \eqref{eq:MFMC_RealValued_Sample_Size}, i.e.,
 \[
 H_k^* = N_k^*
     = \sqrt{\frac{\Delta_k}{C_k}}\,
       \frac{p}{\sum_{j=1}^K \sqrt{C_j\Delta_j}}.
 \]
-Moreover, the iterative scheme preserves both the total computational budget and the optimal variance
+Moreover, the iterative scheme exactly satisfies the total budget constraint and yields the optimal variance,
 \[
 \sum_{k=1}^K C_k H_k^* = p, 
 \qquad  
@@ -210,8 +209,7 @@ which coincides with the closed-form MFMC sample size in \eqref{eq:MFMC_RealValu
 
 
 \subsection{Integer-valued allocation and cost bounds}
-
-For practical implementation, we extend the recursive formulation to {\it integer-valued} sample sizes. The integer iteration preserves the analytical structure while enforcing feasibility through forward recursion
+While the real-valued allocation provides an analytically optimal solution, its direct implementation is infeasible since the number of samples must be integer-valued. To address this, we extend the recursive formulation to an {\it integer-valued} scheme that retains the analytical structure of the continuous solution while enforcing feasibility through a forward recursive adjustment. Specifically, we define
 %
 \begin{equation}\label{eq:MFMC_New_IntegerValued_Sample_Size}
     M_1^* = \sqrt{\frac{\Delta_1}{C_1}}\frac{p}{\sum_{j=1}^K\sqrt{C_j\Delta_j}}, 
@@ -326,7 +324,7 @@ Since \(M_k^* \ge N_k^*\), this occurs precisely when they share the same intege
 \end{proof}
 
 
-Theorem \ref{thm:MFMC_New_IntegerValued_Variance} establishes that the iterative integer-valued allocation achieves superior variance performance compared to direct flooring while maintaining proximity to the continuous optimum.
+Theorem \ref{thm:MFMC_New_IntegerValued_Variance} establishes that the iterative integer-valued allocation achieves better variance performance compared to direct flooring in trade of the under-utilized budget due to floor operation.
 
 % \JLcolor{The lower bound establishes that the iterative scheme achieves variance no worse than the continuous optimum, while the upper bound guarantees improved performance compared to naive flooring. Together, these results confirm that the dynamic programming formulation preserves the optimal variance–cost structure of the MFMC method while enabling efficient integer-valued implementation.}
 
