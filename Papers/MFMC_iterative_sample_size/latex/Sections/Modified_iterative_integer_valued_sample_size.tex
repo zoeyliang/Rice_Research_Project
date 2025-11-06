@@ -1,7 +1,10 @@
 % ====================================================
 \section{Modified iterative sample size estimation for MFMC}\label{sec:Modified_IntegerValued_Sample_Size}
 % ====================================================
-A direct flooring of real-valued MFMC allocations can lead to pathological cases where high-fidelity models receive zero samples due to their substantial computational costs, resulting in degenerate estimators that violate the fundamental variance reduction principles of multifidelity methods. To address this critical limitation, we extend the modified rounding procedure introduced in~\cite{GrGuJuWa:2023} within our iterative framework, ensuring robust estimator construction while maintaining theoretical guarantees.
+When the computational budget $p$ is small, direct flooring of the real-valued MFMC sample allocations may lead to pathological cases in which high-fidelity models receive zero samples. Such degenerate allocations destroy the variance reduction property of multifidelity estimators and undermine the optimal variance--cost tradeoff. To overcome this limitation, we extend the modified rounding procedure proposed in~\cite{GrGuJuWa:2023} and embed it within our iterative allocation framework. As established in Section~\ref{sec:MFMC}, identical sample sizes across successive fidelity levels do not contribute to variance reduction but still incur additional computational cost. Motivated by this observation, we further refine the allocation procedure by eliminating models with equal integer-valued sample sizes during the iteration. The resulting subset of selected models satisfies a strictly increasing sequence of integer sample sizes across fidelities, thereby ensuring efficient utilization of the available budget and preservation of the hierarchical variance decay structure inherent to the MFMC method.
+
+
+
 
 \subsection{Modified Allocation Framework}
 
@@ -145,7 +148,7 @@ Thus $H_k^* = N_k^*$ for all $k$, establishing the equivalence.
 \end{proof}
 
 
-\subsection{Integer-Valued Allocation}
+\subsection{Integer-valued Allocation}
 Extending to integer-valued allocations, we define the proxy sequence $\{M_k^*\}$ through iterative flooring and budget updates
 %
 \begin{equation}
@@ -278,7 +281,13 @@ The left inequality reflects the optimal continuous variance as a lower bound. T
 % \frac{\partial L}{\partial N_k} = - \frac{\sigma_1^2\Delta_{k}}{N_{k}^2} +\lambda_0 C_{k}-\lambda_{k}+\lambda_{k+1}=0,\qquad i\le k\le K.
 % \]
 
-This iterative extension establishes a unified computational framework that preserves the robustness guarantees of modified allocation strategies while systematically leveraging the computational advantages and theoretical foundations of dynamic programming. By maintaining mathematical consistency with the original MFMC optimality principles, the approach ensures that fundamental variance-cost balancing properties are retained throughout the allocation process, even under practical integer constraints. The sequential decomposition transforms complex integer-constrained optimization into a series of tractable subproblems, enabling efficient implementation with linear computational complexity in the number of fidelity levels. Simultaneously, the minimum sample enforcement mechanism prevents pathological allocations that could compromise estimator stability, while iterative budget redistribution ensures full utilization of computational resources. The framework's unified structure further permits seamless integration of various constraint handling strategies and domain-specific requirements, offering both theoretical rigor and practical utility for robust multifidelity estimation under realistic computational constraints.
+
+\subsection{Further Modification}
+In \eqref{eq:Modified_sample_size_iterative_integer_proxy}, identical sample sizes across consecutive fidelity levels do not contribute to variance reduction yet still incur additional computational cost. To mitigate this inefficiency, we refine the iterative allocation by dynamically adjusting the set of active models. Specifically, instead of relying on a fixed subset of preselected models, we sequentially evaluate whether to eliminate models whose integer-valued sample sizes coincide with those of the preceding fidelity level. The elimination criterion is determined using the second condition of Theorem~\ref{thm:Sample_size_real}, applied to the parameters of the reduced model set after each elimination step. The first condition of the theorem is automatically satisfied, while the second condition ensures that the resulting subset exhibits strictly increasing sample sizes across fidelities.
+
+This adaptive elimination strategy enables the model subset to adjust to the available computational budget~$p$, producing an allocation that maintains monotonicity and enhances variance decay relative to that obtained with a fixed model hierarchy. The complete procedure is summarized in Algorithm~\ref{algo:Iterative_MFMC_Algo}.
+
+
 
 
 % \begin{algorithm}[!ht]
@@ -322,60 +331,71 @@ This iterative extension establishes a unified computational framework that pres
 \label{algo:Iterative_MFMC_Algo}
 \DontPrintSemicolon
 
-\KwIn{Correlation coefficients $\rho_{1,k}$, standard deviations $\sigma_k$, computational costs $C_k$, total budget $p$.}
-\KwOut{Integer-valued sample sizes $\lfloor M_k^* \rfloor$ for $k=1,\dots,K$.}
+\KwIn{Correlation coefficients  $\{\rho_{1,k}\}_{k=1}^K$, computational costs $\{C_k\}_{k=1}^K$, total budget $p$.}
+\KwOut{Integer-valued sample sizes $\{\lfloor M_k^* \rfloor\}_{k=1}^{K_r}$.}
 \hrule\vspace{1ex}
 
 \If{$p < \sum_{j=1}^K C_j$}{
     \textbf{return} ``Insufficient budget: requires at least $\sum_{j=1}^K C_j$''.
 }
 
+Let $\boldsymbol{\rho} = [\rho_{1,1}, \ldots, \rho_{1,K}], \boldsymbol{C} = [C_{1}, \ldots, C_{K}]$. 
+
 Compute variance terms: $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k = 1, \dots, K$ with $\rho_{1,K+1}=0$.
 
-% Compute normalization constant: $S = \sum_{i=1}^K \sqrt{C_i \Delta_i}$\;
+RestartFlag = true.\;
 
-Initialize with first fidelity level:
+% Compute normalization constant: $S = \sum_{i=1}^K \sqrt{C_i \Delta_i}$\;
+\While{RestartFlag}{
+
+RestartFlag = false.\;
+Initialize the real-valued optimal allocation:
 \[
-M_1^* = \sqrt{\frac{\Delta_1}{C_1}} \frac{p}{ \sum_{j=1}^K \sqrt{C_j \Delta_j}}.
+M_1^* = \sqrt{\frac{\Delta_1}{C_1}} \frac{p}{ \sum_{j=1}^K \sqrt{C_j \Delta_j}},
+\qquad
+\left\lfloor M_1^* \right\rfloor = \max \left(\left\lfloor M_1^* \right\rfloor, 1\right)
 \]
 
+
+
 \For{$k = 2$ \KwTo $K$}{
-    Update residual budget: $R_k = p - \sum_{j=1}^{k-1} C_j \lfloor M_j^* \rfloor$.\;
-    Compute current allocation:
+    Update residual budget: $R_k = p - \sum_{j=1}^{k-1} C_j \left\lfloor M_j^* \right\rfloor$.\;
+    Compute the current allocation:
     \[
-    M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{R_k}{\sum_{j=k}^K \sqrt{C_j \Delta_j}}.
+    M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{R_k}{\sum_{j=k}^K \sqrt{C_j \Delta_j}},
+    \qquad
+    \left\lfloor M_k^* \right\rfloor = \max \left(\left\lfloor M_k^* \right\rfloor, 1 \right).
     \]
-    \If{$\lfloor M_k^* \rfloor < 1$}{
-        Enforce minimum sample: $\lfloor M_k^* \rfloor = 1$.
-    }
+    % \If{$\lfloor M_k^* \rfloor < 1$}{
+    %     Enforce minimum sample: $\lfloor M_k^* \rfloor = 1$.
+    % }
 
 
-\If{$\lfloor M_{k-1}^* \rfloor=\lfloor M_k^* \rfloor$}{
-    Let $\boldsymbol{\rho} = [\rho_{1,1}, \ldots, \rho_{1,K}], \boldsymbol{C} = [C_{1}, \ldots, C_{K}]$
+\If{$\left\lfloor M_{k-1}^* \right\rfloor=\left\lfloor M_k^* \right\rfloor$}{
     
     
-    Check condition (2):
     
-    
-    $\widetilde\Delta_{k-1}=\rho_{1,k-1}^2 - \rho_{1,k+1}^2, \widetilde\Delta_k = \rho_{1,k+1}^2-\rho_{1,k+2}^2$
+    Compute updated variance: $\widetilde\Delta_{k-1}=\rho_{1,k-1}^2 - \rho_{1,k+1}^2, \widetilde\Delta_k = \rho_{1,k+1}^2-\rho_{1,k+2}^2$
 
     
-    calculate condition (2) $\frac{\widetilde\Delta_{k-1}}{C_{k-1}}<\frac{\widetilde\Delta_{k}}{C_{k+1}}$
-    
-    \If{condition (2) holds without model $k$}{ 
-    $\lfloor M_k^* \rfloor=0$.
-    
-    delete model $k$, $\boldsymbol{\rho}(k)=[], \boldsymbol{C}(k)=[]$
-    
-    update $\boldsymbol{\rho}$ and $\boldsymbol{C}$,
-    $K=K-1$,
-    
-    $k=2$, start from beginning of the for loop with the update $\boldsymbol{\rho}$ and $\boldsymbol{C}$.
+    \If{condition $\frac{\widetilde\Delta_{k-1}}{C_{k-1}}<\frac{\widetilde\Delta_{k}}{C_{k+1}}$}{ 
+
+    Discard model $k$: $\boldsymbol{\rho} \leftarrow \boldsymbol{\rho} \setminus \{\rho_{1,k}\}$, $\boldsymbol{C} \leftarrow \boldsymbol{C} \setminus \{C_k\}$,\;
+    Update $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$,\;
+    $K \leftarrow K - 1$.\;
+
+    RestartFlag = true.\;
+
+    Break.\;
+    % \scr{Restart iteration with updated parameters and recompute $M_k^*$ from step 5.}
     }
     
-    \Else{otherwise keep model $k$.}
+    \Else{Retain model $k$.}
     
 }
 }
-\textbf{return} $\lfloor M_1^* \rfloor, \dots, \lfloor M_K^* \rfloor$.
+}
+$K_r \leftarrow K$\;
+\textbf{return} $\left\lfloor M_1^* \right\rfloor, \dots, \left\lfloor M_{K_r}^* \right\rfloor$.
 \end{algorithm}
+
