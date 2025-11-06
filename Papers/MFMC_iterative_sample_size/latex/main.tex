@@ -28,13 +28,6 @@
 
 
 % ==============   Macros  ====================
-
-\newcommand{\JL}[1]{\textcolor{red}{JL: #1}}
-\newcommand{\MH}[1]{\textcolor{blue}{MH: #1}}
-
-
-
-
 \newcommand{\real}{\mathbb{R}} 
 \newcommand{\nat}{\mathbb{N}} 
 
@@ -81,7 +74,7 @@
 \address[JL]{Department of Computational Applied Mathematics \& Operations Research, Rice University.}
 
 \begin{abstract}
-In multifidelity Monte Carlo (MFMC) methods, optimal sample allocations are typically derived by solving a continuous optimization problem, with integer solutions obtained through flooring operations. This rounding approach frequently leads to budget underutilization and suboptimal variance reduction in practical implementations. In this work, we present a novel iterative scheme that directly computes integer-valued sample allocations for MFMC estimation. The proposed method guarantees a better adherence to total budget constraints while generating integer-feasible solutions that more closely approximate the continuous optimum. Numerical results demonstrate that our approach achieves lower estimator variance compared to conventional rounding strategies. These advancements offer significant practical benefits for uncertainty quantification applications requiring optimal resource allocation across multiple model fidelities.
+Optimal sample allocation in multifidelity Monte Carlo (MFMC) methods is conventionally obtained from a continuous relaxation of the allocation problem, followed by rounding to enforce integer sample sizes. However, such post hoc rounding often leads to budget under-utilization and diminished variance reduction efficiency. This paper presents a novel iterative allocation scheme that computes integer-valued sample sizes directly within a recursive optimization framework. The proposed method preserves the analytical structure of the continuous optimum while ensuring strict adherence to budget constraints and maintaining monotonicity across fidelity levels. Theoretical analysis establishes improved variance and cost bounds compared to direct rounding strategies, and numerical experiments confirm enhanced estimator accuracy and budget utilization. The results demonstrate that the proposed scheme provides a robust and practical framework for optimal sample allocation in multifidelity Monte Carlo estimation.
 \end{abstract}
 
 
@@ -102,11 +95,12 @@ Multi-fidelity Monte Carlo \sep Sample Allocation \sep Integer Optimization  \se
 \input{./Sections/Modified_iterative_Integer_Valued_Sample_Size}
 \input{./Sections/Numerics} 
 \input{./Sections/Conclusion} 
+% \input{./Sections/Illustration}
 
 
 \bibliographystyle{abbrv}
 % \bibliographystyle{alphaurl}
-\bibliography{references,references_liang}
+\bibliography{references_liang}
 % \bibliography{reference}
 \end{document}
 
