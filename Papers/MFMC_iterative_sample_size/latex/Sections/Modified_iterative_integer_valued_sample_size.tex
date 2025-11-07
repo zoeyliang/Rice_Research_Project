@@ -87,65 +87,40 @@ f(H_k^*) = \sum_{k=1}^{i-1} \Delta_k + \frac{\left(\sum_{k=i}^K \sqrt{C_k \Delta
 
 
 \begin{proof}
-Define the cumulative cost and the remaining budget by
+Define the cumulative cost and the remaining budget as
 %
 \[
-T_k = \sum_{j=1}^k C_j H_j^*, 
+T_k = \sum_{j=1}^k C_j H_j^*,\quad k=1\ldots, K,
 \qquad 
-R_k = p - T_k.
+R_1=p,
+\qquad 
+R_k = p - T_{k-1}, \quad k=2, \ldots, K.
 \]
 %
-For the first $i-1$ fidelities, we have $H_j^* = 1$, hence
-%
+For $k=i,\ldots,K$, the budget residual satisfies
 \[
-T_k = \sum_{j=1}^k C_j, \qquad R_k = p - \sum_{j=1}^k C_j, \qquad 1 \le k < i-1.
+R_k = R_{k-1} - C_{k-1} H_{k-1}^* = \frac{S_k}{S_{k-1}} R_{k-1}.
 \]
-%
-For $i \le k \le K$, substituting the iterative definition \eqref{eq:Modified_sample_size_iterative_real_valued} gives
-%
+For the first $i-1$ fidelities, $H_k^* = 1$, hence
 \[
-H_k^* 
-= \sqrt{\frac{\Delta_k}{C_k}}
-  \frac{R_{k-1}}{\sum_{j=k}^{K} \sqrt{C_j \Delta_j}},
+R_i = p - \sum_{j=1}^{i-1} C_j,
 \]
-%
-Combining these relations yields the recurrence
-%
+and iterating the recurrence gives
 \[
-R_k = R_{k-1} - C_k H_k^*
-=
-\frac{\sum_{j=k+1}^{K} \sqrt{C_j \Delta_j}}
-       {\sum_{j=k}^{K} \sqrt{C_j \Delta_j}} R_{k-1},
-\qquad i \le k \le K.
+R_k = \frac{S_k}{S_i} R_i 
+      = \frac{S_k}{S_i} \left(p - \sum_{j=1}^{i-1} C_j\right), 
+\quad k=i,\ldots,K.
 \]
-%
-Iterating this expression from $R_{i-1} = p - \sum_{j=1}^{i-1} C_j$ gives
-%
+Substituting into \eqref{eq:Modified_sample_size_iterative_real_valued} yields
 \[
-R_k 
-= 
-\frac{\sum_{j=k+1}^{K} \sqrt{C_j \Delta_j}}
-       {\sum_{j=i}^{K} \sqrt{C_j \Delta_j}}
-  \left( p - \sum_{j=1}^{i-1} C_j \right),
-\qquad i \le k \le K.
+H_k^* = \sqrt{\frac{\Delta_k}{C_k}} \frac{R_k}{S_k} 
+       = \sqrt{\frac{\Delta_k}{C_k}} 
+         \frac{p - \sum_{j=1}^{i-1} C_j}{\sum_{j=i}^{K} \sqrt{C_j \Delta_j}}, 
+\quad k=i,\ldots,K.
 \]
-%
-Substituting this result back into the definition of $H_k^*$ yields
-%
-\[
-H_k^*
-= \sqrt{\frac{\Delta_k}{C_k}}
-  \frac{R_{k-1}}{\sum_{j=k}^{K} \sqrt{C_j \Delta_j}}
-= \sqrt{\frac{\Delta_k}{C_k}}
-  \frac{p - \sum_{j=1}^{i-1} C_j}
-       {\sum_{j=i}^{K} \sqrt{C_j \Delta_j}},
-\qquad i \le k \le K.
-\]
-%
-Thus $H_k^* = N_k^*$ for all $k$, establishing the equivalence. 
-% Substituting $H_k^*$ into $f(H_k^*) = \sum_{k=1}^K \Delta_k / H_k^*$ 
-% gives the desired variance expression, completing the proof.
+Thus $H_k^* = N_k^*$ for all $k$, establishing the equivalence.
 \end{proof}
+
 
 
 \subsection{Integer-valued Allocation}
@@ -177,42 +152,46 @@ Let $\lfloor N_k^* \rfloor$ denote the integer allocation from direct flooring o
 \begin{proof}
 Define the remaining budget after assigning the first $k$ integer proxy allocations by 
 \[
-R_k = p-\sum_{j=1}^k C_j \left\lfloor M_j^* \right\rfloor, \quad \text{for}\quad i\le k\le K.
+R_k = p-\sum_{j=1}^{k-1} C_j \left\lfloor M_j^* \right\rfloor,
+\qquad 
+    k=i,\ldots, K
 \]
-with the convention $R_0=p$. By construction of the proxy, for $k\ge i$ we have
+with the convention $R_1=p$. By construction of the proxy, for $k\ge i$ we have
 %
 \begin{equation}\label{eq:M_def_proof}
-    M_k^*=\sqrt{\frac{\Delta_k}{C_k}}\frac{R_{k-1}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}.
+    M_k^*=\sqrt{\frac{\Delta_k}{C_k}}\frac{R_{k}}{S_k},
+    \qquad 
+    k=i,\ldots, K
 \end{equation}
 %
 We first show $\sum_{k=1}^K C_k\lfloor M_k^*\rfloor \le p$, equivalently $R_K\ge 0$.
 Because $\lfloor M_k^*\rfloor \le M_k^*$ and using \eqref{eq:M_def_proof}, for $k\ge i$,
 \[
-C_k \left\lfloor M_k^* \right\rfloor\le \sqrt{C_k\Delta_k}\frac{R_{k-1}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}, \quad i\le k\le K.
+C_k \left\lfloor M_k^* \right\rfloor\le \sqrt{C_k\Delta_k}\frac{R_{k}}{S_k}, \quad i\le k\le K.
 \]
 Hence
 %
 \begin{equation*}
-    R_k = R_{k-1}-C_k  \left\lfloor M_k^* \right\rfloor\ge R_{k-1}\left(1-\frac{\sqrt{C_k\Delta_k}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}\right) = R_{k-1}\frac{\sum_{j=k+1}^{K}\sqrt{C_j\Delta_j}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}, \quad i\le k\le K.
+    R_k = R_{k-1}-C_{k-1}  \left\lfloor M_{k-1}^* \right\rfloor\ge R_{k-1}\left(1-\frac{\sqrt{C_{k-1}\Delta_{k-1}}}{S_{k-1}}\right) = R_{k-1}\frac{S_{k}}{S_{k-1}}, \quad i\le k\le K.
 \end{equation*}
 %
 Iterating this inequality starting from
 %
 \[
-R_{i-1} \;=\; p - \sum_{j=1}^{i-1} C_j \left\lfloor M_j^*\right\rfloor
+R_{i} \;=\; p - \sum_{j=1}^{i-1} C_j \left\lfloor M_j^*\right\rfloor
          \;=\; p - \sum_{j=1}^{i-1} C_j
 \]
 %
 (since $\lfloor M_j^*\rfloor =1$ for $j<i$ by construction) yields,
 %
 \begin{equation}\label{eq:modified_proof_recursion}
-R_{k}\ge \left(p-\sum_{j=1}^{i-1}C_j\right)\frac{\sum_{j=k+1}^K \sqrt{C_j\Delta_j}}{\sum_{j=i}^K \sqrt{C_j\Delta_j}},\quad i\le k\le K.
+R_{k}\ge \left(p-\sum_{j=1}^{i-1}C_j\right)\frac{S_{k}}{S_{i-1}},\quad i\le k\le K.
 \end{equation}
 %
-In particular, for $k=K$ we obtain $R_K\ge 0$, which is equivalent to
+Therefore,
 %
 \begin{equation*}\label{eq:modified_total_cost}
-    \sum_{k-1}^K C_k\left\lfloor M_k^* \right\rfloor=p-R_K\le p,
+    \sum_{k=1}^K C_k\left\lfloor M_k^* \right\rfloor \le \sum_{k=1}^K\sqrt{C_k\Delta_k}\frac{R_{k}}{S_k}=\sum_{k=1}^{i-1}C_k+\sum_{k=i}^K\sqrt{C_k\Delta_k}\frac{R_{k}}{S_k} \le \sum_{k=1}^{i-1}C_k+\frac{R_{i}}{S_i}S_i=p,
 \end{equation*}
 proving the upper bound.
 
@@ -221,7 +200,7 @@ $\sum_{k=1}^K C_k\lfloor N_k^*\rfloor \le \sum_{k=1}^K C_k\lfloor M_k^*\rfloor$.
 Substituting \eqref{eq:modified_proof_recursion} into \eqref{eq:M_def_proof} gives
 %
 \begin{equation}\label{eq:Modified_nondecreasing_sample_size_proof}
-    M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{R_{k-1}}{\sum_{j=k}^{K}\sqrt{C_j\Delta_j}}\ge \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{j=1}^{i-1}C_j}{\sum_{j=i}^K \sqrt{C_j\Delta_j}}=N_k^*, \quad i\le k\le K.
+    M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{R_{k-1}}{S_k}\ge \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\sum_{j=1}^{i-1}C_j}{S_i}=N_k^*, \quad i\le k\le K.
 \end{equation}
 %
 For $k<i$ we already have $M_k^*=N_k^*=1$. Since the floor function is monotone non-decreasing, it follows that $\lfloor N_k^* \rfloor\le \lfloor M_k^* \rfloor$, and this prove the lower bound.
