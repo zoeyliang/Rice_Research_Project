@@ -133,7 +133,7 @@ If $C_k$ denotes the per-sample cost of model $u_k$, the total computational cos
 
 
 In order to determine optimal sample sizes $m_k$ and weights $\alpha_k$ in the MFMC estimator \eqref{eq:MFMC_estimator_independent} the MFMC estimator  variance \eqref{eq:MFMC_variance0} 
-is minimized subject to a fixed budget $p$ on the computational cost \eqref{eq:MFMC_cost}.
+is minimized subject to a fixed budget $b$ on the computational cost \eqref{eq:MFMC_cost}.
 We note that the problem of computing optimal sample sizes $m_k$ and weights $\alpha_k$ 
 can be separated. 
 If ${\mathcal N}$ is a set of feasible integer sample sizes satisfying $1 \le m_1 \le m_2 \le \ldots \le m_K$,
@@ -161,7 +161,10 @@ With the optimal weights \eqref{eq:MFMC_weights}, the MFMC estimator  variance \
   &= \sigma_1^2\sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k},           \label{eq:MFMC_variance_b}
 \end{align}
 \end{subequations}
-where $\rho_{1,K+1} :=0$. 
+where 
+\[
+                 \rho_{1,K+1} :=0.
+\]
 
 As noted earlier,  $m_1 \ge 1$ is needed to ensure the unbiasedness \eqref{eq:MFMC_expectation}
 of the MFMC estimator.

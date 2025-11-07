@@ -13,7 +13,7 @@ A first version of the optimization problem to compute $1 \le m_1 \le m_2 \le \l
 \begin{subequations}\label{eq:Optimization_sample_size_N}
     \begin{align}
     \min \quad &\sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k},   \\
-       \text{s.t.}\quad & \sum_{k=1}^K C_km_k \le p,       \label{eq:Optimization_sample_size_m_budget}  \\
+       \text{s.t.}\quad & \sum_{k=1}^K C_km_k \le b,       \label{eq:Optimization_sample_size_m_budget}  \\
                                 & m_1\ge 1,\quad  m_k \ge m_{k-1}, \quad k=2\ldots,K,\\
                                 &m_1,\ldots, m_K\in \nat.
     \end{align}
@@ -32,7 +32,7 @@ The optimization problem formulation for the optimal sample size selection is
 \begin{subequations}\label{eq:Optimization_sample_size_Nz}
     \begin{align}
     \min \quad &\sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k},   \\
-       \text{s.t.}\quad &  C_1 m_1 + \sum_{k=2}^K z_k C_k m_k \le p,       \label{eq:Optimization_sample_size_Nz_budget}  \\
+       \text{s.t.}\quad &  C_1 m_1 + \sum_{k=2}^K z_k C_k m_k \le b,       \label{eq:Optimization_sample_size_Nz_budget}  \\
                                 & m_1\ge 1,\quad  m_k \ge m_{k-1}, \quad k=2\ldots,K,\\
                                 & m_k - m_{k-1} \ge z_k, \quad M z_k \ge m_k - m_{k-1},  \quad k=2\ldots,K,  \label{eq:Optimization_sample_size_Nz_z}  \\
                                 &m_1,\ldots, m_K\in \nat, \quad z_2 ,\ldots, z_K\in \{0,1\}.
@@ -56,8 +56,9 @@ Specifically, \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a}
 considered the problem
 \begin{subequations}\label{eq:Optimization_sample_size_m_relaxed}
     \begin{align}
+    \label{eq:Optimization_sample_size_m_relaxed_obj}
     \min \quad &\sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k},   \\
-       \text{s.t.}\quad & \sum_{k=1}^K C_km_k \le p,       \\
+       \text{s.t.}\quad & \sum_{k=1}^K C_km_k \le b,       \\
                                 & m_1\ge 0,\quad  m_k \ge m_{k-1}, \quad k=2\ldots,K,\\
                                 &m_1,\ldots, m_K\in \real.
     \end{align}
@@ -72,7 +73,7 @@ $0  < m_1^* < m_2^* <  \ldots < m_K^*$.
 The following theorem is proven in \cite[Th.~3.4]{BPeherstorfer_KWillcox_MDGunzburger_2016a}.
 
 \begin{theorem}[Optimal MFMC Real-Valued Sample Allocation]   \label{thm:Sample_size_real}
-   Let models $u_1, \ldots, u_k \in   L_{\mathbb{P}}^2(W, {\mathcal U})$ with
+   Let models $u_1, \ldots, u_k \in   L_{\mathbb{b}}^2(W, {\mathcal U})$ with
    standard deviations $\sigma_k$, correlation coefficients $\rho_{1,k}$, $k = 2, \ldots, K$,
    between the HF model $u_1$  and the  LF models $u_k$, $k = 2, \ldots, K$, and 
    per-sample costs $C_1, \ldots, C_K$ be given.
@@ -86,17 +87,18 @@ The following theorem is proven in \cite[Th.~3.4]{BPeherstorfer_KWillcox_MDGunzb
                                                                   & \text{(cost-correlation ratio)}
     \end{align}
     \end{subequations}
-    hold, where $\rho_{1,K+1} :=0$, then the solution of \eqref{eq:Optimization_sample_size_m_relaxed} is
+    hold, where $\rho_{1,K+1} :=0$, then the unique solution of \eqref{eq:Optimization_sample_size_m_relaxed} is
     \begin{equation}\label{eq:MFMC_RealValued_Sample_Size}
              m_k^* = \sqrt{\frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{C_k}} \; 
-                          \frac{p}{\sum_{j=1}^K \sqrt{C_j (\rho_{1,j}^2 - \rho_{1,j+1}^2)}},
+                          \frac{b}{\sum_{l=1}^K \sqrt{C_l (\rho_{1,l}^2 - \rho_{1,l+1}^2)}},
+             \quad k = 1, \ldots, K, 
      \end{equation}
     the cost constraint is active $\sum_{k=1}^K C_km_k^* = p$, 
     and the resulting minimal variance of the MFMC estimator is
      \begin{equation}\label{eq:MFMC_variance_optimal}
            \mathcal{V}^{\text{MF}}(m_1^*, \ldots, m_K^*)
            =   \sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k^*}
-           =  \frac{\sigma_1^2}{p}\!\left(\sum_{k=1}^K \sqrt{C_k (\rho_{1,k}^2 - \rho_{1,k+1}^2) }\right)^{\!2}.
+           =  \frac{\sigma_1^2}{b}\!\left(\sum_{k=1}^K \sqrt{C_k (\rho_{1,k}^2 - \rho_{1,k+1}^2) }\right)^{\!2}.
        \end{equation}
 \end{theorem}
 
@@ -134,7 +136,7 @@ sub-optimality, producing the bounds
 \begin{subequations}\label{eq:bounds_for_floor}
 \begin{align}
     \mathcal{V}^{\text{MF}}\left(\lfloor m_1^* \rfloor, \ldots \lfloor m_K^* \rfloor \right)
-    & \in \left[\frac{\sigma_1^2}{p}\left(\sum_{k=1}^K \sqrt{C_k  (\rho_{1,k}^2 - \rho_{1,k+1}^2)}\right)^2,
+    & \in \left[\frac{\sigma_1^2}{b}\left(\sum_{k=1}^K \sqrt{C_k  (\rho_{1,k}^2 - \rho_{1,k+1}^2)}\right)^2,
                    \sum_{k=1}^K\frac{ (\rho_{1,k}^2 - \rho_{1,k+1}^2)}{m_k^*-1}\right),       \\
    \mathcal{W}^{\text{MF}}\left(\lfloor m_1^* \rfloor, \ldots \lfloor m_K^* \rfloor \right)
    &\in \left( p-\sum_{k=1}^K C_k, p\right].

@@ -1,75 +1,71 @@
-%!TEX root = ../main.tex
 % ====================================================
 \section{Iterative sample size estimation for MFMC}\label{sec:Iterative_IntegerValued_Sample_Size}
 % ====================================================
-   
-For $j = 1, \ldots, K$  we consider the problem 
-\begin{subequations}\label{eq:Sequential_Optimization}
-    \begin{align}
-    \label{eq:Sequential_Optimization_obj}
-    \min \quad &\sigma_1^2  \sum_{k=j}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k},   \\
-       \text{s.t.}\quad & \sum_{k=j}^K C_km_k \le b_j,       \\
-                                & m_j \ge 0,\quad  m_k \ge m_{k-1}, \quad k=j+1\ldots,K,\\
-                                &m_j,\ldots, m_K\in \real.
-    \end{align}
-\end{subequations}   
-The problem  \eqref{eq:Sequential_Optimization} has the same structure as 
-\eqref{eq:Optimization_sample_size_m_relaxed}, and 
-if $j = 1$ and $b_1 = b$, then \eqref{eq:Sequential_Optimization} is
-identical to \eqref{eq:Optimization_sample_size_m_relaxed}.
+To overcome the budget under-utilization using the direct rounding strategies as mentioned in \eqref{eq:bounds_for_floor}, we develop an iterative sample size estimation scheme for MFMC grounded in dynamic programming principles. The approach applies Bellman’s principle of optimality \cite{Be:1957} to decompose the global optimization into a sequence of tractable subproblems. Each subproblem preserves the analytical structure of the continuous optimum and maintains the essential variance–cost trade-offs of the original formulation. The resulting recursion yields an integer-compatible allocation strategy that achieves better variance reduction in trade of budget under-utilization.
 
-Under the assumptions of Theorem~\ref{thm:Sample_size_real},
-\eqref{eq:Sequential_Optimization} has a unique solution, which we denote
-by $m_{j,j}^*, \ldots, m_{K,j}^*$.
-Define
-\[
-        b_1 := b \quad \mbox{ and } \quad m_0^* = m_{0,0}^* := 0.
-\]
-The reason for considering  \eqref{eq:Sequential_Optimization} is that 
-if $m_1^*, \ldots, m_K^*$ is the solution of \eqref{eq:Optimization_sample_size_m_relaxed},
-then the solution of \eqref{eq:Sequential_Optimization} with $b_j = b - \sum_{k=1}^{j-1} C_km_k^*$
-and with constraint $m_j \ge 0$ replaced by $m_j \ge m_{j-1}^*$ is given by
-\begin{equation}\label{eq:Sequential_Optimization_sol}
-      m_{j,j}^* = m_j^*, \ldots, m_{K,j}^* = m_K^*.
-\end{equation}   
-In fact, if there was a different $m_{j,j}^*, \ldots, m_{K,j}^*$ feasible point for 
-\eqref{eq:Sequential_Optimization} with $b_j = b - \sum_{k=1}^{j-1} C_k m_k^*$
-and with constraint $m_j \ge 0$ replaced by $m_j \ge m_{j-1}^*$, and with lower 
-objective function value  \eqref{eq:Sequential_Optimization},
-then $m_1^*, \ldots, m_{j-1}^*, m_{j,j}^*, \ldots, m_{K,j}^*$ is feasible for 
-\eqref{eq:Optimization_sample_size_m_relaxed} with lower objectve function value
-\eqref{eq:Optimization_sample_size_m_relaxed_obj} than \eqref{eq:MFMC_variance_optimal}.
-We will show that \eqref{eq:Sequential_Optimization_sol} remains true for the solution of
-\eqref{eq:Sequential_Optimization} with $b_k = b - \sum_{k=1}^{j-1} C_km_k^*$.
 
-\begin{theorem}  \label{thm:Sequential_Optimization_sample_size_real}
-   Let the assumption of Theorem~\ref{thm:Sample_size_real} be satisfied.
-   \begin{itemize}
-   \item[i.] The unique solution of \eqref{eq:Sequential_Optimization} is
-    \begin{equation}\label{eq:Sequential_Optimization_mjj}
-             m_{k,j}^* = \sqrt{\frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{C_k}} \; 
-                          \frac{b_j}{\sum_{l=j}^K \sqrt{C_l (\rho_{1,l}^2 - \rho_{1,l+1}^2)}},
-             \quad k = j, \ldots, K,
-     \end{equation}
-    the cost constraint is active $\sum_{k=1}^K C_km_k^* = b_j$, 
-    and the resulting optimal objective function value is
-     \begin{equation}\label{eq:MFMC_variance_optimal}
-            \sigma_1^2  \sum_{k=j}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k^*}
-           =  \frac{\sigma_1^2}{b_j}\!\left(\sum_{k=j}^K \sqrt{C_k (\rho_{1,k}^2 - \rho_{1,k+1}^2) }\right)^{\!2}.
-       \end{equation}
-    \item[ii.] If $b_j = b - \sum_{k=1}^{j-1} C_k m_{k,k}^*$,
-                  then $0 < m_{1,1}^* < \ldots < m_{K,K}^*$.
-    \item[iii.] If $b_j = b - \sum_{k=1}^{j-1} C_k m_{k,k}^*$, then $m_1^* = m_{1,1}^*,  \ldots, m_K^* = m_{K,K}^*$.
-    \end{itemize}
-\end{theorem}
-\begin{proof}
- \begin{itemize}
-   \item[i.] Because  \eqref{eq:Sequential_Optimization} has the same structure as 
-                \eqref{eq:Optimization_sample_size_m_relaxed}, the first statement follows from
-                Theorem~\ref{thm:Sample_size_real}.
-  \item[ii.]
-  \end{itemize}
-\end{proof}
+
+
+% The mathematical foundation for this decomposition rests on the separable structure of the MFMC optimization problem. The objective function $\sum_{k=1}^K \Delta_k/N_k$ exhibits complete separability across fidelity levels, while the budget constraint $\sum_{k=1}^K C_kN_k = p$ admits additive decomposition. This structure ensures the problem possesses optimal substructure: any optimal sequence of decisions must contain within it optimal solutions to all subsequent subproblems. The state variable $R_k = p - \sum_{j=1}^{k-1} C_j H_j$ captures the essential information from previous allocations, satisfying the Markov property that future optimization depends only on the current remaining budget. At each stage $k$, the subproblem over levels $k$ through $K$ with residual budget $R_k$ preserves the original problem's structure while maintaining all monotonicity and budget constraints.
+
+\subsection{Theoretical Justification for Dynamic Programming Decomposition}
+
+% The decomposition of the MFMC optimization problem \eqref{eq:Optimization_pb_sample_size_reduced} into a sequence of subproblems is justified by its intrinsic separability and the optimal substructure of the objective function. The objective $\sum_{k=1}^K \Delta_k/N_k$ is completely separable across fidelity levels, while the budget constraint $\sum_{k=1}^K C_kN_k=p$ admits additive decomposition. This structure ensures that any optimal sequence of decisions contains within it optimal solutions to all subsequent subproblems—a hallmark of dynamic programming problems.
+
+% Bellman’s principle of optimality formalizes this intuition: if $\{N_1^*,N_2^*,\ldots,N_K^*\}$ solves the global optimization, then for each $k$, the truncated sequence $\{N_k^*,N_{k+1}^*,\ldots,N_K^*\}$ must solve the corresponding subproblem defined over the remaining fidelity levels with residual budget 
+% \[
+% R_k = p - \sum_{j=1}^{k-1}C_jN_j^*.
+% \]
+% The residual budget $R_k$ serves as a sufficient state variable, encapsulating all necessary information from prior allocations. The Markov property follows: future decisions depend only on $R_k$ and not on the detailed allocation history.
+
+
+% At stage $k$, the subproblem governing levels $k$ through $K$ with remaining budget $R_k$ retains the structure of the original optimization:
+% \begin{equation}\label{eq:Sequential_Optimization}
+% \begin{array}{ll}
+% \displaystyle \min_{H_k,\ldots,H_K\in \mathbb{R}} &
+% \displaystyle \sum_{j=k}^K \frac{\Delta_j}{H_j}, \\[2mm]
+% \text{subject to} &
+% \displaystyle \sum_{j=k}^K C_jH_j = R_k,\\[1mm]
+% &H_k \ge 0,\quad H_{j-1}-H_j \le 0,\; j=k+1,\ldots,K.
+% \end{array}
+% \end{equation}
+% The recursive budget update enforces the global cost constraint, while the local monotonicity constraints preserve the fidelity hierarchy, ensuring consistency with the MFMC structure.
+
+
+% ===========================================
+
+The decomposition of the original optimization problem \eqref{eq:Optimization_sample_size_m_relaxed} into sequential subproblems is justified by the problem's mathematical structure and fundamental optimization principles:
+
+
+\begin{enumerate}
+
+    \item \textbf{Optimal Substructure and Separability}: The objective function $\sum_{k=1}^K \frac{\Delta_k}{N_k}$ exhibits complete separability across fidelity levels, while the budget constraint $\sum_{k=1}^K C_kN_k = p$ admits additive decomposition. This separable structure ensures that the optimal solution possesses the key property that any subsequence of decisions must be optimal for the corresponding subproblem with the remaining budget.
+
+    \item \textbf{Bellman's Principle of Optimality}: If $\{N_1^*, N_2^*, \ldots, N_K^*\}$ constitutes an optimal solution to the global problem, then for any $k \in \{1,\ldots,K\}$, the truncated sequence $\{N_k^*, N_{k+1}^*, \ldots, N_K^*\}$ must be an optimal solution to the subproblem defined on levels $k$ through $K$ with residual budget $R_k = p - \sum_{j=1}^{k-1} C_j N_j^*$. This principle follows directly from the contradiction that would arise if a superior partial solution existed for any subproblem.
+
+    \item \textbf{State Variable Sufficiency}: The recursive definition of the state variable $R_k$ 
+    \[
+    R_1 := p, \qquad R_k := p - \sum_{j=1}^{k-1} C_j H_j, \quad k=2,\ldots,K.
+    \]
+    as the remaining computational budget captures all essential information from previous decisions. The Markovian property holds because future optimization depends only on the current remaining budget $R_k$ and not on the specific history of allocations that led to this state.
+
+
+    \item \textbf{Sequential Decision Framework}: At each stage $k$, given the fixed decisions $\{H_1, \ldots, H_{k-1}\}$ and current state $R_k$, the optimization over remaining levels $\{H_k, \ldots, H_K\}$ constitutes a well-defined subproblem that preserves the original problem's structure:
+    \begin{equation}\label{eq:Sequential_Optimization}
+        \begin{array}{ll}
+        \displaystyle 
+        \min_{H_k,\ldots,H_K\in \mathbb{R}} & 
+            \displaystyle 
+            \sum_{j=k}^K \frac{\Delta_j}{H_{j}}, \\
+        \text{subject to} &
+            \displaystyle \sum_{j=k}^K C_j H_j = R_k,\\
+            &H_k\ge 0,\quad H_{j-1}-H_j\le 0,\;\; j=k+1,\ldots,K.
+        \end{array}
+    \end{equation}
+
+    \item \textbf{Constraint Preservation}: The sequential formulation inherently maintains all original constraints. The budget constraint is preserved through the recursive budget update, while the monotonicity constraints $H_{j-1} \leq H_j$ are enforced locally at each stage, ensuring global consistency with the MFMC hierarchy requirements.
+\end{enumerate}
+
 
 
 \subsection{Convexity and Global Optimality}
@@ -78,9 +74,9 @@ The convexity of each subproblem in \eqref{eq:Sequential_Optimization} guarantee
 Applying the optimality conditions from Theorem~\ref{thm:Sample_size_real} to each subproblem yields the recursive solution
 %
 \begin{equation*}
-    H_k^* = \sqrt{\frac{\Delta_k}{C_k}} \frac{b_k}{\sum_{j=k}^K\sqrt{C_j\Delta_j}},
+    H_k^* = \sqrt{\frac{\Delta_k}{C_k}} \frac{R_k}{\sum_{j=k}^K\sqrt{C_j\Delta_j}},
     \qquad 
-    b_{k+1} = b_k - C_k H_k^*,
+    R_{k+1} = R_k - C_k H_k^*,
 \end{equation*}
 %
 which unfolds into the explicit forward recursion
@@ -108,23 +104,23 @@ Introducing the aggregate cost variance partial sum from model $k$ up to $K$
 %
 then 
 \begin{equation}\label{eq:S_k_H_k}
-    S_{k-1}=\sqrt{C_{k-1}\Delta_{k-1}}+S_k, \qquad H_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{b_k}{S_k},
+    S_{k-1}=\sqrt{C_{k-1}\Delta_{k-1}}+S_k, \qquad H_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{R_k}{S_k},
 \end{equation}
 %
 and
 \begin{equation*}
-b_k = b_{k-1} - C_{k-1}H_{k-1}^* = b_{k-1}\left(1 - \frac{\sqrt{C_{k-1}\Delta_{k-1}}}{S_{k-1}}\right) = b_{k-1}\frac{S_k}{S_{k-1}}.
+R_k = R_{k-1} - C_{k-1}H_{k-1}^* = R_{k-1}\left(1 - \frac{\sqrt{C_{k-1}\Delta_{k-1}}}{S_{k-1}}\right) = R_{k-1}\frac{S_k}{S_{k-1}}.
 \end{equation*}
 It follows that 
 %
-\begin{equation}\label{eq:b_kS_k}
-    \frac{b_k}{S_k} = \frac{b_{k-1}}{S_{k-1}},
+\begin{equation}\label{eq:R_kS_k}
+    \frac{R_k}{S_k} = \frac{R_{k-1}}{S_{k-1}},
 \end{equation}
 %
 and hence
 \[
-H_k^*=\sqrt{\frac{\Delta_k}{C_k}}\frac{b_k}{S_k}
-> \sqrt{\frac{\Delta_{k-1}}{C_{k-1}}}\frac{b_{k-1}}{S_{k-1}}
+H_k^*=\sqrt{\frac{\Delta_k}{C_k}}\frac{R_k}{S_k}
+> \sqrt{\frac{\Delta_{k-1}}{C_{k-1}}}\frac{R_{k-1}}{S_{k-1}}
 =H_{k-1}^*,
 \]
 where the inequality follows from assumption (ii) of Theorem~\ref{thm:Sample_size_real}.
@@ -134,7 +130,7 @@ where the inequality follows from assumption (ii) of Theorem~\ref{thm:Sample_siz
 % Importantly, this monotonicity property is enforced implicitly. While the global problem includes explicit constraints $H_{j-1}\le H_j$, the sequential formulation maintains them automatically through the budget recursion. Thus, the constraint $H_k\ge0$ suffices, and the monotonicity follows directly from the problem structure, simplifying computation without sacrificing theoretical rigor.
 
 
-The absence of explicit monotonicity constraints between $H_k$ and previously determined allocations $H_1, \ldots, H_{k-1}$ in formulation \eqref{eq:Sequential_Optimization} is mathematically justified by the problem structure. While the global optimization requires $H_{j-1} \le H_j$ for all $j=k+1,\ldots,K$, the sequential decomposition naturally preserves this property through the budget propagation mechanism. The recursive relationship $b_k = p - \sum_{j=1}^{k-1} C_j H_j$ ensures that the residual budget decreases monotonically, while the allocation formula $H_k^* = \sqrt{\Delta_k/C_k} \cdot b_k / \sum_{j=k}^K \sqrt{C_j\Delta_j}$ maintains the relative weighting $b_k / \sum_{j=k}^K \sqrt{C_j\Delta_j}$ across fidelity levels. Crucially, under the assumptions of Theorem~\ref{thm:Sample_size_real}, the optimal solution automatically satisfies $H_k^* > H_{k-1}^*$ without explicit enforcement, as established in Theorem~\ref{thm:Monotonicity_H_k}. Consequently, the constraint $H_k \ge 0$ suffices in the sequential formulation, as the more restrictive monotonicity conditions are inherently satisfied by the optimal solution. This structural insight significantly simplifies the recursive optimization while preserving all essential properties of the MFMC framework.
+The absence of explicit monotonicity constraints between $H_k$ and previously determined allocations $H_1, \ldots, H_{k-1}$ in formulation \eqref{eq:Sequential_Optimization} is mathematically justified by the problem structure. While the global optimization requires $H_{j-1} \le H_j$ for all $j=k+1,\ldots,K$, the sequential decomposition naturally preserves this property through the budget propagation mechanism. The recursive relationship $R_k = p - \sum_{j=1}^{k-1} C_j H_j$ ensures that the residual budget decreases monotonically, while the allocation formula $H_k^* = \sqrt{\Delta_k/C_k} \cdot R_k / \sum_{j=k}^K \sqrt{C_j\Delta_j}$ maintains the relative weighting $R_k / \sum_{j=k}^K \sqrt{C_j\Delta_j}$ across fidelity levels. Crucially, under the assumptions of Theorem~\ref{thm:Sample_size_real}, the optimal solution automatically satisfies $H_k^* > H_{k-1}^*$ without explicit enforcement, as established in Theorem~\ref{thm:Monotonicity_H_k}. Consequently, the constraint $H_k \ge 0$ suffices in the sequential formulation, as the more restrictive monotonicity conditions are inherently satisfied by the optimal solution. This structural insight significantly simplifies the recursive optimization while preserving all essential properties of the MFMC framework.
 
 \subsection{Equivalence with Continuous MFMC Solution}
 The following theorem establishes the fundamental equivalence between the iterative formulation and the standard MFMC sample allocation. This result guaranties that the sequential procedure exactly reproduces the optimal continuous allocation, thereby preserving both the total computational budget and the minimal achievable variance of the estimator.
@@ -163,9 +159,9 @@ f(H_k^*) = \sum_{k=1}^K \frac{\Delta_k}{H_k^*} = \frac{1}{p} \left(\sum_{k=1}^K 
 % \[
 %     T_k = \sum_{j=1}^k C_j H_j^*, 
 %     \qquad 
-%     b_k = p - T_k,
+%     R_k = p - T_k,
 % \]
-% so that $b_0 = p$ and $T_0 = 0$. 
+% so that $R_0 = p$ and $T_0 = 0$. 
 
 Let $S_k$ be the aggregate cost–variance weight defined in \eqref{eq:aggregate_cost_variance_weight_Sk}. 
 % For $k=1$, from \eqref{eq:MFMC_New_RealValued_Sample_Size} we obtain
@@ -174,7 +170,7 @@ Let $S_k$ be the aggregate cost–variance weight defined in \eqref{eq:aggregate
 %     T_1 = C_1H_1^* 
 %     = p\,\frac{\sqrt{C_1\Delta_1}}{S_1},
 %     \qquad
-%     b_1 = p - T_1
+%     R_1 = p - T_1
 %     = p\,\frac{S_2}{S_1}.
 % \]
 %
@@ -182,18 +178,18 @@ Let $S_k$ be the aggregate cost–variance weight defined in \eqref{eq:aggregate
 % \[
 %     H_k^*
 %     = \sqrt{\frac{\Delta_k}{C_k}}\,
-%       \frac{b_{k-1}}{S_k},
+%       \frac{R_{k-1}}{S_k},
 % \]
 % which implies that the remaining budget satisfies
 % \[
-%     b_k 
-%     = b_{k-1} - C_k H_k^*
+%     R_k 
+%     = R_{k-1} - C_k H_k^*
 %     = \frac{S_{k+1}}
-%            {S_k} \, b_{k-1}.
+%            {S_k} \, R_{k-1}.
 % \]
-Hence, $\{b_k\}_{k=1}^K$ forms a geometric sequence due to \eqref{eq:b_kS_k}. We obtain by recursion that
+Hence, $\{R_k\}_{k=1}^K$ forms a geometric sequence due to \eqref{eq:R_kS_k}. We obtain by recursion that
 \[
-    b_k = \frac{p}{S_1}S_k.
+    R_k = \frac{p}{S_1}S_k.
 \]
 Substituting this expression into the formula for $H_k^*$ in \eqref{eq:S_k_H_k} yields
 \[
@@ -201,7 +197,7 @@ Substituting this expression into the formula for $H_k^*$ in \eqref{eq:S_k_H_k} 
     = \frac{p}{S_1}\sqrt{\frac{\Delta_k}{C_k}},
 \]
 which coincides with the closed-form MFMC sample size in \eqref{eq:MFMC_RealValued_Sample_Size}.  
-% In particular, for $k=K$, we have $b_K=0$, and thus $T_K = p - b_K = p$, verifying that the total cost constraint $\sum_{k=1}^K C_k H_k^* = p$ is satisfied.  
+% In particular, for $k=K$, we have $R_K=0$, and thus $T_K = p - R_K = p$, verifying that the total cost constraint $\sum_{k=1}^K C_k H_k^* = p$ is satisfied.  
 % Finally,
 % \[
 %     f(H_k^*)
@@ -235,7 +231,7 @@ The iterative integer scheme achieves superior budget utilization compared to di
 \begin{theorem}[Cost bound for the iterative integer-valued allocation]
 \label{thm:MFMC_New_IntegerValued_Cost}
 Let $\lfloor M_k^* \rfloor$ and $\lfloor N_k^* \rfloor$ denote the integer-valued allocations from the iterative and direct rounding schemes, respectively. Under condition \eqref{eq:p_bound}, their total costs satisfy
-\begin{equation}\label{eq:Iterative_integeb_sample_size_cost_bound}
+\begin{equation}\label{eq:Iterative_integer_sample_size_cost_bound}
     \sum_{k=1}^K C_k \left\lfloor N_k^* \right\rfloor
     \;\le\;
     \sum_{k=1}^K C_k \left\lfloor M_k^* \right\rfloor
@@ -300,21 +296,21 @@ In particular, when $k=K$, we obtain
 \begin{equation}\label{eq:MFMC_iterative_total_cost}
 T_K = \sum_{j=1}^K C_j\left\lfloor M_j^*\right\rfloor \le p,
 \end{equation}
-confirming that the iterative scheme never exceeds the prescribed computational budget. To establish the lower bound in \eqref{eq:Iterative_integeb_sample_size_cost_bound}, we compare the auxiliary sequences $M_k^*$ and $N_k^*$. From \eqref{eq:Tk_bound},
+confirming that the iterative scheme never exceeds the prescribed computational budget. To establish the lower bound in \eqref{eq:Iterative_integer_sample_size_cost_bound}, we compare the auxiliary sequences $M_k^*$ and $N_k^*$. From \eqref{eq:Tk_bound},
 %
 \[
 M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{p - T_{k-1}}{S_k} \ge \sqrt{\frac{\Delta_k}{C_k}}\frac{p-\frac{p}{S}\sum_{j=1}^{k-1}\sqrt{C_j\Delta_j}}{S_k} = \sqrt{\frac{\Delta_k}{C_k}}\frac{p}{S_1}=N_k^*, \qquad k \ge 1.
 \]
 % 
 Monotonicity of the floor function implies \(\lfloor M_k^*\rfloor\ge\lfloor N_k^*\rfloor\) for every \(k\). Multiplying by \(C_k\) and summing yields the desired lower bound in 
-\eqref{eq:Iterative_integeb_sample_size_cost_bound}.  
+\eqref{eq:Iterative_integer_sample_size_cost_bound}.  
 Combining this with \eqref{eq:MFMC_iterative_total_cost} completes the proof of the cost bound.
 
 
 \medskip
 \noindent
 \textit{ Equality conditions.}
-The upper bound in \eqref{eq:Iterative_integeb_sample_size_cost_bound} is attained if and only if no budget remains unused, i.e.,
+The upper bound in \eqref{eq:Iterative_integer_sample_size_cost_bound} is attained if and only if no budget remains unused, i.e.,
 \[
 \sum_{k=1}^K C_k \left(M_k^* - \left\lfloor M_k^*\right\rfloor\right) = 0.
 \]
@@ -338,7 +334,7 @@ Theorem \ref{thm:MFMC_New_IntegerValued_Variance} establishes that the iterative
 \label{thm:MFMC_New_IntegerValued_Variance}
 Let $\lfloor M_k^* \rfloor$ denote the integer-valued sample sizes obtained from the iterative allocation scheme \eqref{eq:MFMC_New_IntegerValued_Sample_Size}, and let $\lfloor N_k^* \rfloor$ denote those obtained by directly flooring the real-valued optimal allocation \eqref{eq:MFMC_RealValued_Sample_Size}. Under the computational budget constraint \eqref{eq:p_bound} and the standard variance conditions on $\Delta_k$ from Theorem~\ref{thm:Sample_size_real}, the normalized variance satisfies the following bounds
 %
-\begin{equation}\label{eq:Iterative_Integeb_Variance_Bound}
+\begin{equation}\label{eq:Iterative_Integer_Variance_Bound}
 \frac{1}{p}\left(\sum_{k=1}^K \sqrt{C_k \Delta_k}\right)^2
 = \sum_{k=1}^K \frac{\Delta_k}{N_k^*}
 \;\le\;
@@ -354,7 +350,7 @@ Let $\lfloor M_k^* \rfloor$ denote the integer-valued sample sizes obtained from
 
 
 \begin{proof}
-We first prove the upper bound in \eqref{eq:Iterative_Integeb_Variance_Bound}.  
+We first prove the upper bound in \eqref{eq:Iterative_Integer_Variance_Bound}.  
 From Theorem~\ref{thm:MFMC_New_IntegerValued_Cost}, it follows that $\lfloor M_k^* \rfloor \ge \lfloor N_k^* \rfloor$ for all $k$.  
 Since $x \mapsto \Delta_k/x$ is strictly decreasing for $x > 0$, it immediately follows that
 \[
@@ -391,7 +387,7 @@ Equality in the Cauchy--Schwarz step occurs if and only if there exists a consta
 \[
 \left\lfloor M_k^* \right\rfloor = \lambda \sqrt{\frac{\Delta_k}{C_k}}, \qquad k=1,\ldots,K,
 \]
-which corresponds to the continuous optimal allocation $M_k^* = N_k^*$. Therefore, equality in \eqref{eq:Iterative_Integeb_Variance_Bound} holds if and only if the iterative scheme reproduces the continuous solution exactly, i.e., when all $\lfloor M_k^* \rfloor = N_k^*$ and the total cost equals $p$.
+which corresponds to the continuous optimal allocation $M_k^* = N_k^*$. Therefore, equality in \eqref{eq:Iterative_Integer_Variance_Bound} holds if and only if the iterative scheme reproduces the continuous solution exactly, i.e., when all $\lfloor M_k^* \rfloor = N_k^*$ and the total cost equals $p$.
 \end{proof}
 
 
