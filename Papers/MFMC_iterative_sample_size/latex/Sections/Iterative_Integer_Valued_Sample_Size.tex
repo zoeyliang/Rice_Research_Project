@@ -3,6 +3,8 @@
 \section{Iterative sample size estimation for MFMC}\label{sec:Iterative_IntegerValued_Sample_Size}
 % ====================================================
    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Recursive computation of the sample size}   
 For $j = 1, \ldots, K$  we consider the problem 
 \begin{subequations}\label{eq:Sequential_Optimization}
     \begin{align}
@@ -23,27 +25,22 @@ Under the assumptions of Theorem~\ref{thm:Sample_size_real},
 by $m_{j,j}^*, \ldots, m_{K,j}^*$.
 Define
 \[
-        b_1 := b \quad \mbox{ and } \quad m_0^* = m_{0,0}^* := 0.
+        b_1 := b.
 \]
-The reason for considering  \eqref{eq:Sequential_Optimization} is that 
-if $m_1^*, \ldots, m_K^*$ is the solution of \eqref{eq:Optimization_sample_size_m_relaxed},
-then the solution of \eqref{eq:Sequential_Optimization} with $b_j = b - \sum_{k=1}^{j-1} C_km_k^*$
+The problem \eqref{eq:Sequential_Optimization} with $b_j = b - \sum_{k=1}^{j-1} C_km_k^*$
+and with constraint $m_j \ge 0$ replaced by $m_j \ge m_{j-1}^*$ ($m_0^* = 0$) is equivalent to
+\eqref{eq:Optimization_sample_size_m_relaxed} with $m_1, \ldots, m_{j-1}$ fixed at
+$m_1^*, \ldots, m_{j-1}^*$.
+Therefore, the solution of \eqref{eq:Sequential_Optimization} with $b_j = b - \sum_{k=1}^{j-1} C_km_k^*$
 and with constraint $m_j \ge 0$ replaced by $m_j \ge m_{j-1}^*$ is given by
 \begin{equation}\label{eq:Sequential_Optimization_sol}
       m_{j,j}^* = m_j^*, \ldots, m_{K,j}^* = m_K^*.
-\end{equation}   
-In fact, if there was a different $m_{j,j}^*, \ldots, m_{K,j}^*$ feasible point for 
-\eqref{eq:Sequential_Optimization} with $b_j = b - \sum_{k=1}^{j-1} C_k m_k^*$
-and with constraint $m_j \ge 0$ replaced by $m_j \ge m_{j-1}^*$, and with lower 
-objective function value  \eqref{eq:Sequential_Optimization},
-then $m_1^*, \ldots, m_{j-1}^*, m_{j,j}^*, \ldots, m_{K,j}^*$ is feasible for 
-\eqref{eq:Optimization_sample_size_m_relaxed} with lower objectve function value
-\eqref{eq:Optimization_sample_size_m_relaxed_obj} than \eqref{eq:MFMC_variance_optimal}.
+\end{equation}  
 We will show that \eqref{eq:Sequential_Optimization_sol} remains true for the solution of
 \eqref{eq:Sequential_Optimization} with $b_k = b - \sum_{k=1}^{j-1} C_km_k^*$.
 
 \begin{theorem}  \label{thm:Sequential_Optimization_sample_size_real}
-   Let the assumption of Theorem~\ref{thm:Sample_size_real} be satisfied.
+   Let the assumption of Theorem~\ref{thm:Sample_size_real} be satisfied and define $\rho_{1,K+1} = 0$.
    \begin{itemize}
    \item[i.] The unique solution of \eqref{eq:Sequential_Optimization} is
     \begin{equation}\label{eq:Sequential_Optimization_mjj}
@@ -54,7 +51,7 @@ We will show that \eqref{eq:Sequential_Optimization_sol} remains true for the so
     the cost constraint is active $\sum_{k=1}^K C_km_k^* = b_j$, 
     and the resulting optimal objective function value is
      \begin{equation}\label{eq:MFMC_variance_optimal}
-            \sigma_1^2  \sum_{k=j}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k^*}
+            \sigma_1^2  \sum_{k=j}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_{k,j}^*}
            =  \frac{\sigma_1^2}{b_j}\!\left(\sum_{k=j}^K \sqrt{C_k (\rho_{1,k}^2 - \rho_{1,k+1}^2) }\right)^{\!2}.
        \end{equation}
     \item[ii.] If $b_j = b - \sum_{k=1}^{j-1} C_k m_{k,k}^*$,
@@ -67,151 +64,46 @@ We will show that \eqref{eq:Sequential_Optimization_sol} remains true for the so
    \item[i.] Because  \eqref{eq:Sequential_Optimization} has the same structure as 
                 \eqref{eq:Optimization_sample_size_m_relaxed}, the first statement follows from
                 Theorem~\ref{thm:Sample_size_real}.
-  \item[ii.]
+  \item[ii.] Define
+        \begin{equation}\label{eq:aggregate_cost_variance_weight_S_j}
+            S_j = \sum_{k=j}^K\sqrt{C_k (\rho_{1,k}^2 - \rho_{1,k+1}^2) }.
+        \end{equation}
+        Then 
+        \begin{equation}\label{eq:S_j_H_j}
+            S_{j-1}=\sqrt{C_{j-1} (\rho_{1,j-1}^2 - \rho_{1,j}^2) }+S_j, \qquad 
+            m_{j,j}^* = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j-1}^2}{C_j}}\frac{b_j}{S_j},
+        \end{equation}
+        and
+        \begin{equation*}
+                     b_j = b_{j-1} - C_{j-1} m_{j-1,j-1}^* 
+                         = b_{j-1}\left(1 - \frac{\sqrt{C_{j-1}(\rho_{1,j-1}^2 - \rho_{1,j}^2) }}{S_{j-1}}\right) 
+                         = b_{j-1}\frac{S_j}{S_{j-1}}.
+        \end{equation*}
+        It follows that 
+        \begin{equation}\label{eq:b_jS_j}
+            \frac{b_j}{S_j} = \frac{b_{j-1}}{S_{j-1}},
+        \end{equation}
+        and, using assumption \eqref{eq:Sample_size_real_assumptions_b}
+        of Theorem~\ref{thm:Sample_size_real},
+        \[
+             m_{j,j}^* = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j+1}^2}{C_j}} \, \frac{b_j}{S_j}
+                           = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j+1}^2}{C_j}} \,  \frac{b_{j-1}}{S_{j-1}}
+                            > \sqrt{\frac{\rho_{1,j-1}^2 - \rho_{1,j}^2}{C_{j-1}}} \, \frac{b_{j-1}}{S_{j-1}}
+                           = m_{j-1,j-1}^*.
+        \]
+        
+      \item[iii.]     Recursive application of  \eqref{eq:b_jS_j} gives $b_j = b S_j / S_1$.
+             Substituting this expression into \eqref{eq:S_j_H_j} yields
+             \[
+                        m_{j,j}^*   = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j+1}^2}{C_j}} \, \frac{b}{S_1},
+             \]
+             which coincides with the closed-form MFMC sample size $m_j^*$ in \eqref{eq:MFMC_RealValued_Sample_Size}.  
   \end{itemize}
 \end{proof}
 
 
-\subsection{Convexity and Global Optimality}
-The convexity of each subproblem in \eqref{eq:Sequential_Optimization} guarantees global optimality throughout the decomposition. Since $\Delta_j > 0$ and $H_j \ge 0$, each subproblem's objective $\sum_{j=k}^K \Delta_j/H_j$ is convex, and the feasible set defined by the linear constraints forms a convex polyhedron. This convexity ensures that local optimality implies global optimality and prevents the sequential approach from converging to suboptimal solutions. 
 
-Applying the optimality conditions from Theorem~\ref{thm:Sample_size_real} to each subproblem yields the recursive solution
-%
-\begin{equation*}
-    H_k^* = \sqrt{\frac{\Delta_k}{C_k}} \frac{b_k}{\sum_{j=k}^K\sqrt{C_j\Delta_j}},
-    \qquad 
-    b_{k+1} = b_k - C_k H_k^*,
-\end{equation*}
-%
-which unfolds into the explicit forward recursion
-%
-\begin{equation}\label{eq:MFMC_New_RealValued_Sample_Size}
-    H_1^* = \sqrt{\frac{\Delta_1}{C_1}} \frac{p}{\sum_{j=1}^K\sqrt{C_j\Delta_j}}, 
-    \qquad 
-    H_k^* = \sqrt{\frac{\Delta_k}{C_k}} \frac{p-\sum_{j=1}^{k-1}C_jH_j^*}{\sum_{j=k}^K\sqrt{C_j\Delta_j}}, 
-    \quad k = 2,\ldots, K.
-\end{equation}
-%
-This recursive construction maintains feasibility at every step, progressively allocates the budget, and decomposes a high-dimensional constrained optimization into a sequence of one-dimensional problems, while preserving the guarantees of global optimality. It further aligns with the structure of multi-fidelity estimation, where lower-fidelity models receive larger sample allocations due to their lower computational cost.
-%
-\begin{theorem}[Monotonicity of the iterative formulation]
-\label{thm:Monotonicity_H_k}
-Under the assumptions of Theorem~\ref{thm:Sample_size_real}, the iterative allocation defined by \eqref{eq:MFMC_New_RealValued_Sample_Size} satisfies $H_k^* > H_{k-1}^*$ for $k=2,\ldots,K$, forming a strictly increasing sequence.
-\end{theorem}
-%
-\begin{proof}
-Introducing the aggregate cost variance partial sum from model $k$ up to $K$
-%
-\begin{equation}\label{eq:aggregate_cost_variance_weight_Sk}
-    S_k=\sum_{j=k}^K\sqrt{C_j\Delta_j},
-\end{equation}
-%
-then 
-\begin{equation}\label{eq:S_k_H_k}
-    S_{k-1}=\sqrt{C_{k-1}\Delta_{k-1}}+S_k, \qquad H_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{b_k}{S_k},
-\end{equation}
-%
-and
-\begin{equation*}
-b_k = b_{k-1} - C_{k-1}H_{k-1}^* = b_{k-1}\left(1 - \frac{\sqrt{C_{k-1}\Delta_{k-1}}}{S_{k-1}}\right) = b_{k-1}\frac{S_k}{S_{k-1}}.
-\end{equation*}
-It follows that 
-%
-\begin{equation}\label{eq:b_kS_k}
-    \frac{b_k}{S_k} = \frac{b_{k-1}}{S_{k-1}},
-\end{equation}
-%
-and hence
-\[
-H_k^*=\sqrt{\frac{\Delta_k}{C_k}}\frac{b_k}{S_k}
-> \sqrt{\frac{\Delta_{k-1}}{C_{k-1}}}\frac{b_{k-1}}{S_{k-1}}
-=H_{k-1}^*,
-\]
-where the inequality follows from assumption (ii) of Theorem~\ref{thm:Sample_size_real}.
-\end{proof}
-%
-
-% Importantly, this monotonicity property is enforced implicitly. While the global problem includes explicit constraints $H_{j-1}\le H_j$, the sequential formulation maintains them automatically through the budget recursion. Thus, the constraint $H_k\ge0$ suffices, and the monotonicity follows directly from the problem structure, simplifying computation without sacrificing theoretical rigor.
-
-
-The absence of explicit monotonicity constraints between $H_k$ and previously determined allocations $H_1, \ldots, H_{k-1}$ in formulation \eqref{eq:Sequential_Optimization} is mathematically justified by the problem structure. While the global optimization requires $H_{j-1} \le H_j$ for all $j=k+1,\ldots,K$, the sequential decomposition naturally preserves this property through the budget propagation mechanism. The recursive relationship $b_k = p - \sum_{j=1}^{k-1} C_j H_j$ ensures that the residual budget decreases monotonically, while the allocation formula $H_k^* = \sqrt{\Delta_k/C_k} \cdot b_k / \sum_{j=k}^K \sqrt{C_j\Delta_j}$ maintains the relative weighting $b_k / \sum_{j=k}^K \sqrt{C_j\Delta_j}$ across fidelity levels. Crucially, under the assumptions of Theorem~\ref{thm:Sample_size_real}, the optimal solution automatically satisfies $H_k^* > H_{k-1}^*$ without explicit enforcement, as established in Theorem~\ref{thm:Monotonicity_H_k}. Consequently, the constraint $H_k \ge 0$ suffices in the sequential formulation, as the more restrictive monotonicity conditions are inherently satisfied by the optimal solution. This structural insight significantly simplifies the recursive optimization while preserving all essential properties of the MFMC framework.
-
-\subsection{Equivalence with Continuous MFMC Solution}
-The following theorem establishes the fundamental equivalence between the iterative formulation and the standard MFMC sample allocation. This result guaranties that the sequential procedure exactly reproduces the optimal continuous allocation, thereby preserving both the total computational budget and the minimal achievable variance of the estimator.
-
-%
-\begin{theorem}[Equivalence of iterative and standard MFMC formulations]\label{thm:MFMC_Iterative_RealValued_Sample_Size}
-Under the assumptions of Theorem \ref{thm:Sample_size_real},
-the iteratively defined sample sizes $H_k^*$ in \eqref{eq:MFMC_New_RealValued_Sample_Size} are identical to the continuous MFMC solution $N_k^*$ in \eqref{eq:MFMC_RealValued_Sample_Size}, i.e.,
-\[
-H_k^* = N_k^*
-    = \sqrt{\frac{\Delta_k}{C_k}}\,
-      \frac{p}{\sum_{j=1}^K \sqrt{C_j\Delta_j}}.
-\]
-Moreover, the iterative scheme exactly satisfies the total budget constraint and yields the optimal variance,
-\[
-\sum_{k=1}^K C_k H_k^* = p, 
-\qquad  
-f(H_k^*) = \sum_{k=1}^K \frac{\Delta_k}{H_k^*} = \frac{1}{p} \left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2.
-\]
-\end{theorem}
-%
-
-
-\begin{proof}
-% Define the cumulative cost and remaining budget by
-% \[
-%     T_k = \sum_{j=1}^k C_j H_j^*, 
-%     \qquad 
-%     b_k = p - T_k,
-% \]
-% so that $b_0 = p$ and $T_0 = 0$. 
-
-Let $S_k$ be the aggregate cost–variance weight defined in \eqref{eq:aggregate_cost_variance_weight_Sk}. 
-% For $k=1$, from \eqref{eq:MFMC_New_RealValued_Sample_Size} we obtain
-% %
-% \[
-%     T_1 = C_1H_1^* 
-%     = p\,\frac{\sqrt{C_1\Delta_1}}{S_1},
-%     \qquad
-%     b_1 = p - T_1
-%     = p\,\frac{S_2}{S_1}.
-% \]
-%
-% For general $k\ge 1$, the iterative definition \eqref{eq:MFMC_New_RealValued_Sample_Size} gives
-% \[
-%     H_k^*
-%     = \sqrt{\frac{\Delta_k}{C_k}}\,
-%       \frac{b_{k-1}}{S_k},
-% \]
-% which implies that the remaining budget satisfies
-% \[
-%     b_k 
-%     = b_{k-1} - C_k H_k^*
-%     = \frac{S_{k+1}}
-%            {S_k} \, b_{k-1}.
-% \]
-Hence, $\{b_k\}_{k=1}^K$ forms a geometric sequence due to \eqref{eq:b_kS_k}. We obtain by recursion that
-\[
-    b_k = \frac{p}{S_1}S_k.
-\]
-Substituting this expression into the formula for $H_k^*$ in \eqref{eq:S_k_H_k} yields
-\[
-    H_k^*
-    = \frac{p}{S_1}\sqrt{\frac{\Delta_k}{C_k}},
-\]
-which coincides with the closed-form MFMC sample size in \eqref{eq:MFMC_RealValued_Sample_Size}.  
-% In particular, for $k=K$, we have $b_K=0$, and thus $T_K = p - b_K = p$, verifying that the total cost constraint $\sum_{k=1}^K C_k H_k^* = p$ is satisfied.  
-% Finally,
-% \[
-%     f(H_k^*)
-%     = \sum_{k=1}^K \frac{\Delta_k}{H_k^*}
-%     = \frac{1}{p} \left(\sum_{k=1}^K \sqrt{C_k\Delta_k}\right)^2,
-% \]
-% which completes the proof.
-\end{proof}
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Integer-valued allocation and cost bounds}
 While the real-valued allocation provides an analytically optimal solution, its direct implementation is infeasible since the number of samples must be integer-valued. To address this, we extend the recursive formulation to an {\it integer-valued} scheme that retains the analytical structure of the continuous solution while enforcing feasibility through a forward recursive adjustment. Specifically, we define
 %
