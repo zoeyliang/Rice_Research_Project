@@ -7,10 +7,10 @@ We present numerical experiments to demonstrate the efficacy of the proposed ite
 Table~\ref{Tab:Eg1_Parameters} summarizes the model parameters derived from a plasma physics application \cite{ElLiSa:2023,ElLiSa:2025}, featuring five fidelity levels with strongly correlated models ($\rho_{1,k} > 0.98$) and rapidly decreasing computational costs across the hierarchy.
 
 
-Table~\ref{tab:MFMC_integer_comparison_Eg1} presents detailed allocation comparisons for two budget scenarios. For $p=200$, the real-valued allocation achieves the theoretical optimum with variance $f=2.1645\times10^{-4}$. Direct flooring reduces the actual cost to approximately 169.86 (15\% budget underutilization) while increasing variance by 18\%. In contrast, the iterative scheme fully utilizes the budget ($p=200$) and maintains variance within 11\% of the continuous optimum.
+Table~\ref{tab:MFMC_integer_comparison_Eg1} presents detailed allocation comparisons for two budget scenarios. For $p=200$, the real-valued allocation achieves the theoretical optimum with variance $f=2.1645\times10^{-4}$. Direct flooring reduces the actual cost to approximately 169.86 (15\% budget underutilization) while increasing variance by 18\%. In contrast, the iterative scheme fully utilizes the budget ($b=200$) and maintains variance within 11\% of the continuous optimum.
 
 
-The constrained budget case ($p=73.03$) reveals more dramatic differences. Direct flooring produces a degenerate estimator (infinite variance) by assigning zero samples to the highest-cost model. The modified approach restores feasibility but yields substantially higher variance ($f=2.4834\times10^{-2}$). The iterative method achieves a 5\% variance reduction relative to the modified approach while maintaining full budget utilization, demonstrating its ability to balance constraint satisfaction with statistical efficiency.
+The constrained budget case ($b=73.03$) reveals more dramatic differences. Direct flooring produces a degenerate estimator (infinite variance) by assigning zero samples to the highest-cost model. The modified approach restores feasibility but yields substantially higher variance ($f=2.4834\times10^{-2}$). The iterative method achieves a 5\% variance reduction relative to the modified approach while maintaining full budget utilization, demonstrating its ability to balance constraint satisfaction with statistical efficiency.
 
 %
 \begin{table}[ht]
@@ -40,11 +40,11 @@ Cost &73&7.0318e-03 &1.4018e-03 &5.0613e-04 &2.6803e-04\\
 \begin{tabular}{|c|p{4.8cm}|c|c|p{4.8cm}|c|c|}
 \hline
 \multirow{2}{*}{Method} 
-& \multicolumn{3}{c|}{$p = 73.03$} 
-& \multicolumn{3}{c|}{$p = 200$} \\
+& \multicolumn{3}{c|}{$b = 73.03$} 
+& \multicolumn{3}{c|}{$b = 200$} \\
 \cline{2-7}
-& Sample size & Total cost & $f$ 
-& Sample size & Total cost & $f$ \\
+& Sample size & Actual cost & Actual $f$ 
+& Sample size & Actual cost & Actual $f$ \\
 \hline
 Real-valued 
 & [8.8106e-01, 1.3495e+02, 5.8795e+02, 2.5402e+03, 2.1095e+04] 
@@ -77,7 +77,7 @@ Integer, iterative (delete equal)
 \hline
 \end{tabular}
 }
-\caption{Comparison of real-valued and integer-valued MFMC sample allocations for small and large budgets ($p=73.03$ and $p=200$).}
+\caption{Comparison of real-valued and integer-valued MFMC sample allocations for small and large budgets ($b=73.03$ and $b=200$).}
 \label{tab:MFMC_integer_comparison_Eg1}
 \end{table}
 
@@ -89,19 +89,19 @@ Integer, iterative (delete equal)
 \includegraphics[width=0.48\linewidth]{./Figures/Eg1_Cost.pdf} 
 \end{tabular}
 \caption{
-Budget sensitivity analysis for the the first example. Top left: actual variance and cost for an increasing budget $p$. Top right: relative cost deviation $(p - \sum_k C_k \lfloor \cdot \rfloor)/p$ versus prescribed budget $p$. Bottom left: relative variance deviation $(f(\lfloor \cdot \rfloor) - f(N_k^*))/f(N_k^*)$ versus prescribed budget $p$. 
+Budget sensitivity analysis for the the first example. Top left: actual variance and cost for an increasing budget $b$. Top right: relative cost deviation $(b - \sum_k C_k \lfloor \cdot \rfloor)/b$ versus prescribed budget $b$. Bottom left: relative variance deviation $(f(\lfloor \cdot \rfloor) - f(N_k^*))/f(N_k^*)$ versus prescribed budget $b$. 
 } 
 \label{fig:Eg1} 
 \end{figure}
 %
 
-Figure~\ref{fig:Eg1} examines the sensitivity of cost utilization and variance performance to the prescribed budget $p \in [\sum_k C_k, 10^4]$, illustrating the relative performance of integer allocation schemes compared to the continuous optimum.
+Figure~\ref{fig:Eg1} examines the sensitivity of cost utilization and variance performance to the prescribed budget $b \in [\sum_k C_k, 10^4]$, illustrating the relative performance of integer allocation schemes compared to the continuous optimum.
 
-The left panel quantifies the budget under-utilization through the metric $p - \sum_k C_k \lfloor \cdot \rfloor$. The iterative scheme demonstrates near-perfect budget adherence across all budget levels, with deviations remaining at numerical precision levels. In contrast, direct flooring exhibits approximately six orders of magnitude greater under-utilization across most budget values. This substantial gap underscores the iterative method's ability to fully leverage available computational resources.
+The left panel quantifies the budget under-utilization through the metric $b - \sum_k C_k \lfloor \cdot \rfloor$. The iterative scheme demonstrates near-perfect budget adherence across all budget levels, with deviations remaining at numerical precision levels. In contrast, direct flooring exhibits approximately six orders of magnitude greater under-utilization across most budget values. This substantial gap underscores the iterative method's ability to fully leverage available computational resources.
 
 
 
-The variance deviation (right panel) uses the metric $\sum_k (\Delta_k/\lfloor \cdot \rfloor - \Delta_k/N_k^*)$ to measure variance inflation relative to the continuous optimum. Both integer schemes exhibit the expected variance penalty, but the iterative method consistently outperforms direct flooring across the entire budget range. Notably, the iterative scheme approaches but never exceeds the theoretical upper bound (in red) derived from the worst-case sample reduction $\sum_k (\Delta_k/(N_k^*-1) - \Delta_k/N_k^*)$, validating the theoretical guarantees established in \eqref{eq:bounds_for_floor}. The convergence of all curves (ignore sawtooth behavior) reflects the diminishing effect of integer constraints when sample sizes become substantial ($p > 10^5$).
+The variance deviation (right panel) uses the metric $\sum_k (\Delta_k/\lfloor \cdot \rfloor - \Delta_k/N_k^*)$ to measure variance inflation relative to the continuous optimum. Both integer schemes exhibit the expected variance penalty, but the iterative method consistently outperforms direct flooring across the entire budget range. Notably, the iterative scheme approaches but never exceeds the theoretical upper bound (in red) derived from the worst-case sample reduction $\sum_k (\Delta_k/(N_k^*-1) - \Delta_k/N_k^*)$, validating the theoretical guarantees established in \eqref{eq:bounds_for_floor}. The convergence of all curves (ignore sawtooth behavior) reflects the diminishing effect of integer constraints when sample sizes become substantial ($b > 10^4$).
 
 
 The distinctive sawtooth patterns evident in both plots arise from the discrete nature of integer allocations. As budget $p$ increases continuously, the real-valued optimal allocation $N_k^*$ increases smoothly. However, the integer-valued allocations $\lfloor N_k^* \rfloor$ and $\lfloor M_k^* \rfloor$ remain constant until specific threshold budgets trigger discrete increments in sample counts. This creates a characteristic pattern where cost deviation increases linearly during constant-allocation intervals, followed by abrupt decreases when additional samples become affordable. Similarly, the variance deviation exhibits inverse behavior: it grows as fixed sample sizes become increasingly inadequate for larger budgets, then drops sharply when sample counts increase at threshold points.
@@ -114,7 +114,7 @@ These results collectively demonstrate that the proposed iterative method achiev
 \subsection{Second example}
 We now examine a four-fidelity configuration derived from the benchmark parameters in \cite{PeWiGu:2016}, as detailed in Table~\ref{Tab:Eg2_Parameters}. This test case presents a challenging allocation scenario characterized by near-perfect inter-fidelity correlations ($\rho_{1,k} \approx 1$) and computational costs spanning five orders of magnitude. 
 
-For a moderate budget of $p=200$, the real-valued allocation achieves an optimal variance of $f=5.0571\times10^{-5}$. Direct flooring results in substantial budget underutilization ($p \approx 179.34$) and a 15\% variance increase to $f=5.8074\times10^{-5}$, whereas the iterative scheme maintains exact budget adherence while reducing the variance penalty to just 6\% above the continuous optimum ($f=5.3495\times10^{-5}$). 
+For a moderate budget of $b=200$, the real-valued allocation achieves an optimal variance of $f=5.0571\times10^{-5}$. Direct flooring results in substantial budget underutilization ($b \approx 179.34$) and a 15\% variance increase to $f=5.8074\times10^{-5}$, whereas the iterative scheme maintains exact budget adherence while reducing the variance penalty to just 6\% above the continuous optimum ($f=5.3495\times10^{-5}$). 
 
 Under the more constrained budget $p=46$, direct flooring produces a degenerate estimator with infinite variance due to exclusion of the high fidelity model. The modified rounding approach restores estimator feasibility with $f=5.1658\times10^{-3}$, while the iterative method achieves a further 7\% variance reduction to $f=4.8046\times10^{-3}$ through more balanced resource distribution. Figure~\ref{fig:Eg2} demonstrates that these performance advantages persist across the entire budget spectrum, with the iterative scheme maintaining near-perfect cost utilization and consistently superior variance characteristics compared to direct flooring. The observed sawtooth patterns, arising from the discrete threshold behavior of integer allocations, further validate the theoretical framework established in equation~\eqref{eq:bounds_for_floor}. These results collectively confirm the robustness of the proposed iterative approach in handling challenging multi-fidelity configurations with extreme parameter variations. 
 
@@ -146,11 +146,11 @@ Cost &44.395 &6.8409e-01 &2.9937e-01 &1.9908e-04\\
 \begin{tabular}{|c|p{4.8cm}|c|c|p{4.8cm}|c|c|}
 \hline
 \multirow{2}{*}{Method} 
-& \multicolumn{3}{c|}{$p = 46$} 
-& \multicolumn{3}{c|}{$p = 200$} \\
+& \multicolumn{3}{c|}{$b = 46$} 
+& \multicolumn{3}{c|}{$b = 200$} \\
 \cline{2-7}
-& Sample size & Total cost & $f$ 
-& Sample size & Total cost & $f$ \\
+& Sample size & Actual cost & Actual $f$ 
+& Sample size & Actual cost & Actual $f$ \\
 \hline
 Real-valued 
 & [3.3349e-01, 2.9158e+00, 7.6071e+01, 3.2282e+04] 
@@ -183,7 +183,7 @@ Integer, iterative (delete equal)
 \hline
 \end{tabular}
 }
-\caption{Comparison of real-valued and integer-valued MFMC sample allocations for small and large budgets ($p=46$ and $p=200$). The iterative integer-valued scheme achieves better cost utilization than the direct flooring approach while preserving the structure of the continuous optimizer.}
+\caption{Comparison of real-valued and integer-valued MFMC sample allocations for small and large budgets ($b=46$ and $b=200$). The iterative integer-valued scheme achieves better cost utilization than the direct flooring approach while preserving the structure of the continuous optimizer.}
 \label{tab:MFMC_integer_comparison_Eg2}
 \end{table}
 
@@ -197,7 +197,7 @@ Integer, iterative (delete equal)
 \includegraphics[width=0.48\linewidth]{./Figures/Eg2_Cost.pdf}
 \end{tabular}
 \caption{
-Budget sensitivity analysis for the the second example. Top left: actual variance and cost for an increasing budget $p$. Top right: relative cost deviation $(p - \sum_k C_k \lfloor \cdot \rfloor)/p$ versus prescribed budget $p$. Bottom left: relative variance deviation $(f(\lfloor \cdot \rfloor) - f(N_k^*))/f(N_k^*)$ versus prescribed budget $p$. 
+Budget sensitivity analysis for the the second example. Top left: actual variance and cost for an increasing budget $b$. Top right: relative cost deviation $(b - \sum_k C_k \lfloor \cdot \rfloor)/b$ versus prescribed budget $b$. Bottom left: relative variance deviation $(f(\lfloor \cdot \rfloor) - f(N_k^*))/f(N_k^*)$ versus prescribed budget $b$. 
 } 
 \label{fig:Eg2} 
 \end{figure}
