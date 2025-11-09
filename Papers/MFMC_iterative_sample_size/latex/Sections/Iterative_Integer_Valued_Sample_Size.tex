@@ -113,7 +113,10 @@ While the real-valued allocation provides an analytically optimal solution, its 
     \quad k = 2,\ldots, K,
 \end{equation}
 %
-The procedure begins with the continuous estimate $M_1^*$, from which the integer allocation $\lfloor M_1^*\rfloor$ is obtained. The corresponding cost $C_1\lfloor M_1^*\rfloor$ is subtracted from the total budget, and the recursion proceeds to subsequent levels using the remaining budget. This construction ensures that each integer allocation $\lfloor M_k^*\rfloor$ is adapted to the updated residual cost, thereby maintaining feasibility and preserving the optimal proportionality implied by the continuous solution. By design, the total cost of the integer allocation satisfies
+The procedure begins with the continuous estimate $M_1^*$, from which the integer allocation $\lfloor M_1^*\rfloor$ is obtained. The corresponding cost $C_1\lfloor M_1^*\rfloor$ is subtracted from the total budget, and the recursion proceeds to subsequent levels using the remaining budget. This construction ensures that each integer allocation $\lfloor M_k^*\rfloor$ is adapted to the updated residual cost, thereby maintaining feasibility and preserving the optimal proportionality implied by the continuous solution. At each iteration, only the residual budget and a cumulative sum over the fidelity hierarchy are updated, both of which can be performed in constant time. Consequently, the per-step computational cost remains $\mathcal{O}(1)$, yielding an overall linear complexity $\mathcal{O}(K)$ with respect to the number of fidelity levels. Owing to this linear scaling and the recursive dependence structure, the scheme avoids global re-optimization or backtracking and is particularly well-suited for large or high-dimensional fidelity hierarchies, where efficiency and scalability are critical.
+
+
+By design, the total cost of the integer allocation satisfies
 \[
 \sum_{k=1}^K C_k\lfloor M_k^*\rfloor \le b.
 \]
