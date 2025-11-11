@@ -1,0 +1,73 @@
+% ====================================================
+\section{Floor or ceiling: optimal integer choice}
+% ====================================================
+We study the single-variable subproblem that arises when all other sample sizes are chosen optimally (continuous relaxation) and one seeks an integer allocation for the first fidelity level.  Let positive constants \(\{C_j,\Delta_j\}_{j=1}^K\) and a budget \(b>0\) be given, and assume feasibility so that \(b-\sum_{j=1}^K C_j>0\) (or at least the residual budget after any fixed choices remains positive).  Consider the integer optimization
+\[
+\min_{\overline m_1\in\mathbb Z_{+}} 
+\; f(\overline m_1)
+\;=\;
+\frac{\Delta_1}{\overline m_1}
+\;+\;
+\frac{\Big(\sum_{j=2}^K \sqrt{C_j\Delta_j}\Big)^2}{\,b-C_1\overline m_1\,},
+\]
+defined for \( \overline m_1\) such that \(b-C_1\overline m_1>0\).
+
+The continuous (relaxed) minimizer is
+\[
+m_1^* \;=\; \sqrt{\frac{\Delta_1}{C_1}}\;\frac{b}{\sum_{j=1}^K \sqrt{C_j\Delta_j}}.
+\]
+
+Differentiate \(f\) with respect to the real variable \(x\in(0,b/C_1)\) to obtain
+\[
+f'(x) = -\frac{\Delta_1}{x^2} + \frac{C_1\Big(\sum_{j=2}^K \sqrt{C_j\Delta_j}\Big)^2}{(b-C_1 x)^2},
+\]
+and
+\[
+f''(x) = \frac{2\Delta_1}{x^3} + \frac{2C_1^2\Big(\sum_{j=2}^K \sqrt{C_j\Delta_j}\Big)^2}{(b-C_1 x)^3}.
+\]
+Since all parameters are positive and \(b-C_1 x>0\) on the domain, we have \(f''(x)>0\) for all feasible \(x\). Hence \(f\) is strictly convex on its feasible interval and admits a unique continuous minimizer \(m_1^*\).
+
+\begin{theorem}
+Let \(f\) be a strictly convex function on an interval of \(\mathbb R\) with unique minimizer \(x^*\).  The minimizer of \(f\) over integers in the feasible interval is attained at one of the two integers nearest to \(x^*\); that is,
+\[
+x^{\mathrm{int}} \in \{\lfloor x^*\rfloor,\;\lceil x^*\rceil\}.
+\]
+\end{theorem}
+
+\begin{proof}
+Because \(f\) is strictly convex with unique minimizer \(x^*\), \(f\) is strictly decreasing on \((-\infty,x^*]\) and strictly increasing on \([x^*,\infty)\). Let \(a=\lfloor x^*\rfloor\) and \(b=\lceil x^*\rceil\). For any integer \(n\le a-1\) we have \(n<a\le x^*\), hence \(f(n)>f(a)\). Similarly, for any integer \(n\ge b+1\) we have \(n>b\ge x^*\), hence \(f(n)>f(b)\). Therefore the integer minimizer must be either \(a\) or \(b\).
+\end{proof}
+
+\subsection{Extension to intermediate fidelities}
+
+Fix sample sizes \(\overline m_1,\dots,\overline m_{k-1}\in\mathbb Z_+\) for the first \(k-1\) fidelities and consider the subproblem of choosing an integer \(\overline m_k\) to minimize the total variance, while higher-level sample sizes \(m_{k+1},\dots,m_K\) are taken as their continuous optimal values given the residual budget. The resulting objective is
+\[
+f(\overline m_k)
+= \sum_{j=1}^{k-1}\frac{\Delta_j}{\overline m_j} \;+\; \frac{\Delta_k}{\overline m_k}
+\;+\; \frac{\Big(\sum_{j=k+1}^K \sqrt{C_j\Delta_j}\Big)^2}{\,b-\sum_{j=1}^k C_j\overline m_j\,},
+\]
+with feasible \(\overline m_k\) satisfying the positivity of the residual budget. Differentiating with respect to the real variable \(x\) gives
+\[
+f'(x) = -\frac{\Delta_k}{x^2} + \frac{C_k\Big(\sum_{j=k+1}^K \sqrt{C_j\Delta_j}\Big)^2}
+{\big(b-\sum_{j=1}^{k-1}C_j\overline m_j - C_k x\big)^2},
+\]
+and
+\[
+f''(x) = \frac{2\Delta_k}{x^3} + \frac{2C_k^2\Big(\sum_{j=k+1}^K \sqrt{C_j\Delta_j}\Big)^2}
+{\big(b-\sum_{j=1}^{k-1}C_j\overline m_j - C_k x\big)^3} > 0.
+\]
+Thus \(f\) is strictly convex in \(\overline m_k\), and the same integer-adjacency conclusion applies: the optimal integer \(\overline m_k^{\mathrm{int}}\) is either \(\lfloor m_k^*\rfloor\) or \(\lceil m_k^*\rceil\), where \(m_k^*\) denotes the continuous minimizer for this subproblem.
+
+
+\subsection{Implication for the sequential algorithm}
+At each step $k$, after fixing previous allocations, the subproblem becomes a single-variable convex optimization and the choice for the current level reduces to checking at most two candidate integers $\lfloor m_k^* \rfloor$ or $\lceil m_k^* \rceil$. Consequently, the combinatorial complexity of searching over all integer allocations is avoided: the sequential procedure requires only \(O(K)\) such local checks and thus scales linearly with the number of fidelity levels (subject to simple feasibility checks and possible model deletions in degenerate regimes).
+
+
+Edge cases require care: if the continuous minimizer \(m_k^*<1\), the integer constraint and minimal-sample enforcement will push the solution to \(\overline m_k=1\); if enforcing \(\overline m_k=1\) leaves no feasible residual budget for higher fidelities, one must either delete models or treat feasibility by a higher-level rule (as implemented in the iterative algorithm).
+
+
+
+
+
+
+
