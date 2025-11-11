@@ -102,19 +102,22 @@ The following theorem is proven in \cite[Th.~3.4]{BPeherstorfer_KWillcox_MDGunzb
        \end{equation}
 \end{theorem}
 
-Note that because of the cost-correlation ratio assumption, the  solution \eqref{eq:MFMC_RealValued_Sample_Size}
+Note that because of the cost-correlation ratio assumption \eqref{eq:Sample_size_real_assumptions_b}, 
+the  solution \eqref{eq:MFMC_RealValued_Sample_Size}
 satisfies $0  < m_1^* < m_2^* <  \ldots < m_K^*$.
+
 To obtain integer samples,  \cite[p.~A3171]{BPeherstorfer_KWillcox_MDGunzburger_2016a}
 round down, i.e., use $\lfloor m_1^* \rfloor, \ldots, \lfloor m_K^* \rfloor$. 
 Rounding down will reduce the cost, i.e., the rounded down sample sizes are still feasible for
-\eqref{eq:Optimization_sample_size_m_relaxed}. 
-Rounding down increases the variance.
-Rounding may lead to $\lfloor m_1^* \rfloor = 0$, which introduces bias,  
+\eqref{eq:Optimization_sample_size_m_relaxed}.  Rounding down increases the variance.
+Thus, rounding down the sample sizes of more costly, higher fidelity samples, frees up computational 
+budget that could be used for additional  samples of less costly, lower fidelity samples to reduce the variance.
+
+Rounding down may lead to $\lfloor m_1^* \rfloor = 0$, which introduces bias,  
 $\mathbb{E}[A^{\text{MF}}] \not=  \mathbb{E}[u_1]$,
 or may lead to $\lfloor m_k^* \rfloor = \lfloor m_{k-1}^* \rfloor$ for some $k \in \{ 2, \ldots, K\}$, 
 which means the $k$-th model does not contribute to variance reduction, but its cost is included in the
 computational budget.
-
 The case $\lfloor m_1^* \rfloor = 0$ can happen if the computational budget $p$ is small.
 If $0< m_1^* < 1$, \cite{AGruber_MGunzburger_LJu_ZWang_2023a} use $\lceil m_1^* \rceil = 1$,
 and iterative recompute integer sample sizes from a modified version of 
@@ -125,26 +128,36 @@ See Tables~1 and 2 in \cite{AGruber_MGunzburger_LJu_ZWang_2023a}.
 In this case, the models $2$ to $k$ do not contribute to variance reduction, but their cost is included in the
 computational budget.
 
-The issues using the rounded-down solution of \eqref{eq:MFMC_RealValued_Sample_Size},
-namely, that $\lfloor m_1^* \rfloor = 0$ or  $\lfloor m_k^* \rfloor = \lfloor m_{k-1}^* \rfloor$ for some $k \in \{ 2, \ldots, K\}$, 
-is more likely to occur when the total computational budget $p$ is small relative to the cost $C_1$ of the HF.
+Finally, while the  solution \eqref{eq:MFMC_RealValued_Sample_Size} satisfies $0  < m_1^* < m_2^* <  \ldots < m_K^*$,
+some rounded down sample sizes may be identical,  $\lfloor m_k^* \rfloor = \lfloor m_{k-1}^* \rfloor$ for some 
+$k \in \{ 2, \ldots, K\}$, in which case the samples of the $k$-th model do not contribute to variance
+reduction, but their costs are charged to the budget. 
+The issues $\lfloor m_1^* \rfloor = 0$ or $\lfloor m_k^* \rfloor = \lfloor m_{k-1}^* \rfloor$ for some 
+$k \in \{ 2, \ldots, K\}$, are more likely to occur when the total computational budget $b$ is small relative
+ to the cost $C_1$ of the HF.
 See, e.g., the numerical examples in  \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a} or \cite{AGruber_MGunzburger_LJu_ZWang_2023a}.
 
-Generally, because $m_k^*-1 < \lfloor m_k^*\rfloor \le m_k^*$, the floor operation induces bounded 
-sub-optimality, producing the bounds
-%
-\begin{subequations}\label{eq:bounds_for_floor}
-\begin{align}
-    \mathcal{V}^{\text{MF}}\left(\lfloor m_1^* \rfloor, \ldots \lfloor m_K^* \rfloor \right)
-    & \in \left[\frac{\sigma_1^2}{b}\left(\sum_{k=1}^K \sqrt{C_k  (\rho_{1,k}^2 - \rho_{1,k+1}^2)}\right)^2,
-                   \sum_{k=1}^K\frac{ (\rho_{1,k}^2 - \rho_{1,k+1}^2)}{m_k^*-1}\right),       \\
-   \mathcal{W}^{\text{MF}}\left(\lfloor m_1^* \rfloor, \ldots \lfloor m_K^* \rfloor \right)
-   &\in \left( p-\sum_{k=1}^K C_k, p\right].
-\end{align}
-\end{subequations}
-If $\sum_{k=1}^K C_k \ll p$, the work 
-$\mathcal{W}^{\text{MF}}\big(\lfloor m_1^* \rfloor, \ldots, \lfloor m_K^* \rfloor \big)
- \approx  \mathcal{W}^{\text{MF}}\big( m_1^* , \ldots,  m_K^* \big) = p$.
+To avoid issues with simple rounding, we propose to compute sample sizes recursively.
+The general idea is similar to the one in \cite{AGruber_MGunzburger_LJu_ZWang_2023a},
+but \cite{AGruber_MGunzburger_LJu_ZWang_2023a} use a recursion only to avoid
+$\lfloor m_1^* \rfloor = \lfloor m_k^* \rfloor = 0$ for some $k \in \{ 2, \ldots, K\}$,
+which can happen when the budget $b$ is small.
+
+%Generally, because $m_k^*-1 < \lfloor m_k^*\rfloor \le m_k^*$, the floor operation induces bounded 
+%sub-optimality, producing the bounds
+%%
+%\begin{subequations}\label{eq:bounds_for_floor}
+%\begin{align}
+%    \mathcal{V}^{\text{MF}}\left(\lfloor m_1^* \rfloor, \ldots \lfloor m_K^* \rfloor \right)
+%    & \in \left[\frac{\sigma_1^2}{b}\left(\sum_{k=1}^K \sqrt{C_k  (\rho_{1,k}^2 - \rho_{1,k+1}^2)}\right)^2,
+%                   \sum_{k=1}^K\frac{ (\rho_{1,k}^2 - \rho_{1,k+1}^2)}{m_k^*-1}\right),       \\
+%   \mathcal{W}^{\text{MF}}\left(\lfloor m_1^* \rfloor, \ldots \lfloor m_K^* \rfloor \right)
+%   &\in \left( p-\sum_{k=1}^K C_k, p\right].
+%\end{align}
+%\end{subequations}
+%If $\sum_{k=1}^K C_k \ll p$, the work 
+%$\mathcal{W}^{\text{MF}}\big(\lfloor m_1^* \rfloor, \ldots, \lfloor m_K^* \rfloor \big)
+% \approx  \mathcal{W}^{\text{MF}}\big( m_1^* , \ldots,  m_K^* \big) = p$.
 
 
 
