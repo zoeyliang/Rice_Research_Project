@@ -165,57 +165,57 @@ which can happen when the budget $b$ is small.
 \subsection{Model selection}
 % ====================================================
 \MH{may not need a subsection on this. Can simply reference}
-The analytical solution of \eqref{eq:Optimization_sample_size_m_relaxed} in 
-Theorem~\ref{thm:Sample_size_real} requires that the models satsfy 
-\eqref{eq:Sample_size_real_assumptions}.
-Thus, given models, we need to select the models from the available set such that the parameters 
-associated with the selected models satisfy the two conditions in Theorem \ref{thm:Sample_size_real}, as well as the $\mathcal{V}^{\text{MF}}$ as small as possible (Note that minimize \eqref{eq:MFMC_variance_optimal} is a selection of model that associated with 
-different cost and $\rho_{1,k}^2 - \rho_{1,k+1}^2$, 
-and is independent of budget $p$). Let $\mathcal{S}^*=\{1, \ldots, K^*\}$ be the indices of $K^*$ available models. 
-We seek a subset $\mathcal{S}=\{i_1,i_2, \ldots,i_{K}\}\subseteq \mathcal{S}^* (K\le K^*)$ of indices that minimizes the sampling cost of multifidelity Monte Carlo estimator. Note that $\mathcal{S}$ is non-empty and $i_1=1$ since the high fidelity model must be included. 
-We will follow the exhaustive algorithm in \cite[Algorithm~1]{BPeherstorfer_KWillcox_MDGunzburger_2016a} 
-for $2^{K^*-1}$ subsets of $\mathcal{S}^*$.  This algorithm gives the indices of the selected model.
+The analytical solution of \eqref{eq:Optimization_sample_size_m_relaxed} derived in Theorem~\ref{thm:Sample_size_real} is valid only when the underlying models satisfy the assumptions specified in \eqref{eq:Sample_size_real_assumptions}. Consequently, the practical implementation of MFMC proceeds in two stages. First, given a pool of candidate models, we identify a subset whose parameters satisfy the conditions of Theorem~\ref{thm:Sample_size_real}.  Among all admissible subsets, the chosen set should minimize the resulting variance 
+$\mathcal{V}^{\text{MF}}$ in \eqref{eq:MFMC_variance_optimal}, thereby ensuring maximal efficiency of the multifidelity estimator~\cite{PeWiGu:2016}. Once the subset is selected and the corresponding sample sizes are determined from the analytical expressions, the statistical sampling is carried out accordingly.
 
-\normalem
-\begin{algorithm}[!ht]
-\label{algo:MFMC_Algo_model_selection}
-\DontPrintSemicolon    
-   \KwIn{Models $u_1, \ldots, u_{K^*}$ ordered such that $|\rho_{1,2}| \ge \ldots \ge |\rho_{1,K^*}|$,
-             and corresponding sample costs  $C_1, \ldots, C_{K^*}$.}\vspace{1ex}
+It is important to emphasize that the model selection step is independent of the total computational budget~$p$. The optimal subset depends only on the correlation structure among models and their relative computational costs.
+
+
+
+% Let $\mathcal{S}^*=\{1, \ldots, K^*\}$ be the indices of $K^*$ available models. 
+% We seek a subset $\mathcal{S}=\{i_1,i_2, \ldots,i_{K}\}\subseteq \mathcal{S}^* (K\le K^*)$ of indices that minimizes the sampling cost of multifidelity Monte Carlo estimator. Note that $\mathcal{S}$ is non-empty and $i_1=1$ since the high fidelity model must be included. 
+% We will follow the exhaustive algorithm in \cite[Algorithm~1]{BPeherstorfer_KWillcox_MDGunzburger_2016a} 
+% for $2^{K^*-1}$ subsets of $\mathcal{S}^*$.  This algorithm gives the indices of the selected model.
+
+% \normalem
+% \begin{algorithm}[!ht]
+% \label{algo:MFMC_Algo_model_selection}
+% \DontPrintSemicolon    
+%    \KwIn{Models $u_1, \ldots, u_{K^*}$ ordered such that $\rho_{1,2}^2 \ge \ldots \ge \rho_{1,K^*}$,
+%              and corresponding sample costs  $C_1, \ldots, C_{K^*}$.}\vspace{1ex}
     
-    \KwOut{ Selected index set $\mathcal{S}$.}\vspace{1ex}
-    \hrule \vspace{1ex}
+%     \KwOut{ Selected index set $\mathcal{S}$.}\vspace{1ex}
+%     \hrule \vspace{1ex}
 
-   % Estimate $\rho_{1,k}$ and $C_k$ for each model $f_k$ using $m_0$ samples.
+%    % Estimate $\rho_{1,k}$ and $C_k$ for each model $f_k$ using $m_0$ samples.
    
    
-   Set $\mathcal{S}=\{1,\ldots, K^*\}$. 
+%    Set $\mathcal{S}=\{1,\ldots, K^*\}$. 
    
-   Initialize $v_{\min}=C_1$, $\mathcal{S}=\{1\}$. Let $ \mathcal{\widehat S}$ be all $2^{K-1}$ ordered subsets of $\mathcal{S}^*$, each containing the high fidelity model with index $1$. 
-   % Set $ \mathcal{\widehat S}_1=\mathcal{S}^*$.
+%    Initialize $v_{\min}=C_1$, $\mathcal{S}=\{1\}$. Let $ \mathcal{\widehat S}$ be all $2^{K-1}$ ordered subsets of $\mathcal{S}^*$, each containing the high fidelity model with index $1$. 
+%    % Set $ \mathcal{\widehat S}_1=\mathcal{S}^*$.
 
-    % $(2 \le j \le 2^{K-1})$
-    \For{each subset $\mathcal{\widehat S}_j$\,}{
+%     % $(2 \le j \le 2^{K-1})$
+%     \For{each subset $\mathcal{\widehat S}_j$\,}{
 
-    {
-    \If{ Condition \eqref{eq:Sample_size_real_assumptions_b} from Theorem \ref{thm:Sample_size_real} is satisfied}{
-    Compute $\Delta_k$ and $v = \left(\sum_{k=1}^K \sqrt{C_k (\rho_{1,k}^2 - \rho_{1,k+1}^2) }\right)^{\!2}$.
-    \MH{What is $K$?}
+%     {
+%     \If{ Condition \eqref{eq:Sample_size_real_assumptions_b} from Theorem \ref{thm:Sample_size_real} is satisfied}{
+%     Compute $\Delta_k$ and $v = \left(\sum_{k=1}^K \sqrt{C_k (\rho_{1,k}^2 - \rho_{1,k+1}^2) }\right)^{\!2}$.
+%     \MH{What is $K$?}
     
-    \If{$v<v_{\min}$}{
-    {
-    Update $\mathcal{S} = \mathcal{\widehat S}_j$ and $v_{\min} = v$.
-    }
-    } 
-    }
-    }
-    $j=j+1$.
-    }
-    Return  $\mathcal{S}$.
-\caption{Multi-fidelity Model Selection}
-\end{algorithm}
-\ULforem
-
+%     \If{$v<v_{\min}$}{
+%     {
+%     Update $\mathcal{S} = \mathcal{\widehat S}_j$ and $v_{\min} = v$.
+%     }
+%     } 
+%     }
+%     }
+%     $j=j+1$.
+%     }
+%     Return  $\mathcal{S}$.
+% \caption{Multi-fidelity Model Selection}
+% \end{algorithm}
+% \ULforem
 
 
 
