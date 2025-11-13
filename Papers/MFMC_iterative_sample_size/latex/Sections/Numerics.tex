@@ -45,7 +45,7 @@ Cost &73&7.0318e-03 &1.4018e-03 &5.0613e-04 &2.6803e-04\\
 \hline
 Real-valued 
 & [8.8106e-01, 1.3495e+02, 5.8795e+02, 2.5402e+03, 2.1095e+04] 
-& 7.3029e+01 & 5.9275e-04 
+& 7.3030e+01 & 5.9275e-04 
 & [2.4129e+00, 3.6959e+02, 1.6102e+03, 6.9567e+03, 5.7770e+04] 
 & 2.0000e+02 & 2.1645e-04 \\
 \hline
@@ -60,17 +60,93 @@ Modified
 & 7.3029e+01 & 2.4834e-02 
 & \multicolumn{3}{c|}{---} \\
 \hline
-Integer, iterative 
+Iterative 
 & [1, 1, 1, 7, 67] 
 & 7.3030e+01 & 2.3668e-02 
 & [2, 836, 3644, 15744, 130749] 
 & 2.0000e+02 & 2.4138e-04 \\
 \hline
-Integer, iterative (delete equal)
+Iterative (delete equal)
 &[1, -, 2, 9, 84]
 &7.3030e+01
 &1.7936e-02
 & \multicolumn{3}{c|}{---} \\
+\hline
+Iterative (adaptive)
+&[1, 0, 2, 10, 82]
+&7.3030e+01
+&1.7922e-02
+&[2, 836, 3644, 15745, 130747]
+&2.0000e+02
+&2.4138e-04\\
+\hline
+Integer program
+&[1, 0, 2, 10, 82]
+&7.3029e+01 &1.7922e-02
+&[2, 836, 3644, 15741, 130755]
+&2.0000e+02&2.4138e-04\\
+\hline
+\end{tabular}
+}
+\caption{Comparison of real-valued and integer-valued MFMC sample allocations for small and large budgets ($b=73.03$ and $b=200$).}
+\label{tab:MFMC_integer_comparison_Eg1}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\scalebox{0.73}{
+\begin{tabular}{|c|p{4.8cm}|c|c|p{4.8cm}|c|c|}
+\hline
+\multirow{2}{*}{Method} 
+& \multicolumn{3}{c|}{$b = 248$} 
+& \multicolumn{3}{c|}{$b = 828$} \\
+\cline{2-7}
+& Sample size & Actual cost & Actual $f$ 
+& Sample size & Actual cost & Actual $f$ \\
+\hline
+Real-valued 
+& [2.9920e+00, 4.5829e+02,   1.9966e+03,   8.6262e+03,   7.1634e+04] 
+& 248 & 1.7455e-04
+& [9.9893e+00,   1.5301e+03,   6.6661e+03,   2.8800e+04, 2.3917e+05] 
+&828 &5.2282e-05\\
+\hline
+Integer, floor 
+& [] 
+&  & 
+& [] 
+& & \\
+\hline
+% Modified 
+% & [] 
+% &  & 
+% & [] 
+% & & \\
+% % & \multicolumn{3}{c|}{---} \\
+% \hline
+Iterative 
+& [2,        1579,        6883,       29740, 246971] 
+& 2.4800e+02 & 2.3601e-04
+& [9,        2648,       11539,       49856,  414023] 
+&8.2800e+02 & 5.4709e-05\\
+\hline
+% Iterative (delete equal)
+% & [] 
+% &  & 
+% & [] 
+% & & \\
+% % & \multicolumn{3}{c|}{---} \\
+% \hline
+Iterative (adaptive)
+& [3,         449,        1957,        8455, 70216] 
+& 2.4800e+02 & 1.7456e-04
+& [10,        1518,        6613,       28572,   237266] 
+& 8.2800e+02&5.2282e-05 \\
+\hline
+Integer program
+& [3, 449, 1958, 8455, 70211] 
+& 2.4800e+02 & 1.7456e-04
+& [10, 1518, 6617, 28569,  237251]
+& 8.2800e+02& 5.2282e-05\\
 \hline
 \end{tabular}
 }
@@ -160,13 +236,13 @@ Modified
 & 4.5880e+01 & 5.1658e-03 
 & \multicolumn{3}{c|}{---} \\
 \hline
-Integer, iterative 
+Iterative 
 & [1, 1, 2, 1.6180e+03] 
 & 4.6000e+01 & 4.8046e-03 
 & [1, 14, 380, 1.6208e+05] 
 & 2.0000e+02 & 5.3495e-05 \\
 \hline
-Integer, iterative (delete equal)
+Iterative (delete equal)
 &[1, -, 4, 2047]
 &4.6000e+01
 &2.6060e-03
