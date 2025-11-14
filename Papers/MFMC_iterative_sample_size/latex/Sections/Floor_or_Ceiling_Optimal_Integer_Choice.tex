@@ -41,11 +41,13 @@ Because \(f\) is strictly convex with unique minimizer \(x^*\), \(f\) is strictl
 \subsection{Extension to intermediate fidelities}
 
 Fix sample sizes \(\overline m_1,\dots,\overline m_{k-1}\in\mathbb Z_+\) for the first \(k-1\) fidelities and consider the subproblem of choosing an integer \(\overline m_k\) to minimize the total variance, while higher-level sample sizes \(m_{k+1},\dots,m_K\) are taken as their continuous optimal values given the residual budget. The resulting objective is
-\[
-f(\overline m_k)
+%
+\begin{equation}\label{eq:Objective_adaptive_strategy}
+    f(\overline m_k)
 = \sum_{j=1}^{k-1}\frac{\Delta_j}{\overline m_j} \;+\; \frac{\Delta_k}{\overline m_k}
 \;+\; \frac{\Big(\sum_{j=k+1}^K \sqrt{C_j\Delta_j}\Big)^2}{\,b-\sum_{j=1}^k C_j\overline m_j\,},
-\]
+\end{equation}
+%
 with feasible \(\overline m_k\) satisfying the positivity of the residual budget. Differentiating with respect to the real variable \(x\) gives
 \[
 f'(x) = -\frac{\Delta_k}{x^2} + \frac{C_k\Big(\sum_{j=k+1}^K \sqrt{C_j\Delta_j}\Big)^2}
@@ -65,9 +67,126 @@ At each step $k$, after fixing previous allocations, the subproblem becomes a si
 
 Edge cases require care: if the continuous minimizer \(m_k^*<1\), the integer constraint and minimal-sample enforcement will push the solution to \(\overline m_k=1\); if enforcing \(\overline m_k=1\) leaves no feasible residual budget for higher fidelities, one must either delete models or treat feasibility by a higher-level rule (as implemented in the iterative algorithm).
 
+=====================================================================
+
+The naive sequential floor rounding scheme can be improved by incorporating a look-ahead step that evaluates the impact of rounding directions on the objective function. Specifically, at each step, for the variable $N_k$ under consideration, we consider both the floor and ceiling rounding directions. For each direction, we fix $N_k$ to the rounded value, update the remaining budget, and then solve the continuous relaxation for the remaining variables. The rounding direction that yields a better objective value (i.e., lower variance) is chosen. This process is repeated until all variables are rounded.
+
+Algorithm \ref{alg:improved_rounding} outlines the procedure for the first formulation (minimizing variance under a fixed cost).
+
+% \begin{algorithm}
+% \caption{Improved Sequential Rounding for Minimizing Variance}\label{alg:improved_rounding}
+
+% Initialize: $\mathbf{N} \gets \mathbf{N}^*$ (continuous solution), $B \gets C_{\text{total}}$\;
+% \For{$k = 1$ to $L$}{
+% % Let $x_{\text{floor}} = \lfloor N_k \rfloor$, $x_{\text{ceil}} = \lceil N_k \rceil$\;
+% For $x \in {x_{\text{floor}}, x_{\text{ceil}}}$:\;
+% \quad Update remaining budget: $B_x = B - c_k \cdot x$\;
+% \quad Solve continuous relaxation for ${N_{k+1}, \dots, N_L}$ under budget $B_x$ to get $\mathbf{N}{\text{rest}, x}$\;
+% \quad Compute the total variance $V_x = \text{Variance}(x, \mathbf{N}{\text{rest}, x})$\;
+% Choose $x^* = \arg\min_{x} V_x$ (if tie, choose the one with lower cost)\;
+% Set $N_k = x^$, and update $B = B - c_k \cdot x^$\;
+% }
+
+% \end{algorithm}
+
+
+\begin{algorithm}[!ht]
+\caption{Improved Sequential Rounding for Minimizing Variance}
+\label{alg:improved_rounding}
+\DontPrintSemicolon
+
+\KwIn{Correlation coefficients  $\{\rho_{1,k}\}_{k=1}^K$, computational costs $\{C_k\}_{k=1}^K$, total budget $b$.}
+\KwOut{Integer-valued sample sizes $\{\overline{m}_k\}_{k=1}^{K_r}$.}
+\hrule\vspace{1ex}
+
+\If{$b < \sum_{j=1}^K C_j$}{
+    \textbf{return} ``Insufficient budget: requires at least $\sum_{j=1}^K C_j$''.
+}
+
+Let $\boldsymbol{\rho} = [\rho_{1,1}, \ldots, \rho_{1,K}], \boldsymbol{C} = [C_{1}, \ldots, C_{K}]$. $b_1=b$.
+
+Compute variance terms: $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k = 1, \dots, K$ with $\rho_{1,K+1}=0$.
+
+RestartFlag = true.\;
+
+% Compute normalization constant: $S = \sum_{i=1}^K \sqrt{C_i \Delta_i}$\;
+\While{RestartFlag}{
+
+RestartFlag = false.\;
+% Initialize the real-valued optimal allocation:
+% \[
+% M_1^* = \sqrt{\frac{\Delta_1}{C_1}} \frac{b}{ \sum_{j=1}^K \sqrt{C_j \Delta_j}},
+% \]
 
 
 
+
+
+
+\For{$k = 1$ \KwTo $K$}{
+    % Update residual budget: $R_1=b$,  $R_k = b - \sum_{j=1}^{k-1} C_j \overline{m}_{j}$ for $k\ge 2$.\;
+    Compute the real-valued proxy for current allocation:
+    \[
+    m_k^* = \sqrt{\frac{\Delta_k}{C_k}}\frac{b_k}{\sum_{j=k}^K \sqrt{C_j \Delta_j}},
+    % \qquad
+    % \left\lfloor M_k^* \right\rfloor = \max \left(\left\lfloor M_k^* \right\rfloor, 1 \right).
+    \]
+    % \If{$\lfloor M_k^* \rfloor < 1$}{
+    %     Enforce minimum sample: $\lfloor M_k^* \rfloor = 1$.
+    % }
+
+
+For $x\in \{\lfloor m_k^* \rfloor, \lceil m_k^* \rceil\}$:\;
+% \quad Update remaining budget: $b_{k+1} = b_k - C_k \cdot x$\;
+\quad Solve previous variance with fixed integer for $\overline{m}_{1}, \ldots, \overline{m}_{k-1}$\;
+\quad Solve current variance integer for $x$\;
+\quad Solve future variance of continuous relaxation for ${m_{k+1}^*, \dots, m_K^*}$ under the remaining budget: $b_{k+1} = b_k - C_k \cdot x$ to get the third component in \eqref{eq:Objective_adaptive_strategy}\;
+\quad Compute the total variance by adding the previous three steps (\eqref{eq:Objective_adaptive_strategy}) to obtain $V(x)$\;
+
+Choose $\overline{m}_k = \arg\min_{x} V(x)$ (if tie, choose the one with lower cost)\;
+
+Update $b_{k+1} = b_k - C_k \cdot \overline{m}_k$.\;
+
+\If{$V(\lceil m_k^* \rceil)<V(\lfloor m_k^* \rfloor)\quad$ \& $\quad\max(\lceil m_k^* \rceil,\overline{m}_{k-1})\cdot\sum_{j=k}^K C_j <b-\sum_{j=1}^{k-1}C_j\overline{m}_j$}{
+\overline{m}_k = \max(\lceil M_k^* \rceil,\overline{m}_{k-1})\;
+}
+\ElseIf{$\lfloor m_k^* \rfloor<\overline{m}_{k-1}\quad$ \& $\quad\overline{m}_{k-1}\cdot\sum_{j=k}^K C_j <b-\sum_{j=1}^{k-1}C_j\overline{m}_j$}{
+\overline{m}_k = \overline{m}_{k-1}
+}
+\Else{
+\overline{m}_k = \lfloor m_k^* \rfloor
+}
+
+
+\If{$\left\lfloor m_{k-1}^* \right\rfloor=\left\lfloor m_k^* \right\rfloor$}{
+    
+    
+    
+    Compute updated variance: $\widetilde\Delta_{k-1}=\rho_{1,k-1}^2 - \rho_{1,k+1}^2, \widetilde\Delta_k = \rho_{1,k+1}^2-\rho_{1,k+2}^2$
+
+    
+    \If{condition $\frac{\widetilde\Delta_{k-1}}{C_{k-1}}<\frac{\widetilde\Delta_{k}}{C_{k+1}}$}{ 
+
+    Discard model $k$: $\boldsymbol{\rho} \leftarrow \boldsymbol{\rho} \setminus \{\rho_{1,k}\}$, $\boldsymbol{C} \leftarrow \boldsymbol{C} \setminus \{C_k\}$,\;
+    Update $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$,\;
+    $K \leftarrow K - 1$.\;
+
+    RestartFlag = true.\;
+
+    Break.\;
+    % \scr{Restart iteration with updated parameters and recompute $M_k^*$ from step 5.}
+    }
+    
+    \Else{Retain model $k$.}
+    
+}
+}
+}
+$K_r \leftarrow K$\;
+\textbf{return} $\overline{m}_1, \dots, \overline{m}_{K_r}$.
+\end{algorithm}
+
+This improved rounding strategy accounts for the global objective function when making local rounding decisions, and thus is expected to yield solutions closer to the true integer optimum compared to the naive floor rounding.
 
 
 
