@@ -4,7 +4,7 @@
 % ====================================================
    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Recursive computation of the sample size}   
+\subsection{Recursive computation of sample sizes}   
 For $j = 1, \ldots, K$  we consider the problem 
 \begin{subequations}\label{eq:Sequential_Optimization}
     \begin{align}
@@ -101,9 +101,16 @@ We will show that \eqref{eq:Sequential_Optimization_sol} remains true for the so
   \end{itemize}
 \end{proof}
 
+There is a benefit in solving sequences of problems \eqref{eq:Sequential_Optimization} when
+one rounds the real-valued sample sizes to integers.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Recursive computation of integer-valued sample size}  
+The idea is to solve a sequence of problems \eqref{eq:Sequential_Optimization} to 
+compute integer-valued sample sizes by rounding.
 
 
-\subsection{Integer-valued allocation and cost bounds}
 While the real-valued allocation provides an analytically optimal solution, its direct implementation is infeasible since the number of samples must be integer-valued. To address this, we extend the recursive formulation to an {\it integer-valued} scheme that retains the analytical structure of the continuous solution while enforcing feasibility through a forward recursive adjustment. Specifically, we define
 %
 \begin{equation}\label{eq:MFMC_New_IntegerValued_Sample_Size}
