@@ -9,7 +9,7 @@ For $j = 1, \ldots, K$  we consider the problem
 \begin{subequations}\label{eq:Sequential_Optimization}
     \begin{align}
     \label{eq:Sequential_Optimization_obj}
-    \min \quad &\sigma_1^2  \sum_{k=j}^K \frac{ \rho_{1|k}^2 - \rho_{1,k+1}^2}{m_k},   \\
+    \min \quad &\sigma_1^2  \sum_{k=j}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k},   \\
        \text{s.t.}\quad & \sum_{k=j}^K C_km_k \le b_j,       \\
                                 & m_j \ge 0,\quad  m_k \ge m_{k-1}, \quad k=j+1\ldots,K,\\
                                 &m_j,\ldots, m_K\in \real.
@@ -44,15 +44,15 @@ We will show that \eqref{eq:Sequential_Optimization_sol} remains true for the so
    \begin{itemize}
    \item[i.] The unique solution of \eqref{eq:Sequential_Optimization} is
     \begin{equation}\label{eq:Sequential_Optimization_mjj}
-             m_{k|j}^* = \sqrt{\frac{\rho_{1|k}^2 - \rho_{1,k+1}^2}{C_k}} \; 
+             m_{k|j}^* = \sqrt{\frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{C_k}} \; 
                           \frac{b_j}{\sum_{l=j}^K \sqrt{C_l (\rho_{1,l}^2 - \rho_{1,l+1}^2)}},
              \quad k = j, \ldots, K,
      \end{equation}
     the cost constraint is active $\sum_{k=1}^K C_km_k^* = b_j$, 
     and the resulting optimal objective function value is
      \begin{equation}\label{eq:MFMC_variance_optimal}
-            \sigma_1^2  \sum_{k=j}^K \frac{ \rho_{1|k}^2 - \rho_{1,k+1}^2}{m_{k|j}^*}
-           =  \frac{\sigma_1^2}{b_j}\!\left(\sum_{k=j}^K \sqrt{C_k (\rho_{1|k}^2 - \rho_{1,k+1}^2) }\right)^{\!2}.
+            \sigma_1^2  \sum_{k=j}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_{k|j}^*}
+           =  \frac{\sigma_1^2}{b_j}\!\left(\sum_{k=j}^K \sqrt{C_k (\rho_{1,k}^2 - \rho_{1,k+1}^2) }\right)^{\!2}.
        \end{equation}
     \item[ii.] If $b_j = b - \sum_{k=1}^{j-1} C_k m_{k|k}^*$,
                   then $0 < m_{1|1}^* < \ldots < m_{K|K}^*$.
@@ -66,17 +66,17 @@ We will show that \eqref{eq:Sequential_Optimization_sol} remains true for the so
                 Theorem~\ref{thm:Sample_size_real}.
   \item[ii.] Define
         \begin{equation}\label{eq:aggregate_cost_variance_weight_S_j}
-            S_j = \sum_{k=j}^K\sqrt{C_k (\rho_{1|k}^2 - \rho_{1,k+1}^2) }.
+            S_j = \sum_{k=j}^K\sqrt{C_k (\rho_{1,k}^2 - \rho_{1,k+1}^2) }.
         \end{equation}
         Then 
         \begin{equation}\label{eq:S_j_H_j}
-            S_{j-1}=\sqrt{C_{j-1} (\rho_{1|j-1}^2 - \rho_{1|j}^2) }+S_j, \qquad 
-            m_{j|j}^* = \sqrt{\frac{\rho_{1|j}^2 - \rho_{1|j-1}^2}{C_j}}\frac{b_j}{S_j},
+            S_{j-1}=\sqrt{C_{j-1} (\rho_{1,j-1}^2 - \rho_{1,j}^2) }+S_j, \qquad 
+            m_{j|j}^* = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j-1}^2}{C_j}}\frac{b_j}{S_j},
         \end{equation}
         and
         \begin{equation*}
                      b_j = b_{j-1} - C_{j-1} m_{j-1|j-1}^* 
-                         = b_{j-1}\left(1 - \frac{\sqrt{C_{j-1}(\rho_{1|j-1}^2 - \rho_{1|j}^2) }}{S_{j-1}}\right) 
+                         = b_{j-1}\left(1 - \frac{\sqrt{C_{j-1}(\rho_{1,j-1}^2 - \rho_{1,j}^2) }}{S_{j-1}}\right) 
                          = b_{j-1}\frac{S_j}{S_{j-1}}.
         \end{equation*}
         It follows that 
@@ -86,16 +86,16 @@ We will show that \eqref{eq:Sequential_Optimization_sol} remains true for the so
         and, using assumption \eqref{eq:Sample_size_real_assumptions_b}
         of Theorem~\ref{thm:Sample_size_real},
         \[
-             m_{j|j}^* = \sqrt{\frac{\rho_{1|j}^2 - \rho_{1,j+1}^2}{C_j}} \, \frac{b_j}{S_j}
-                           = \sqrt{\frac{\rho_{1|j}^2 - \rho_{1,j+1}^2}{C_j}} \,  \frac{b_{j-1}}{S_{j-1}}
-                            > \sqrt{\frac{\rho_{1|j-1}^2 - \rho_{1|j}^2}{C_{j-1}}} \, \frac{b_{j-1}}{S_{j-1}}
+             m_{j|j}^* = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j+1}^2}{C_j}} \, \frac{b_j}{S_j}
+                           = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j+1}^2}{C_j}} \,  \frac{b_{j-1}}{S_{j-1}}
+                            > \sqrt{\frac{\rho_{1,j-1}^2 - \rho_{1,j}^2}{C_{j-1}}} \, \frac{b_{j-1}}{S_{j-1}}
                            = m_{j-1|j-1}^*.
         \]
         
       \item[iii.]     Recursive application of  \eqref{eq:b_jS_j} gives $b_j = b S_j / S_1$.
              Substituting this expression into \eqref{eq:S_j_H_j} yields
              \[
-                        m_{j|j}^*   = \sqrt{\frac{\rho_{1|j}^2 - \rho_{1,j+1}^2}{C_j}} \, \frac{b}{S_1},
+                        m_{j|j}^*   = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j+1}^2}{C_j}} \, \frac{b}{S_1},
              \]
              which coincides with the closed-form MFMC sample size $m_j^*$ in \eqref{eq:MFMC_RealValued_Sample_Size}.  
   \end{itemize}

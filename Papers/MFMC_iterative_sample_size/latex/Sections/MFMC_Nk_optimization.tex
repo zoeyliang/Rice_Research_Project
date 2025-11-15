@@ -106,15 +106,6 @@ Note that because of the cost-correlation ratio assumption \eqref{eq:Sample_size
 the  solution \eqref{eq:MFMC_RealValued_Sample_Size}
 satisfies $0  < m_1^* < m_2^* <  \ldots < m_K^*$.
 
-\cite[Sec.~3.5]{BPeherstorfer_KWillcox_MDGunzburger_2016a}, even if the original set of models
-does not satisfy \eqref{eq:Sample_size_real_assumptions_a} or \eqref{eq:Sample_size_real_assumptions_b},
-one can select a subset of $K$ models that meet these requirements.
-See Algorithm~1 in \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a}.
-
-
-
-
-
 To obtain integer samples,  \cite[p.~A3171]{BPeherstorfer_KWillcox_MDGunzburger_2016a}
 round down, i.e., use $\lfloor m_1^* \rfloor, \ldots, \lfloor m_K^* \rfloor$. 
 Rounding down will reduce the cost, i.e., the rounded down sample sizes are still feasible for
@@ -169,17 +160,17 @@ which can happen when the budget $b$ is small.
 % \approx  \mathcal{W}^{\text{MF}}\big( m_1^* , \ldots,  m_K^* \big) = p$.
 
 
-%
-%% ====================================================
-%\subsection{Model selection}
-%% ====================================================
-%\MH{may not need a subsection on this. Can simply reference}
-%The analytical solution of \eqref{eq:Optimization_sample_size_m_relaxed} derived in Theorem~\ref{thm:Sample_size_real} is valid only when the underlying models satisfy the assumptions specified in \eqref{eq:Sample_size_real_assumptions}. Consequently, the practical implementation of MFMC proceeds in two stages. First, given a pool of candidate models, we identify a subset whose parameters satisfy the conditions of Theorem~\ref{thm:Sample_size_real}.  Among all admissible subsets, the chosen set should minimize the resulting variance 
-%$\mathcal{V}^{\text{MF}}$ in \eqref{eq:MFMC_variance_optimal}, thereby ensuring maximal efficiency of the multifidelity estimator~\cite{PeWiGu:2016}. Once the subset is selected and the corresponding sample sizes are determined from the analytical expressions, the statistical sampling is carried out accordingly.
-%
-%It is important to emphasize that the model selection step is independent of the total computational budget~$p$. The optimal subset depends only on the correlation structure among models and their relative computational costs.
-%
-%
+
+% ====================================================
+\subsection{Model selection}
+% ====================================================
+\MH{may not need a subsection on this. Can simply reference}
+The analytical solution of \eqref{eq:Optimization_sample_size_m_relaxed} derived in Theorem~\ref{thm:Sample_size_real} is valid only when the underlying models satisfy the assumptions specified in \eqref{eq:Sample_size_real_assumptions}. Consequently, the practical implementation of MFMC proceeds in two stages. First, given a pool of candidate models, we identify a subset whose parameters satisfy the conditions of Theorem~\ref{thm:Sample_size_real}.  Among all admissible subsets, the chosen set should minimize the resulting variance 
+$\mathcal{V}^{\text{MF}}$ in \eqref{eq:MFMC_variance_optimal}, thereby ensuring maximal efficiency of the multifidelity estimator~\cite{PeWiGu:2016}. Once the subset is selected and the corresponding sample sizes are determined from the analytical expressions, the statistical sampling is carried out accordingly.
+
+It is important to emphasize that the model selection step is independent of the total computational budget~$p$. The optimal subset depends only on the correlation structure among models and their relative computational costs.
+
+
 
 % Let $\mathcal{S}^*=\{1, \ldots, K^*\}$ be the indices of $K^*$ available models. 
 % We seek a subset $\mathcal{S}=\{i_1,i_2, \ldots,i_{K}\}\subseteq \mathcal{S}^* (K\le K^*)$ of indices that minimizes the sampling cost of multifidelity Monte Carlo estimator. Note that $\mathcal{S}$ is non-empty and $i_1=1$ since the high fidelity model must be included. 
