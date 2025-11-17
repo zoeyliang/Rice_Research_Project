@@ -25,7 +25,7 @@ Cost &73&7.0318e-03 &1.4018e-03 &5.0613e-04 &2.6803e-04\\
 \hline
 \end{tabular}
 }
-\caption{Model parameters for the plasma physics example.}
+\caption{Model parameters for the plasma physics example in \cite{ElLiSa:2023,ElLiSa:2025}.}
 \label{Tab:Eg1_Parameters}
 \end{table}
 %
@@ -49,7 +49,7 @@ Real-valued
 & [2.4129e+00, 3.6959e+02, 1.6102e+03, 6.9567e+03, 5.7770e+04] 
 & 2.0000e+02 & 2.1645e-04 \\
 \hline
-Integer, floor 
+Direct floor 
 & [0, 134, 587, 2540, 21094] 
 & 8.7045e+00 & $\infty$ 
 & [2, 369, 1610, 6956, 57769] 
@@ -110,11 +110,11 @@ Real-valued
 & [9.9893e+00,   1.5301e+03,   6.6661e+03,   2.8800e+04, 2.3917e+05] 
 &828 &5.2282e-05\\
 \hline
-Integer, floor 
-& [] 
-&  & 
-& [] 
-& & \\
+Direct floor 
+& [2, 458, 1996, 8626, 71634] 
+& 1.7559e+02 & 2.5080e-04
+& [9, 1530, 6666, 28800, 239166] 
+&7.5578e+02 &5.7343e-05 \\
 \hline
 % Modified 
 % & [] 
@@ -177,7 +177,7 @@ Figure~\ref{fig:Eg1} examines the actual cost and variance of the compared metho
 
 
 \subsection{Second example}
-We next consider a four-fidelity configuration derived from the benchmark parameters in \cite{PeWiGu:2016}, summarized in Table~\ref{Tab:Eg2_Parameters}. This test case represents a particularly challenging allocation scenario, featuring near-perfect inter-fidelity correlations ($\rho_{1,k} \approx 1$) and computational costs spanning more than five orders of magnitude. 
+We next consider a four-fidelity configuration from the benchmark parameters of tubular reactor problem in \cite{PeWiGu:2016}, summarized in Table~\ref{Tab:Eg2_Parameters}. This test case represents a particularly challenging allocation scenario, featuring near-perfect inter-fidelity correlations ($\rho_{1,k} \approx 1$) and computational costs spanning more than five orders of magnitude. 
 
 For a moderate budget of $b=200$, the real-valued allocation achieves an optimal variance of $f=5.0571\times10^{-5}$. Direct flooring, however, leads to substantial budget under-utilization ($b \approx 179.34$) and increases the variance by approximately 15\% to $f=5.8074\times10^{-5}$. In contrast, the proposed iterative scheme maintains exact budget adherence and limits the variance penalty to only 6\% above the continuous optimum ($f=5.3495\times10^{-5}$).
 
@@ -202,7 +202,7 @@ Cost &44.395 &6.8409e-01 &2.9937e-01 &1.9908e-04\\
 \hline
 \end{tabular}
 }
-\caption{Parameters from Peherstorfer's paper \cite{PeWiGu:2016}.}
+\caption{Parameters of tubular reactor problem in \cite{PeWiGu:2016}.}
 \label{Tab:Eg2_Parameters}
 \end{table}
 %
@@ -214,7 +214,7 @@ Cost &44.395 &6.8409e-01 &2.9937e-01 &1.9908e-04\\
 \hline
 \multirow{2}{*}{Method} 
 & \multicolumn{3}{c|}{$b = 46$} 
-& \multicolumn{3}{c|}{$b = 200$} \\
+& \multicolumn{3}{c|}{$b = 248$} \\
 \cline{2-7}
 & Sample size & Actual cost & Actual $f$ 
 & Sample size & Actual cost & Actual $f$ \\
@@ -222,14 +222,14 @@ Cost &44.395 &6.8409e-01 &2.9937e-01 &1.9908e-04\\
 Real-valued 
 & [3.3349e-01, 2.9158e+00, 7.6071e+01, 3.2282e+04] 
 & 4.6000e+01 & 2.1987e-04 
-& [1.4499e+00, 1.2677e+01, 3.3074e+02, 1.4036e+05] 
-& 2.0000e+02 & 5.0571e-05 \\
+& [1.7979e+00,   1.5720e+01,   4.1012e+02,   1.7404e+05] 
+&248& 4.0783e-05\\
 \hline
-Integer, floor 
+Direct floor 
 & [0, 2, 76, 3.2282e+04] 
 & 3.0547e+01 & $\infty$ 
-& [1, 12, 330, 1.4036e+05] 
-& 1.7934e+02 & 5.8074e-05 \\
+& [1, 15, 410, 174042]
+& 2.1205e+02&5.1348e-05\\
 \hline
 Modified 
 & [1, 1, 2, 1.0180e+03] 
@@ -239,8 +239,8 @@ Modified
 Iterative 
 & [1, 1, 2, 1.6180e+03] 
 & 4.6000e+01 & 4.8046e-03 
-& [1, 14, 380, 1.6208e+05] 
-& 2.0000e+02 & 5.3495e-05 \\
+& [1,          19,         496,      211572] 
+& 2.4800e+02&4.6445e-05 \\
 \hline
 Iterative (delete equal)
 &[1, -, 4, 2047]
@@ -248,9 +248,21 @@ Iterative (delete equal)
 &2.6060e-03
 & \multicolumn{3}{c|}{---} \\
 \hline
+Iterative (adaptive)
+& [1, -, 4, 2047] 
+&4.6000e+01  &2.6060e-03
+& [2,15,388,164723]
+&2.4800e+02 & 4.1015e-05\\
+\hline
+Integer program
+&[1, -, 4, 2047]
+&4.6000e+01  &2.6060e-03
+&[]
+&\\
+\hline
 \end{tabular}
 }
-\caption{Comparison of real-valued and integer-valued MFMC sample allocations for small and large budgets ($b=46$ and $b=200$). The iterative integer-valued scheme achieves better cost utilization than the direct flooring approach while preserving the structure of the continuous optimizer.}
+\caption{Comparison of real-valued and integer-valued MFMC sample allocations for small and large budgets ($b=46$ and $b=248$). The iterative integer-valued scheme achieves better cost utilization than the direct flooring approach while preserving the structure of the continuous optimizer.}
 \label{tab:MFMC_integer_comparison_Eg2}
 \end{table}
 
@@ -273,12 +285,174 @@ Budget sensitivity analysis for the the second example. Top left: actual varianc
 
 
 
+\subsection{Third example}
+%
+\begin{table}[ht]
+\centering
+\scalebox{1}{
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Model index &1 &2 &3\\
+\hline
+Correlation coeff $\rho_{1,k}$ &1     &0.9819  &0.9708\\
+% \hline
+% Standard deviation $\sigma_k$ &0.03\\
+\hline
+Cost &240.5123 &0.0166 &0.0017\\
+\hline
+\end{tabular}
+}
+\caption{Parameters of plasma turbulence problem in \cite{KoFaPeDiJeNeBu:2022}.}
+\label{Tab:Eg3_Parameters}
+\end{table}
+%
 
 
+\begin{table}[ht]
+\centering
+\scalebox{0.73}{
+\begin{tabular}{|c|p{4.8cm}|c|c|p{4.8cm}|c|c|}
+\hline
+\multirow{2}{*}{Method} 
+& \multicolumn{3}{c|}{$b = 240.8$} 
+& \multicolumn{3}{c|}{$b = 960$} \\
+\cline{2-7}
+& Sample size & Actual cost & Actual $f$ 
+& Sample size & Actual cost & Actual $f$ \\
+\hline
+Real-valued 
+& [9.8148e-01,   9.1833e+01,   1.8922e+03] 
+&240.8 &3.7283e-02
+& [3.9129e+00,   3.6611e+02,   7.5438e+03] 
+& 9.6000e+02 &9.3519e-03\\
+\hline
+Direct floor 
+& [0,          91,        1892] 
+& 4.7270e+00& $\infty$
+& [3,         366,        7543] 
+& 9.6000e+02&1.2142e-02\\
+\hline
+Modified 
+& [1,5,114] 
+& 2.4079e+02&4.8475e-02
+& \multicolumn{3}{c|}{---} \\
+\hline
+Iterative 
+& [1,5,120] 
+& 2.4080e+02&4.8061e-02
+& [3,        4618,       95178] 
+& 9.6000e+02&1.1972e-02\\
+\hline
+% Iterative (delete equal)
+% & [] 
+% & &
+% & [] 
+% & &\\
+% \hline
+% & \multicolumn{3}{c|}{---} \\
+Iterative (adaptive)
+& [1,6,110]
+& 2.4080e+02 &4.8053e-02
+& [3,        4619,       95169] 
+& 9.6000e+02&1.1972e-02\\
+\hline
+Integer program
+& [] 
+& &
+& [] 
+& &\\
+\hline
+\end{tabular}
+}
+\caption{Comparison of real-valued and integer-valued MFMC sample allocations for small and large budgets ($b=46$ and $b=248$). The iterative integer-valued scheme achieves better cost utilization than the direct flooring approach while preserving the structure of the continuous optimizer.}
+\label{tab:MFMC_integer_comparison_Eg3}
+\end{table}
 
 
+\subsection{Fourth example}
+
+%
+\begin{table}[ht]
+\centering
+\scalebox{1}{
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Model index &1 &2 &3\\
+\hline
+Correlation coeff $\rho_{1,k}$ &1     &0.9997 &0.9465\\
+% \hline
+% Standard deviation $\sigma_k$ &0.03\\
+\hline
+Cost &1 &0.05  &0.001\\
+\hline
+\end{tabular}
+}
+\caption{Parameters of Ishigami function problem in \cite{KoFaPeDiJeNeBu:2022}.}
+\label{Tab:Eg4_Parameters}
+\end{table}
+%
 
 
+\begin{table}[ht]
+\centering
+\scalebox{0.73}{
+\begin{tabular}{|c|p{4.8cm}|c|c|p{4.8cm}|c|c|}
+\hline
+\multirow{2}{*}{Method} 
+& \multicolumn{3}{c|}{$b = 46$} 
+& \multicolumn{3}{c|}{$b = 248$} \\
+\cline{2-7}
+& Sample size & Actual cost & Actual $f$ 
+& Sample size & Actual cost & Actual $f$ \\
+\hline
+Real-valued 
+& [] 
+& &
+& [] 
+& &\\
+\hline
+Direct floor 
+& [] 
+& &
+& [] 
+& &\\
+\hline
+Modified 
+& [] 
+& &
+& [] 
+& &\\
+\hline
+Iterative 
+& [] 
+& &
+& [] 
+& &\\
+\hline
+Iterative (delete equal)
+& [] 
+& &
+& [] 
+& &\\
+\hline
+% & \multicolumn{3}{c|}{---} \\
+Iterative (adaptive)
+& [] 
+& &
+& [] 
+& &\\
+\hline
+Integer program
+& [] 
+& &
+& [] 
+& &\\
+\hline
+\end{tabular}
+}
+\caption{Comparison of real-valued and integer-valued MFMC sample allocations for small and large budgets ($b=46$ and $b=248$). The iterative integer-valued scheme achieves better cost utilization than the direct flooring approach while preserving the structure of the continuous optimizer.}
+\label{tab:MFMC_integer_comparison_Eg4}
+\end{table}
 
 
 % %
