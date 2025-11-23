@@ -267,7 +267,7 @@ Iterative (adaptive)
 & [10, 1518, 6613, 28572, 237266]
 & 8.28e+02 & 5.228e-05 \\ \hline
 Integer program
-& [10, 1518, 6617, 28569, 237251]
+& [10, 1518, 6617, 28560, 237268]
 & 8.28e+02 & 5.228e-05 \\ \hline
 
 \end{tabular}
@@ -357,9 +357,9 @@ Figure~\ref{fig:Eg2} illustrates that these performance advantages persist acros
 \begin{minipage}{0.8\linewidth}
 \centering
 \small
-\begin{tabular}{|c|p{5.5cm}|c|c|}
+\begin{tabular}{|c|p{5.5cm}|c|c|c|}
 \hline
-\textbf{Method} & \textbf{Sample size} & \textbf{Cost} & \textbf{$f$} \\ \hline
+\textbf{Method} & \textbf{Sample size} & \textbf{Cost} & \textbf{$f$}\\ \hline
 
 \multicolumn{4}{|c|}{\textbf{Budget: $b = 46$}} \\ \hline
 Real-valued 
@@ -398,8 +398,8 @@ Iterative (adaptive)
 & [2, 15, 388, 164723]
 & 2.48e+02 & 4.1015e-05 \\ \hline
 Integer program
-& [] & --- & --- \\ \hline
-
+& [2,     18,    383, 161933] 
+&2.4800e+02 &4.1089e-05 \\ \hline
 \end{tabular}
 \end{minipage}
 
@@ -653,8 +653,8 @@ Iterative (adaptive)
 & 2.4080e+02 & 4.8053e-02 \\ \hline
 
 Integer program
-& [\,]
-& --- & --- \\ \hline
+& [1,   6, 110]
+& 2.4080e+02 & 4.8053e-02 \\ \hline
 
 
 % ======= Budget block 2 =======
@@ -677,8 +677,8 @@ Iterative (adaptive)
 & 9.6000e+02 & 1.1972e-02 \\ \hline
 
 Integer program
-& [\,]
-& --- & --- \\ \hline
+& [3,  4618, 95179]
+& 9.6000e+02 & 1.1972e-02 \\ \hline
 
 \end{tabular}
 \end{minipage}
@@ -693,175 +693,383 @@ Integer program
 
 \subsection{Fourth example}
 
-%
-\begin{table}[ht]
-\centering
-\scalebox{1}{
-\begin{tabular}{|c|c|c|c|c|c|c|}
-\hline
-Model index &1 &2 &3\\
-\hline
-Correlation coeff $\rho_{1,k}$ &1     &0.9997 &0.9465\\
+% %
+% \begin{table}[ht]
+% \centering
+% \scalebox{1}{
+% \begin{tabular}{|c|c|c|c|c|c|c|}
 % \hline
-% Standard deviation $\sigma_k$ &0.03\\
-\hline
-Cost &1 &0.05  &0.001\\
-\hline
-\end{tabular}
-}
-\caption{Parameters of Ishigami function problem in \cite{QiPeOMVe:2018}. $b=2\times 10^2,2\times 10^3,2\times 10^4$.}
-\label{Tab:Eg4_Parameters}
-\end{table}
-%
+% Model index &1 &2 &3\\
+% \hline
+% Correlation coeff $\rho_{1,k}$ &1     &0.9997 &0.9465\\
+% % \hline
+% % Standard deviation $\sigma_k$ &0.03\\
+% \hline
+% Cost &1 &0.05  &0.001\\
+% \hline
+% \end{tabular}
+% }
+% \caption{Parameters of Ishigami function problem in \cite{QiPeOMVe:2018}. $b=2\times 10^2,2\times 10^3,2\times 10^4$.}
+% \label{Tab:Eg4_Parameters}
+% \end{table}
+% %
 
 
+% \begin{table}[ht]
+% \centering
+% \scalebox{0.73}{
+% \begin{tabular}{|c|p{4.8cm}|c|c|p{4.8cm}|c|c|}
+% \hline
+% \multirow{2}{*}{Method} 
+% & \multicolumn{3}{c|}{$b = 1.1$} 
+% & \multicolumn{3}{c|}{$b = 2000$} \\
+% \cline{2-7}
+% & Sample size & Actual cost & Actual $f$ 
+% & Sample size & Actual cost & Actual $f$ \\
+% \hline
+% Real-valued 
+% & [2.1319e-01,   1.2526e+01,   2.6053e+02] 
+% &1.1 &1.4519e-02
+% & [3.8763e+02,   2.2774e+04,   4.7369e+05] 
+% & 2000&7.9853e-06\\
+% \hline
+% Direct floor 
+% & [0, 12, 260] 
+% & 8.6000e-01&$\infty$
+% & [387, 22773, 473686] 
+% & 1.9993e+03&7.9879e-06\\
+% \hline
+% Modified 
+% & [1, 1, 29] 
+% &1.0790e+00 &1.3503e-01
+% & \multicolumn{3}{c|}{---} \\
+% \hline
+% Iterative 
+% & [1, 1, 50] 
+% & 1.1000e+00&1.2205e-01
+% & [387, 22782, 473899]
+% & 2.0000e+03&7.9853e-06\\
+% \hline
+% Iterative (delete equal)
+% & [1, -, 100] 
+% & 1.1000e+00&1.1310e-01
+% & \multicolumn{3}{c|}{---} \\
+% \hline
+% Iterative (adaptive)
+% & [1, -, 100] 
+% & 1.1000e+00&1.1310e-01
+% & [388, 22768, 473600] 
+% & 2000&7.9853e-06\\
+% \hline
+% Integer program
+% & [1, -, 100] 
+% & 1.1000e+00&1.1310e-01
+% & [423,  22665, 443711] 
+% & 2.0000e+03&8.0054e-06\\
+% \hline
+% \end{tabular}
+% }
+% \caption{Comparison of real-valued and integer-valued MFMC sample allocations for small and large budgets ($b=46$ and $b=248$). The iterative integer-valued scheme achieves better cost utilization than the direct flooring approach while preserving the structure of the continuous optimizer.}
+% \label{tab:MFMC_integer_comparison_Eg4}
+% \end{table}
+
+% ===========================================
+% Parameters + Results in Two-Block Layout
+% ===========================================
 \begin{table}[ht]
 \centering
-\scalebox{0.73}{
-\begin{tabular}{|c|p{4.8cm}|c|c|p{4.8cm}|c|c|}
+\scalebox{0.92}{
+\begin{tabular}{cc} % no outer border
+
+% ---------- LEFT: PARAMETERS ----------
+\begin{minipage}{0.25\linewidth}
+\centering
+\small
+\begin{tabular}{|c|c|}
 \hline
-\multirow{2}{*}{Method} 
-& \multicolumn{3}{c|}{$b = 46$} 
-& \multicolumn{3}{c|}{$b = 200$} \\
-\cline{2-7}
-& Sample size & Actual cost & Actual $f$ 
-& Sample size & Actual cost & Actual $f$ \\
+\textbf{Model} & \textbf{$\rho_{1,k}$} \\
 \hline
-Real-valued 
-& [] 
-& &
-& [] 
-& &\\
+1 & 1 \\
+2 & 0.9997 \\
+3 & 0.9465 \\
 \hline
-Direct floor 
-& [] 
-& &
-& [] 
-& &\\
+&\textbf{Cost}\\
 \hline
-Modified 
-& [] 
-& &
-& [] 
-& &\\
-\hline
-Iterative 
-& [] 
-& &
-& [] 
-& &\\
-\hline
-Iterative (delete equal)
-& [] 
-& &
-& [] 
-& &\\
-\hline
-% & \multicolumn{3}{c|}{---} \\
-Iterative (adaptive)
-& [] 
-& &
-& [] 
-& &\\
-\hline
-Integer program
-& [] 
-& &
-& [] 
-& &\\
+1 & 1 \\
+2 & 0.05 \\
+3 & 0.001 \\
 \hline
 \end{tabular}
+\end{minipage}
+&
+% ---------- RIGHT: RESULTS ----------
+\begin{minipage}{0.73\linewidth}
+\centering
+\small
+\begin{tabular}{|c|p{4.9cm}|c|c|}
+\hline
+\textbf{Method} & \textbf{Sample size} & \textbf{Cost} & \textbf{$f$} \\ \hline
+
+% ======= Budget block 1 =======
+\multicolumn{4}{|c|}{\textbf{Budget: $b = 1.1$}} \\ \hline
+
+Real-valued 
+& [2.1319e-01, 1.2526e+01, 2.6053e+02]
+& 1.10 & 1.4519e-02 \\ \hline
+
+Direct floor 
+& [0, 12, 260]
+& 8.6000e-01 & $\infty$ \\ \hline
+
+Modified 
+& [1, 1, 29]
+& 1.0790e+00 & 1.3503e-01 \\ \hline
+
+Iterative 
+& [1, 1, 50]
+& 1.10 & 1.2205e-01 \\ \hline
+
+Iterative (delete equal)
+& [1, –, 100]
+& 1.10 & 1.1310e-01 \\ \hline
+
+Iterative (adaptive)
+& [1, –, 100]
+& 1.10 & 1.1310e-01 \\ \hline
+
+Integer program
+& [1, –, 100]
+& 1.10 & 1.1310e-01 \\ \hline
+
+
+% ======= Budget block 2 =======
+\multicolumn{4}{|c|}{\textbf{Budget: $b = 2000$}} \\ \hline
+
+Real-valued 
+& [3.8763e+02, 2.2774e+04, 4.7369e+05]
+& 2.0000e+03 & 7.9853e-06 \\ \hline
+
+Direct floor 
+& [387, 22773, 473686]
+& 1.9993e+03 & 7.9879e-06 \\ \hline
+
+Iterative 
+& [387, 22782, 473899]
+& 2.0000e+03 & 7.9853e-06 \\ \hline
+
+Iterative (adaptive)
+& [388, 22768, 473600]
+& 2.0000e+03 & 7.9853e-06 \\ \hline
+
+Integer program
+& [388, 22768, 473600]
+& 2.0000e+03 & 7.9853e-06 \\ \hline
+
+\end{tabular}
+\end{minipage}
+
+\end{tabular}
 }
-\caption{Comparison of real-valued and integer-valued MFMC sample allocations for small and large budgets ($b=46$ and $b=248$). The iterative integer-valued scheme achieves better cost utilization than the direct flooring approach while preserving the structure of the continuous optimizer.}
+\caption{Model parameters and MFMC sample allocations for the Ishigami example in \cite{QiPeOMVe:2018}, for budgets $b=1.1$ and $b=2000$. The iterative integer-valued schemes utilize the budget more effectively while preserving the structure of the continuous optimizer.}
 \label{tab:MFMC_integer_comparison_Eg4}
 \end{table}
 
 
-
 \subsection{Fifth example}
 
-%
-\begin{table}[ht]
-\centering
-\scalebox{1}{
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
-\hline
-Model index &1 &2 &3&4&5\\
-\hline
-Correlation coeff $\rho_{1,k}$ &1     &0.99838 &0.99245&0.96560&0.70267\\
+% %
+% \begin{table}[ht]
+% \centering
+% \scalebox{1}{
+% \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 % \hline
-% Standard deviation $\sigma_k$ &0.03\\
-\hline
-Cost &1.000 &0.147 &0.026 &0.009 &0.002\\
-\hline
-\end{tabular}
-}
-\caption{ Two dimensional elasticity in heterogeneous media in \cite{GoGeElJa:2020}. $b=10\sim10^3$.}
-\label{Tab:Eg4_Parameters}
-\end{table}
-%
+% Model index &1 &2 &3&4&5\\
+% \hline
+% Correlation coeff $\rho_{1,k}$ &1     &0.99838 &0.99245&0.96560&0.70267\\
+% % \hline
+% % Standard deviation $\sigma_k$ &0.03\\
+% \hline
+% Cost &1.000 &0.147 &0.026 &0.009 &0.002\\
+% \hline
+% \end{tabular}
+% }
+% \caption{ Two dimensional elasticity in heterogeneous media in \cite{GoGeElJa:2020}. $b=10\sim10^3$.}
+% \label{Tab:Eg4_Parameters}
+% \end{table}
+% %
 
 
+% \begin{table}[ht]
+% \centering
+% \scalebox{0.73}{
+% \begin{tabular}{|c|p{4.8cm}|c|c|p{4.8cm}|c|c|}
+% \hline
+% \multirow{2}{*}{Method} 
+% & \multicolumn{3}{c|}{$b = 14.05$} 
+% & \multicolumn{3}{c|}{$b = 955.1$} \\
+% \cline{2-7}
+% & Sample size & Actual cost & Actual $f$ 
+% & Sample size & Actual cost & Actual $f$ \\
+% \hline
+% Real-valued 
+% & [3.4790e+00, 1.7328e+01, 8.6947e+01, 4.2686e+02, 9.6071e+02] 
+% & 14.05 &3.7580e-03
+% & [2.3650e+02, 1.1779e+03, 5.9105e+03, 2.9018e+04, 6.5308e+04] 
+% & 9.5510e+02&5.5283e-05\\
+% \hline
+% Direct floor 
+% & [3    17    86   426   960] 
+% & 1.3489e+01&3.9289e-03
+% & [236, 1177, 5910, 29017, 65307] 
+% & 9.5445e+02 &5.5321e-05\\
+% \hline
+% Modified 
+% & [] 
+% & &
+% & [] 
+% & &\\
+% \hline
+% Iterative 
+% & [3, 18, 91, 447, 1007] 
+% & 1.4049e+01&3.7843e-03
+% & [236, 1178, 5915, 29044, 65374] 
+% &9.5510e+02 &5.5283e-05\\
+% \hline
+% Iterative (delete equal)
+% & [] 
+% & &
+% & [] 
+% & &\\
+% \hline
+% % & \multicolumn{3}{c|}{---} \\
+% Iterative (adaptive)
+% & [4,    16,    83,   410,   925] 
+% & 1.4050e+01&3.7842e-03
+% & [236, 1179, 5914, 29036, 65349] 
+% &9.5510e+02 &5.5283e-05\\
+% \hline
+% Integer program
+% & [3,   18,   91,  448, 1003] 
+% &1.4050e+01 &3.7841e-03
+% & [235,  1180,  5937, 29136, 65027] 
+% & 9.5510e+02&5.5284e-05\\
+% \hline
+% \end{tabular}
+% }
+% \caption{Comparison of real-valued and integer-valued MFMC sample allocations for small and large budgets ($b=46$ and $b=248$). The iterative integer-valued scheme achieves better cost utilization than the direct flooring approach while preserving the structure of the continuous optimizer.}
+% \label{tab:MFMC_integer_comparison_Eg5}
+% \end{table}
+
+
+% ===========================================
+% Parameters + Results in Two-Block Layout
+% ===========================================
 \begin{table}[ht]
 \centering
-\scalebox{0.73}{
-\begin{tabular}{|c|p{4.8cm}|c|c|p{4.8cm}|c|c|}
+\scalebox{0.90}{
+\begin{tabular}{cc} % no outer border
+
+% ---------- LEFT: PARAMETERS ----------
+\begin{minipage}{0.27\linewidth}
+\centering
+\small
+\begin{tabular}{|c|c|}
 \hline
-\multirow{2}{*}{Method} 
-& \multicolumn{3}{c|}{$b = 46$} 
-& \multicolumn{3}{c|}{$b = 200$} \\
-\cline{2-7}
-& Sample size & Actual cost & Actual $f$ 
-& Sample size & Actual cost & Actual $f$ \\
+\textbf{Model} & \textbf{$\rho_{1,k}$} \\
 \hline
-Real-valued 
-& [] 
-& &
-& [] 
-& &\\
+1 & 1      \\
+2 & 0.99838 \\
+3 & 0.99245 \\
+4 & 0.96560 \\
+5 & 0.70267 \\
 \hline
-Direct floor 
-& [] 
-& &
-& [] 
-& &\\
+& \textbf{Cost} \\
 \hline
-Modified 
-& [] 
-& &
-& [] 
-& &\\
-\hline
-Iterative 
-& [] 
-& &
-& [] 
-& &\\
-\hline
-Iterative (delete equal)
-& [] 
-& &
-& [] 
-& &\\
-\hline
-% & \multicolumn{3}{c|}{---} \\
-Iterative (adaptive)
-& [] 
-& &
-& [] 
-& &\\
-\hline
-Integer program
-& [] 
-& &
-& [] 
-& &\\
+1 & 1.000 \\
+2 & 0.147 \\
+3 & 0.026 \\
+4 & 0.009 \\
+5 & 0.002 \\
 \hline
 \end{tabular}
+\end{minipage}
+&
+% ---------- RIGHT: RESULTS ----------
+\begin{minipage}{0.73\linewidth}
+\centering
+\small
+\begin{tabular}{|c|p{5.4cm}|c|c|}
+\hline
+\textbf{Method} & \textbf{Sample size} & \textbf{Cost} & \textbf{$f$} \\ \hline
+
+% ===== Budget 1 =====
+\multicolumn{4}{|c|}{\textbf{Budget: $b = 14.05$}} \\ \hline
+
+Real-valued 
+& [3.4790e+00, 1.7328e+01, 8.6947e+01, 4.2686e+02, 9.6071e+02]
+& 1.405e+01 & 3.7580e-03 \\ \hline
+
+Direct floor 
+& [3, 17, 86, 426, 960]
+& 1.3489e+01 & 3.9289e-03 \\ \hline
+
+% Modified 
+% & [\,]
+% & --- & --- \\ \hline
+
+Iterative 
+& [3, 18, 91, 447, 1007]
+& 1.4049e+01 & 3.7843e-03 \\ \hline
+
+% Iterative (delete equal)
+% & [\,]
+% & --- & --- \\ \hline
+
+Iterative (adaptive)
+& [4, 16, 83, 410, 925]
+& 1.4050e+01 & 3.7842e-03 \\ \hline
+
+Integer program
+& [3, 18, 91, 448, 1003]
+& 1.4050e+01 & 3.7841e-03 \\ \hline
+
+% ===== Budget 2 =====
+\multicolumn{4}{|c|}{\textbf{Budget: $b = 955.1$}} \\ \hline
+
+Real-valued 
+& [2.3650e+02, 1.1779e+03, 5.9105e+03, 2.9018e+04, 6.5308e+04]
+& 9.5510e+02 & 5.5283e-05 \\ \hline
+
+Direct floor 
+& [236, 1177, 5910, 29017, 65307]
+& 9.5445e+02 & 5.5321e-05 \\ \hline
+
+% Modified 
+% & [\,]
+% & --- & --- \\ \hline
+
+Iterative 
+& [236, 1178, 5915, 29044, 65374]
+& 9.5510e+02 & 5.5283e-05 \\ \hline
+
+Iterative (adaptive)
+& [236, 1179, 5914, 29036, 65349]
+& 9.5510e+02 & 5.5283e-05 \\ \hline
+
+Integer program
+& [239, 1192, 5982, 42816, -]
+& 9.5510e+02 & 4.2483e-05 \\ \hline
+
+\end{tabular}
+\end{minipage}
+
+\end{tabular}
 }
-\caption{Comparison of real-valued and integer-valued MFMC sample allocations for small and large budgets ($b=46$ and $b=248$). The iterative integer-valued scheme achieves better cost utilization than the direct flooring approach while preserving the structure of the continuous optimizer.}
+\caption{Model parameters and MFMC sample allocations for the heterogeneous elasticity example in \cite{GoGeElJa:2020}, for budgets $b=14.05$ and $b=955.1$. The iterative integer schemes improve cost utilization while preserving the structure of the continuous optimizer.}
 \label{tab:MFMC_integer_comparison_Eg5}
 \end{table}
+
+
 
 % %
 % \begin{table}[ht]
