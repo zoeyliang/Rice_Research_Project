@@ -1,9 +1,22 @@
 % ====================================================
 \section{Adaptive strategy}
 % ====================================================
-The rounding step in the iterative scheme can be further improved by incorporating a local look-ahead that evaluates both the floor and ceiling choices and accounts for their effect on the total variance. At fidelity level \(k\), suppose the previously chosen integers \(\overline m_1,\dots,\overline m_{k-1}\in\mathbb Z_+\) are fixed. Let \(x\) denote the real-valued sample size at level \(k\), and define the residual budget $b_k = b - \sum_{j=1}^{k-1} C_j \overline m_j$. Substituting the continuous optimal values for levels \(k+1,\dots,K\) yields the single-variable reduced objective
+The rounding step in the iterative scheme can be strengthened by incorporating a local look-ahead that evaluates both the floor and ceiling choices and measures their effect on the total variance. To motivate the strategy, consider the relaxed optimization problem
+\begin{subequations}\label{eq:Adaptive_Optimization}
+\begin{align}
+    \min \quad & \sigma_1^2 \sum_{k=j}^K \frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k}, \\
+    \text{s.t.} \quad & \sum_{k=j}^K C_k m_k \le b_j, \\
+    & m_j \ge m_{j-1},\qquad m_k \ge m_{k-1}, \quad k=j+1,\ldots,K, \label{eq:Adaptive_Optimization_obj_c}\\
+    & m_j,\ldots,m_K \in \mathbb{N}.
+\end{align}
+\end{subequations}
+The relaxed problem of \eqref{eq:Adaptive_Optimization} differs from \eqref{eq:Sequential_Optimization} only by the monotonicity constraints \eqref{eq:Adaptive_Optimization_obj_c}. Under assumption \eqref{eq:Sample_size_real_assumptions_b}, the monotonicity enforced in \eqref{eq:Adaptive_Optimization} already holds for the continuous solution of \eqref{eq:Sequential_Optimization}, the real-valued solutions of the relaxed version of \eqref{eq:Sequential_Optimization} and \eqref{eq:Adaptive_Optimization} coincide. However, once integer constraints are imposed and both the floor and ceiling of the continuous minimizer are admissible, monotonicity is no longer automatic, and the requirement \(m_j \ge m_{j-1}\) between subproblem must be imposed explicitly. Solving \eqref{eq:Adaptive_Optimization} with integer variables would therefore require integer programming.
+
+To avoid solving an integer program at each step, we propose an adaptive scheme that combines the actual variance contribution from previously computed integers at high fidelity levels with the continuous relaxation for future uncomputed low fidelity levels. At fidelity level \(k\), suppose the previously computed integers \(\overline m_1,\ldots,\overline m_{k-1} \in \mathbb{Z}_+\) are fixed. Let \(x\) be the real-valued sample size at level \(k\), and define the residual budget $b_k = b - \sum_{j=1}^{k-1} C_j \overline m_j$. Substituting the continuous optimal values for levels \(k+1,\ldots,K\) using \eqref{eq:Sequential_Optimization_mjj} yields the single-variable reduced objective
+%
 \begin{equation}\label{eq:Objective_adaptive_strategy}
-    f(x)
+    f(x)=\sum_{j=1}^{k-1}\frac{\Delta_j}{\overline m_j}
+    + \frac{\Delta_k}{x}+\sum_{j=k+1}^{K}\frac{\Delta_j}{ m_j^*}
     = \sum_{j=1}^{k-1}\frac{\Delta_j}{\overline m_j}
     + \frac{\Delta_k}{x}
     + \frac{\Big(\sum_{j=k+1}^K \sqrt{C_j\Delta_j}\Big)^2}
@@ -18,23 +31,13 @@ f''(x)
 {(b_k - C_k x)^3}
 > 0,
 \]
-so \(f\) is strictly convex on its feasible interval. The continuous minimizer \(m_k^*\) is therefore unique, and strict convexity guarantees that the optimal integer choice must be one of the two nearest integers, \(\lfloor m_k^*\rfloor\) or \(\lceil m_k^*\rceil\). Consequently, each rounding step reduces to evaluating only two candidates.
+so \(f\) is strictly convex on its domain. Hence the continuous minimizer \(m_k^*\) is unique, and the optimal integer choice must be one of the two nearest integers, \(\lfloor m_k^* \rfloor\) or \(\lceil m_k^* \rceil\). Each rounding step therefore reduces to evaluating only these two candidates.
 
-This observation leads to an efficient \(O(K)\) sequential procedure: for each level \(k\), we test the two neighboring integers, fix \(\overline m_k\), update the remaining budget, and recompute the continuous relaxation for the remaining fidelities. Edge cases such as \(m_k^*<1\) or infeasible rounded values are handled by enforcing feasibility or discarding degenerate levels. In practice, this look-ahead strategy yields integer allocations far closer to the true optimum than naive floor rounding, since each local decision incorporates its global effect on the variance. The full procedure is summarized in Algorithm~\ref{alg:improved_rounding}.
-
-
+This yields an efficient \(O(K)\) adaptive procedure: at each level \(k\), we compare the two neighboring integers, select the one yielding the smaller value of $f$ in \eqref{eq:Objective_adaptive_strategy}, update the remaining budget, and recompute the continuous relaxation for the remaining fidelities. Edge cases such as \(m_k^* < 1\) or infeasible rounded values are handled by enforcing feasibility or by discarding degenerate levels. In practice, this look-ahead strategy produces integer allocations closer to the true integer optimum than naive floor rounding, since each local decision accounts for its global impact on the variance. The full scheme is summarized in Algorithm~\ref{alg:improved_rounding}.
 
 
-% \begin{theorem}
-% Let \(f\) be a strictly convex function on an interval of \(\mathbb R\) with unique minimizer \(x^*\).  The minimizer of \(f\) over integers in the feasible interval is attained at one of the two integers nearest to \(x^*\); that is,
-% \[
-% x^{\mathrm{int}} \in \{\lfloor x^*\rfloor,\;\lceil x^*\rceil\}.
-% \]
-% \end{theorem}
 
-% \begin{proof}
-% Because \(f\) is strictly convex with unique minimizer \(x^*\), \(f\) is strictly decreasing on \((-\infty,x^*]\) and strictly increasing on \([x^*,\infty)\). Let \(a=\lfloor x^*\rfloor\) and \(b=\lceil x^*\rceil\). For any integer \(n\le a-1\) we have \(n<a\le x^*\), hence \(f(n)>f(a)\). Similarly, for any integer \(n\ge b+1\) we have \(n>b\ge x^*\), hence \(f(n)>f(b)\). Therefore the integer minimizer must be either \(a\) or \(b\).
-% \end{proof}
+
 
 
 
