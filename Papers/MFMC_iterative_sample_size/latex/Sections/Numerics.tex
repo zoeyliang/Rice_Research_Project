@@ -1,13 +1,26 @@
 % ====================================================
 \section{Numerical results}\label{sec:Num_Result}
 % ====================================================
-We present numerical experiments to demonstrate the effectiveness of the proposed iterative integer-valued sample size allocation scheme. The method is compared against three benchmarks: (i) the standard real-valued MFMC allocation, (ii) direct flooring of the real-valued solution, and (iii) the modified rounding approach of \cite{GrGuJuWa:2023}. Performance is assessed in terms of actual computational cost and normalized variance under fixed budget constraints. All computational workflows are executed in {\tt MATLAB} R2024a on a MacBook Pro with 24 GB RAM and 14-Core Apple M4 Pro processor.
+We present numerical experiments that demonstrate the effectiveness of the proposed iterative and adaptive integer-valued sample allocation scheme. The method is evaluated against three benchmark strategies: (i) the standard real-valued MFMC allocation, (ii) direct flooring of the real-valued solution, and (iii) the modified rounding method of \cite{GrGuJuWa:2023}. Performance is assessed in terms of realized computational cost and the resulting normalized variance under fixed budget constraints. All experiments are performed in {\tt MATLAB} R2024a on a MacBook Pro with 24 GB RAM and a 14-core Apple M4 Pro processor.
+
+
 
 
 \subsection{First example}
-Table~\ref{tab:MFMC_integer_comparison_Eg1} summarizes the model parameters derived from a plasma physics application \cite{ElLiSa:2023,ElLiSa:2025}. The hierarchy consists of five fidelity levels with strong inter-model correlations ($\rho_{1,k} > 0.98$) and rapidly decreasing computational costs.
+Table~\ref{tab:MFMC_integer_comparison_Eg1} reports the model parameters derived from a plasma physics application \cite{ElLiSa:2023,ElLiSa:2025}. The hierarchy comprises five fidelity levels exhibiting strong cross-model correlations ($\rho_{1,k}>0.98$) and rapidly decaying computational costs.
 
-Table~\ref{tab:MFMC_integer_comparison_Eg1} reports detailed allocation results for two representative budgets. For the large-budget case ($b=200$), the real-valued allocation achieves the theoretical optimum with variance $f=2.1645\times10^{-4}$. Direct flooring underutilizes the budget by approximately 15\% (actual cost $\approx 169.86$) and increases the variance by 18\%. In contrast, the proposed iterative integer scheme fully exhausts the budget ($b \approx 200$) while maintaining the variance within 12\% of the continuous optimum. The small-budget case ($b=73.03$) highlights more pronounced differences. Direct flooring produces a degenerate estimator (infinite variance) due to the omission of the highest-cost model. The modified rounding method restores feasibility but yields significantly higher variance ($f=2.4834\times10^{-2}$). The iterative modified scheme achieves a 5\% reduction in variance relative to the modified approach while maintaining full budget utilization. Further removing one redundant sample from the iterative allocation produces an even lower variance ($1.79\times10^{-2}$) compared to the modified method ($2.48\times10^{-2}$).
+
+
+For the smallest budget ($b=73.03$), the results illustrate the fragility of naive rounding. Direct flooring entirely eliminates the high-fidelity model and produces an infeasible MFMC estimator with unbounded variance. The modified ceil–floor strategy restores feasibility but significantly overestimates the variance relative to the continuous benchmark. The iterative approach, in contrast, saturates the budget exactly and reduces the error by roughly 5\% compared to the modified method. When duplicate sample counts are removed, the variance drops further to $1.79\times 10^{-2}$, matching the integer-programming optimum. These results show that, under tight computational budgets, the iterative procedure is markedly more robust and better aligned with the sensitivity structure of the continuous solution.
+
+This table presents the resulting allocations for two representative budget levels. For the large-budget case ($b=200$), the real-valued allocation achieves the theoretical minimum variance $f=2.1645\times 10^{-4}$. Direct flooring underutilizes the budget by roughly 15\% (actual cost $\approx 169.86$), which leads to an 18\% increase in variance. The proposed iterative integer scheme, by contrast, fully saturates the budget and yields a variance within 12\% of the continuous optimum, illustrating that the method preserves most of the performance predicted by the idealized real-valued formulation.
+
+
+The small-budget case ($b=73.03$) is more delicate and reveals failures of conventional rounding. Direct flooring omits the highest-fidelity model and thus produces an infeasible MFMC estimator with unbounded variance. The modified rounding strategy ensures feasibility but incurs a significantly larger error, yielding $f=2.4834\times 10^{-2}$. The iterative scheme improves on this result, reducing the variance by approximately 5\% while still  meeting the prescribed budget. Removing a single redundant fidelity model from the iterative allocation further decreases the variance to $1.79\times 10^{-2}$, outperforming the modified rounding result of $2.48\times 10^{-2}$. These observations highlight that the iterative procedure not only preserves feasibility under tight budgets but also adapts effectively to local sensitivity in the allocation landscape, yielding consistently lower variance than existing integer-based methods.
+
+
+
+
 
 
 
@@ -199,42 +212,42 @@ Table~\ref{tab:MFMC_integer_comparison_Eg1} reports detailed allocation results 
 \multicolumn{4}{|c|}{\textbf{Budget: $b = 73.03$}} \\ \hline
 Real-valued 
 & [8.81e-01, 1.35e+02, 5.88e+02, 2.54e+03, 2.11e+04]
-& 7.30e+01 & 5.93e-04 \\ \hline
+& 7.30e+01 & 5.9275e-04  \\ \hline
 Direct floor 
 & [0, 134, 587, 2540, 21094]
 & 8.70e+00 & $\infty$ \\ \hline
 Modified 
-& [1,1,1,7,62]
-& 7.30e+01 & 2.48e-02 \\ \hline
+& [1, 1, 1, 7, 62]
+& 7.30e+01 & 2.4834e-02  \\ \hline
 Iterative 
-& [1,1,1,7,67]
-& 7.30e+01 & 2.37e-02 \\ \hline
+& [1, 1, 1, 7, 67]
+& 7.30e+01 & 2.3668e-02 \\ \hline
 Iterative (delete equal)
-& [1,-,2,9,84]
-& 7.30e+01 & 1.79e-02 \\ \hline
+& [1, -, 2, 9, 84]
+& 7.30e+01 & 1.7936e-02 \\ \hline
 Iterative (adaptive)
-& [1,0,2,10,82]
-& 7.30e+01 & 1.79e-02 \\ \hline
+& [1, -, 2, 10, 82]
+& 7.30e+01 & 1.7922e-02 \\ \hline
 Integer program
-& [1,0,2,10,82]
-& 7.30e+01 & 1.79e-02 \\ \hline
+& [1, -, 2, 10, 82]
+& 7.30e+01 & 1.7922e-02 \\ \hline
 
 \multicolumn{4}{|c|}{\textbf{Budget: $b = 200$}} \\ \hline
 Real-valued 
 & [2.41e+00, 3.70e+02, 1.61e+03, 6.96e+03, 5.78e+04]
-& 2.00e+02 & 2.16e-04 \\ \hline
+& 2.00e+02 & 2.1645e-04  \\ \hline
 Direct floor 
 & [2, 369, 1610, 6956, 57769]
-& 1.70e+02 & 2.56e-04 \\ \hline
+& 1.70e+02 & 2.5580e-04 \\ \hline
 Iterative 
 & [2, 836, 3644, 15744, 130749]
-& 2.00e+02 & 2.41e-04 \\ \hline
+& 2.00e+02 & 2.4138e-04  \\ \hline
 Iterative (adaptive)
 & [2, 836, 3644, 15745, 130747]
-& 2.00e+02 & 2.41e-04 \\ \hline
+& 2.00e+02 & 2.4138e-04 \\ \hline
 Integer program
 & [2, 836, 3644, 15741, 130755]
-& 2.00e+02 & 2.41e-04 \\ \hline
+& 2.00e+02 & 2.4138e-04 \\ \hline
 
 % \multicolumn{4}{|c|}{\textbf{Budget: $b = 248$}} \\ \hline
 % Real-valued 
@@ -256,19 +269,19 @@ Integer program
 \multicolumn{4}{|c|}{\textbf{Budget: $b = 828$}} \\ \hline
 Real-valued 
 & [9.9893e+00, 1.5301e+03, 6.6661e+03, 2.8800e+04, 2.3917e+05]
-& 8.28e+02 & 5.228e-05 \\ \hline
+& 8.28e+02 & 5.2282e-05 \\ \hline
 Direct floor 
 & [9, 1530, 6666, 28800, 239166]
-& 7.56e+02 & 5.734e-05 \\ \hline
+& 7.56e+02 & 5.7343e-05  \\ \hline
 Iterative 
 & [9, 2648, 11539, 49856, 414023]
-& 8.28e+02 & 5.471e-05 \\ \hline
+& 8.28e+02 & 5.4709e-05 \\ \hline
 Iterative (adaptive)
 & [10, 1518, 6613, 28572, 237266]
-& 8.28e+02 & 5.228e-05 \\ \hline
+& 8.28e+02 & 5.2282e-05 \\ \hline
 Integer program
 & [10, 1518, 6617, 28560, 237268]
-& 8.28e+02 & 5.228e-05 \\ \hline
+& 8.28e+02 & 5.2282e-05 \\ \hline
 
 \end{tabular}
 \end{minipage}
@@ -1037,28 +1050,28 @@ Integer program
 \multicolumn{4}{|c|}{\textbf{Budget: $b = 955.1$}} \\ \hline
 
 Real-valued 
-& [2.3650e+02, 1.1779e+03, 5.9105e+03, 2.9018e+04, 6.5308e+04]
-& 9.5510e+02 & 5.5283e-05 \\ \hline
+& [2.3926e+02,   1.1917e+03,   5.9795e+03,   4.2800e+04]
+& 9.5510e+02 & 5.4015e-05 \\ \hline
 
 Direct floor 
-& [236, 1177, 5910, 29017, 65307]
-& 9.5445e+02 & 5.5321e-05 \\ \hline
+& [239, 1191, 5979, 42800]
+& 9.5473e+02 & 5.4036e-05\\ \hline
 
 % Modified 
 % & [\,]
 % & --- & --- \\ \hline
 
 Iterative 
-& [236, 1178, 5915, 29044, 65374]
-& 9.5510e+02 & 5.5283e-05 \\ \hline
+& [239,        1192,        5981,       42818]
+& 9.5509e+02& 5.4015e-05\\ \hline
 
 Iterative (adaptive)
-& [236, 1179, 5914, 29036, 65349]
-& 9.5510e+02 & 5.5283e-05 \\ \hline
+& [239,        1192,        5982,       42816]
+& 9.5510e+02 & 5.4015e-05\\ \hline
 
 Integer program
-& [239, 1192, 5982, 42816, -]
-& 9.5510e+02 & 4.2483e-05 \\ \hline
+& [239, 1192, 5982, 42816]
+& 9.5510e+02 & 5.4015e-05 \\ \hline
 
 \end{tabular}
 \end{minipage}
