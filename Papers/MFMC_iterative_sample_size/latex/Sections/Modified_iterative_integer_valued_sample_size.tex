@@ -269,16 +269,19 @@ budget admissibility condition~\eqref{eq:p_bound}, the following bounds hold:
 % \]
 
 
-\subsection{Further Modification for identical sample allocation}
+\subsection{Further modification for identical sample allocation}
 
-In the proxy sequence defined by \eqref{eq:Modified_sample_size_iterative_integer_proxy}, identical integer-valued sample sizes across consecutive fidelity levels provide no additional variance reduction while still contributing to the overall computational cost. To eliminate this inefficiency, we introduce a further refinement that adaptively adjusts the active set of models during the iteration. 
+When the computational budget $p$ is limited, the iterative allocation scheme in \eqref{eq:Modified_sample_size_iterative_integer_proxy} may yield identical integer-valued sample sizes across consecutive fidelity levels. Such allocations are inefficient: identical sample sizes provide no additional variance reduction while still incurring computational costs. To address this inefficiency, we introduce a post-processing procedure that dynamically adjusts the active model set during iteration, eliminating levels that would receive identical allocations.
 
-Rather than operating on a fixed hierarchy, the procedure evaluates at each step whether a model should be removed whenever its integer allocation coincides with that of the preceding level. When a model is considered for removal, the first condition of Theorem~\ref{thm:Sample_size_real} is automatically satisfied for the reduced model set. Thus, it suffices to check that the second condition of the theorem remains valid for the remaining fidelity levels. Ensuring this condition guarantees that the resulting allocation admits a strictly increasing sequence of integer sample sizes and that each retained model contributes effectively to variance reduction.
+The key insight is that when two consecutive levels $k-1$ and $k$ receive the same integer sample size $m_{k-1} = m_k$, one of these models can be removed without compromising variance reduction. The decision to remove model $k-1$ or $k$ is based on efficiency metrics. We remove the model whose exclusion minimizes the impact on the theoretical variance $\mathcal{V}^{\text{MF}}$ in \eqref{eq:MFMC_variance_optimal}, thereby preserving estimator efficiency. Formally, we compute the variance difference
+\[
+\Delta f_j = f_{\mathcal{M}}^{\text{Act}} - f_{\mathcal{M}\backslash\{j\}}^{\text{Act}}
+\]
+for $j = k-1, k$ and $\mathcal{M}$ is the selected model set and remove the model with larger $\Delta f_j$. Let $\overline{m_i}$ be the integer sample size of set $\mathcal{M}$  obtained using either floor or ceil. then $f_{\mathcal{M}}^{\text{Act}}=\sum_{i=1}^K \Delta_i/\overline{m_i}$; $f_{\mathcal{M}\backslash\{j\}}^{\text{Act}}$ can be obtained by deleting $j$-th model, and obtain the corresponding integer valued sample size with budget $b$ using the modified iterative scheme. Note that the reduced model set must still satisfy the theoretical conditions required for optimal MFMC estimation. Specifically, when considering the removal of a model at level $k$, the correlation monotonicity condition is automatically preserved in the reduced set. The critical verification is for the cost-correlation ratio condition $(\rho_{1,k-1}^2 - \rho_{1,k+1}^2)/C_{k-1}<(\rho_{1,k+1}^2 - \rho_{1,k+2}^2)/C_{k+1}$, which must be checked for affected indices after removal. This condition ensures that the resulting allocation admits a strictly increasing sequence of integer sample sizes and that each retained model contributes effectively to variance reduction.
 
+This dynamic adjustment enables the active model subset to adapt to the available computational budget $p$, yielding allocations that maintain strict monotonicity in sample sizes while offering improved variance reduction compared to fixed-hierarchy approaches that permit identical allocations. The complete procedure is detailed in Algorithm~\ref{algo:Iterative_MFMC_Algo}.
 
-This adaptive elimination strategy enables the active model subset to adjust dynamically to the available computational budget~$p$, yielding allocations that maintain monotonicity and offer improved variance decay relative to those based on a fixed fidelity hierarchy. The full procedure, including iterative updates, flooring, and adaptive model elimination, is summarized in Algorithm~\ref{algo:Iterative_MFMC_Algo}.
-
-
+--------------------------------------------------
 
 
 % \begin{algorithm}[!ht]
@@ -416,26 +419,45 @@ Compute $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k=1,\ldots,K$ with $\rho
     {\tt RestartFlag} = {\tt false}.\;
 
     \For{$k=1$ \KwTo $K$}{
+    Compute real-valued proxy by \eqref{eq:MFMC_New_IntegerValued_Sample_Size}.
+    
+    Set $\lfloor M_k^* \rfloor = \max(\lfloor M_k^* \rfloor,1)$, $\;\;b_{k+1} = b_k - C_k \lfloor M_k^* \rfloor$.\;
 
-        \[
-        M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\,\frac{b_k}{\sum_{j=k}^K \sqrt{C_j \Delta_j}},
-        \qquad 
-        \lfloor M_k^* \rfloor = \max(\lfloor M_k^* \rfloor,1).
-        \]
+        % \[
+        % M_k^* = \sqrt{\frac{\Delta_k}{C_k}}\,\frac{b_k}{\sum_{j=k}^K \sqrt{C_j \Delta_j}},
+        % \qquad 
+        % \lfloor M_k^* \rfloor = \max(\lfloor M_k^* \rfloor,1).
+        % \]
 
-        $b_{k+1} = b_k - C_k \lfloor M_k^* \rfloor$.\;
+        
 
         \If{$k\ge 2$ and $\lfloor M_{k-1}^* \rfloor = \lfloor M_k^* \rfloor$}{
 
-            Compute merged increments: $\;\;\widetilde\Delta_{k-1} = \rho_{1,k-1}^2 - \rho_{1,k+1}^2,
-            \quad
-            \widetilde\Delta_{k}   = \rho_{1,k+1}^2 - \rho_{1,k+2}^2.$
+            Compute $\Delta \mathcal{V}_{k-1}$ and $\Delta \mathcal{V}_k$.
 
-            \If{$\widetilde\Delta_{k-1}/C_{k-1} < \widetilde\Delta_k/C_{k+1}$}{
+            \If{$\Delta \mathcal{V}_{k-1}>\Delta \mathcal{V}_k$ \& $k\ge 3$}{
+
+            % Compute merged increments: $\;\;\widetilde\Delta_{k-2} = \rho_{1,k-2}^2 - \rho_{1,k}^2,
+            % \quad
+            % \widetilde\Delta_{k-1}   = \rho_{1,k}^2 - \rho_{1,k+1}^2.$\;
+            % \If{$\frac{\rho_{1,k-2}^2 - \rho_{1,k}^2}{C_{k-2}} < \frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{C_{k}}$}{
+                Remove model $k-1$; update $\rho$, $C$, and $\Delta$;  \;
+                $K \leftarrow K-1$.\;
+                {\tt RestartFlag} = {\tt true}; \;
+                \textbf{break}.\;
+                }
+                % }
+            \Else{
+            % Compute merged increments: $\;\;\widetilde\Delta_{k-1} = \rho_{1,k-1}^2 - \rho_{1,k+1}^2,
+            % \quad
+            % \widetilde\Delta_{k}   = \rho_{1,k+1}^2 - \rho_{1,k+2}^2.$\;
+
+            % \If{$\frac{\rho_{1,k-1}^2 - \rho_{1,k+1}^2}{C_{k-1}} < \frac{\rho_{1,k+1}^2 - \rho_{1,k+2}^2}{C_{k+1}}$}{
                 Remove model $k$; update $\rho$, $C$, and $\Delta$;  \;
                 $K \leftarrow K-1$.\;
                 {\tt RestartFlag} = {\tt true}; \;
                 \textbf{break}.\;
+            % }
             }
         }
     }
@@ -445,3 +467,5 @@ $K_r = K$.\;
 \textbf{return} $\lfloor M_1^* \rfloor,\ldots,\lfloor M_{K_r}^* \rfloor$.
 
 \end{algorithm}
+
+
