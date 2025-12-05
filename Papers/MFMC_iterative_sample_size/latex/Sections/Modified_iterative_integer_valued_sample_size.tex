@@ -269,19 +269,14 @@ budget admissibility condition~\eqref{eq:p_bound}, the following bounds hold:
 % \]
 
 
-\subsection{Further modification for identical sample allocation}
+\subsection{Post-processing for identical integer sample allocation}
+When the computational budget $b$ is small, the iterative scheme in \eqref{eq:Modified_sample_size_iterative_integer_proxy} may assign identical integer samples to consecutive fidelity levels. Since equal allocations do not contribute to variance reduction but still incur a cost, such configurations are inefficient. We therefore introduce a post-processing step that removes redundant levels and reallocates the budget across a reduced hierarchy.
 
-When the computational budget $p$ is limited, the iterative allocation scheme in \eqref{eq:Modified_sample_size_iterative_integer_proxy} may yield identical integer-valued sample sizes across consecutive fidelity levels. Such allocations are inefficient: identical sample sizes provide no additional variance reduction while still incurring computational costs. To address this inefficiency, we introduce a post-processing procedure that dynamically adjusts the active model set during iteration, eliminating levels that would receive identical allocations.
+The mechanism relies on the observation that if two consecutive levels satisfy $\lfloor M_{k-1}^* \rfloor = \lfloor M_k^* \rfloor$, then one level can be discarded without worsening the variance decay. Eliminating the less efficient of the two levels concentrates the fixed budget on fewer fidelities, thereby increasing the remaining sample sizes and improving the resulting estimator. This modification is particularly beneficial when $b$ is small relative to the size of the hierarchy.
 
-The key insight is that when two consecutive levels $k-1$ and $k$ receive the same integer sample size $m_{k-1} = m_k$, one of these models can be removed without compromising variance reduction. The decision to remove model $k-1$ or $k$ is based on efficiency metrics. We remove the model whose exclusion minimizes the impact on the theoretical variance $\mathcal{V}^{\text{MF}}$ in \eqref{eq:MFMC_variance_optimal}, thereby preserving estimator efficiency. Formally, we compute the variance difference
-\[
-\Delta f_j = f_{\mathcal{M}}^{\text{Act}} - f_{\mathcal{M}\backslash\{j\}}^{\text{Act}}
-\]
-for $j = k-1, k$ and $\mathcal{M}$ is the selected model set and remove the model with larger $\Delta f_j$. Let $\overline{m_i}$ be the integer sample size of set $\mathcal{M}$  obtained using either floor or ceil. then $f_{\mathcal{M}}^{\text{Act}}=\sum_{i=1}^K \Delta_i/\overline{m_i}$; $f_{\mathcal{M}\backslash\{j\}}^{\text{Act}}$ can be obtained by deleting $j$-th model, and obtain the corresponding integer valued sample size with budget $b$ using the modified iterative scheme. Note that the reduced model set must still satisfy the theoretical conditions required for optimal MFMC estimation. Specifically, when considering the removal of a model at level $k$, the correlation monotonicity condition is automatically preserved in the reduced set. The critical verification is for the cost-correlation ratio condition $(\rho_{1,k-1}^2 - \rho_{1,k+1}^2)/C_{k-1}<(\rho_{1,k+1}^2 - \rho_{1,k+2}^2)/C_{k+1}$, which must be checked for affected indices after removal. This condition ensures that the resulting allocation admits a strictly increasing sequence of integer sample sizes and that each retained model contributes effectively to variance reduction.
+To determine which level to remove, we adopt an efficiency-based comparison. Let $f_{\mathcal{M}}^{\text{Act}}=\sum_{i\in \mathcal{M}}\Delta_i/\overline{m}_i$ denote the actual variance for a given active set $\mathcal M$, where $\overline m_i=\lfloor M_i^* \rfloor$ denotes the integer allocation (via floor). For each candidate removal $j\in \{k-1,k\}$, we recompute the integer allocations under the same budget $b$ and evaluate $f_{\mathcal M\setminus \{j\}}^{\mathrm{Act}}$. The level yielding smaller variance after removal is discarded, ensuring that the retained hierarchy minimizes variance inflation. After eliminating a level, the reduced set must still satisfy the feasibility assumptions of MFMC in Theorem~\ref{thm:Sample_size_real}. The correlation monotonicity condition remains valid automatically when removing an intermediate level. The only nontrivial condition that must be verified is the cost–correlation ratio inequality, $\frac{\rho_{1,k-1}^2 - \rho_{1,k+1}^2}{C_{k-1}}<\frac{\rho_{1,k+1}^2 - \rho_{1,k+2}^2}{C_{k+1}}$, which guarantees that the resulting allocation produces a strictly increasing sequence of sample sizes and that each retained fidelity level contributes effectively to variance reduction. The complete algorithm -- iterative allocation followed by post-process elimination -- is summarized in Algorithm~\ref{algo:Iterative_MFMC_Algo}.
 
-This dynamic adjustment enables the active model subset to adapt to the available computational budget $p$, yielding allocations that maintain strict monotonicity in sample sizes while offering improved variance reduction compared to fixed-hierarchy approaches that permit identical allocations. The complete procedure is detailed in Algorithm~\ref{algo:Iterative_MFMC_Algo}.
-
---------------------------------------------------
+  
 
 
 % \begin{algorithm}[!ht]
@@ -433,9 +428,9 @@ Compute $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k=1,\ldots,K$ with $\rho
 
         \If{$k\ge 2$ and $\lfloor M_{k-1}^* \rfloor = \lfloor M_k^* \rfloor$}{
 
-            Compute $\Delta \mathcal{V}_{k-1}$ and $\Delta \mathcal{V}_k$.
+            Compute $f_{\mathcal M\setminus \{k-1\}}^{\mathrm{Act}}$ and $f_{\mathcal M\setminus \{k\}}^{\mathrm{Act}}$.
 
-            \If{$\Delta \mathcal{V}_{k-1}>\Delta \mathcal{V}_k$ \& $k\ge 3$}{
+            \If{$f_{\mathcal M\setminus \{k-1\}}^{\mathrm{Act}}<f_{\mathcal M\setminus \{k\}}^{\mathrm{Act}}$ \& $k\ge 3$}{
 
             % Compute merged increments: $\;\;\widetilde\Delta_{k-2} = \rho_{1,k-2}^2 - \rho_{1,k}^2,
             % \quad
