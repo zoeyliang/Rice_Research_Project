@@ -1,4 +1,4 @@
-%!TEX root = ../main.tex
+%!TEX root = main.tex
 % ====================================================
 \section{Multi-fidelity Monte Carlo}\label{sec:MFMC}
 % ====================================================
@@ -15,29 +15,32 @@ probability measure. Given a Hilbert space $({\mathcal U}, \langle \cdot, \cdot 
 \end{align}
 The space $ L_{\mathbb{P}}^2(W, {\mathcal U})$ is a Hilbert space with inner product 
 $ \langle u, v \rangle =  \int_W  \langle  u(\omega) , v(\omega)  \rangle_{{\mathcal U}} \; \textup{d}\mathbb{P}(\omega)$.
+For a $u \in  L_{\mathbb{P}}^2(W, {\mathcal U})$ we define
+\begin{equation}   \label{eq:variance_of_u}
+           \mathbb{E}\left[u \right]=\int_W u(\omega) \, \textup{d} \mathbb{P}(\omega) \in  {\mathcal U}
+           \quad \mbox{ and } \quad
+           \mathbb{V}[u] = \mathbb{E}\Big[  \big\| u - \mathbb{E}[u]  \big\|_{{\mathcal U}}^2 \Big] \in \real.
+  \end{equation}
 
-The goal is to estimate the expected value $\mathbb{E}[u_1 ]$ of a high fidelity model $u_1 \in   L_{\mathbb{P}}^2(W, {\mathcal U})$.
+
+
+
+The goal is to estimate the expected value $\mathbb{E}[u_1 ]$ of a high fidelity model (HFM) $u_1 \in   L_{\mathbb{P}}^2(W, {\mathcal U})$.
 The  MC estimator draws $N$ independent and identically distributed (i.i.d.) realizations $\omega^{(i)}$
 and estimates $\mathbb{E}[u ]$ using
 \begin{equation}\label{eq:MC_estimator}
     A^{\text{MC}}_{N} := \frac{1}{N}\sum_{i=1}^{N} u_1 \big(\omega^{(i)} \big).
 \end{equation}
 The MC estimator is unbiased, $\mathbb{E}\big[ A^{\text{MC}}_N \big] = \mathbb{E}\big[ u_1 \big]$
-and has variance $\mathbb{V}[A^{\text{MC}}_{N}] = N^{-1} \mathbb{V}[u_1 ]$, where, as usual,
-\begin{equation}   \label{eq:variance_of_u}
-           \mathbb{E}\left[u(\cdot,\boldsymbol \omega)\right]=\int_W u(\cdot,\omega) \, \pi(\boldsymbol\omega) \,d\omega
-           \quad \mbox{ and } \quad
-           \mathbb{V}[u] = \mathbb{E}\Big[  \big\| u - \mathbb{E}[u]  \big\|_{{\mathcal U}}^2 \Big].
-  \end{equation}
-
+and has variance $\mathbb{V}[A^{\text{MC}}_{N}] = N^{-1} \mathbb{V}[u_1 ]$.
 
 
 
 The MFMC framework uses an ensemble of models with varying computational cost and fidelity 
-to construct a variance-reduced estimator for high-fidelity expectation. 
-In addition to the HF model $u_1 \in   L_{\mathbb{P}}^2(W, {\mathcal U})$ assume that we have lower-fidelity (LF) models
-$\{u_k\}_{k=2}^K \in   L_{\mathbb{P}}^2(W, {\mathcal U})$ that can be sampled with lower computational cost.
-The central goal of MFMC is to allocate a fixed computational budget across these models to minimize estimator variance while maintaining unbiasedness.
+to construct an estimator of $\mathbb{E}[u_1 ]$ with reduced variance, compared to the MC estimator.
+In addition to the HFM $u_1 \in   L_{\mathbb{P}}^2(W, {\mathcal U})$ assume that we have lower-fidelity (LF) models
+$u_2, \ldots u_K \in   L_{\mathbb{P}}^2(W, {\mathcal U})$ that can be sampled with lower computational cost.
+The goal of MFMC is to allocate a fixed computational budget across these models to minimize estimator variance while maintaining unbiasedness.
 
 Given $1 \le m_1 \le m_2 \le \ldots \le m_K$ and i.i.d.\ samples $\omega^{(1)}, \ldots, \omega^{(m_K)}$,
 the MFMC estimator $A^{\text{MF}}$ combines an MC estimate of the high-fidelity model with differences 
@@ -73,19 +76,19 @@ In this formulation, the two terms in each correction are evaluated on independe
 which simplifies variance analysis. 
 We also express the MFMC estimator in compact form
 \begin{equation*}\label{eq:MFMC_estimator_Correction}
-          A^{\text{MF}} = Y_1 + \sum_{k=2}^K \alpha_k Y_k,
+          A^{\text{MF}} = U_1 + \sum_{k=2}^K \alpha_k U_k,
 \end{equation*}
-where the correction terms $Y_k$ are defined as
+where the correction terms $U_k$ are defined as
 \begin{equation} \label{eq:MFMC_Yk}
-       Y_1 := A^{\text{MC}}_{1,m_1},\qquad 
-       Y_k := A^{\text{MC}}_{k,m_k} - A^{\text{MC}}_{k,m_{k-1}}
+       U_1 := A^{\text{MC}}_{1,m_1},\qquad 
+       U_k := A^{\text{MC}}_{k,m_k} - A^{\text{MC}}_{k,m_{k-1}}
                =\left(1-\frac{m_{k-1}}{m_k}\right)
                  \left(A_{k,m_k\backslash m_{k-1}}^{\text{MC}}-A_{k,m_{k-1}}^{\text{MC}}\right), \quad k=2\ldots, K.
 \end{equation}
 %
 Because $\mathbb{E}\big[ A^{\text{MC}}_{k,m} \big] = \mathbb{E}\big[ u_k\big]$, $m \in \{ m_{k-1}, m_k \}$, $k\ge 1$,
-it holds that  $\mathbb{E}[Y_1] =  \mathbb{E}[u_1]$ and  
-$\mathbb{E}[Y_k] = 0$ for $k\ge 2$.
+it holds that  $\mathbb{E}[U_1] =  \mathbb{E}[u_1]$ and  
+$\mathbb{E}[U_k] = 0$ for $k\ge 2$.
 Consequently, for any selection of weights $\alpha_k$, 
 the MFMC estimator is  unbiased, 
 \begin{equation}\label{eq:MFMC_expectation}
@@ -93,7 +96,7 @@ the MFMC estimator is  unbiased,
 \end{equation}
 Note that $m_1 \ge 1$ is needed to ensure \eqref{eq:MFMC_expectation}; otherwise the MFMC estimator
 is biased.
-To analyze the variance, we define the following quantties.
+To analyze the variance, we define the following quantities.
 For each model $u_k$  and each pair of models $u_k$ and $u_j$, 
 we define the variance and the Pearson correlation coefficient as
 \begin{equation*}
@@ -101,18 +104,18 @@ we define the variance and the Pearson correlation coefficient as
                        = \frac{\text{Cov}\left[ u_k, u_j\right]}{\sigma_k\sigma_j}, \quad k,j=1,\dots, K,
 \end{equation*}
 where the covariance is 
-$\text{Cov}[u_k, u_j] := \mathbb{E}[\langle u_k - \mathbb{E}[u_k], u_j - \mathbb{E}[u_j]\rangle_{{\mathcal U}}]$.
+$\text{Cov}[u_k, u_j] := \mathbb{E}\big[\langle u_k - \mathbb{E}[u_k], u_j - \mathbb{E}[u_j \rangle_{{\mathcal U}} \big]$.
 By definition, $\rho_{k,k}=1$. 
 The variances of the components are
 \begin{equation}\label{eq:Var_Yk}
-    \mathbb{V}[Y_1] = \frac{\sigma_1^2}{m_1}, \qquad 
-    \mathbb{V}[Y_k] = \left(\frac{1}{m_{k-1}} - \frac{1}{m_k}\right)\sigma_k^2, \;\; k=2\ldots, K.
+    \mathbb{V}[U_1] = \frac{\sigma_1^2}{m_1}, \qquad 
+    \mathbb{V}[U_k] = \left(\frac{1}{m_{k-1}} - \frac{1}{m_k}\right)\sigma_k^2, \;\; k=2\ldots, K.
 \end{equation}
 The correlations satisfy
 \begin{equation}\label{eq:Cov_Yk}
-\operatorname{Cov} [Y_k,Y_j ]=0, \quad  2\le k<j\le K, 
+\operatorname{Cov} [U_k,U_j ]=0, \quad  2\le k<j\le K, 
 \quad \mbox{ and } \quad
-\operatorname{Cov}[Y_1,Y_k] = -\!\left(\frac{1}{m_{k-1}} - \frac{1}{m_k}\right)\rho_{1,k}\sigma_1\sigma_k,
+\operatorname{Cov}[U_1,U_k] = -\!\left(\frac{1}{m_{k-1}} - \frac{1}{m_k}\right)\rho_{1,k}\sigma_1\sigma_k,
 \quad  2\le k \le K, 
 \end{equation}
 as shown in ??? and \cite[Lemma~3.2]{BPeherstorfer_KWillcox_MDGunzburger_2016a}. 
@@ -132,7 +135,7 @@ If $C_k$ denotes the per-sample cost of model $u_k$, the total computational cos
 
 
 
-In order to determine optimal sample sizes $m_k$ and weights $\alpha_k$ in the MFMC estimator \eqref{eq:MFMC_estimator_independent} the MFMC estimator  variance \eqref{eq:MFMC_variance0} 
+In order to determine optimal sample sizes $m_k$ and weights $\alpha_k$ in the MFMC estimator \eqref{eq:MFMC_estimator_independent}, the MFMC estimator  variance \eqref{eq:MFMC_variance0} 
 is minimized subject to a fixed budget $b$ on the computational cost \eqref{eq:MFMC_cost}.
 We note that the problem of computing optimal sample sizes $m_k$ and weights $\alpha_k$ 
 can be separated. 
@@ -148,9 +151,11 @@ then
 From \eqref{eq:MFMC_variance0} it is easy to see that a solution of the  inner minimization problem in
 \eqref{eq:MFMC_variance_min_alpha} is
 \begin{equation}   \label{eq:MFMC_weights}
-    \alpha_k^* = \frac{\rho_{1,k}\sigma_1}{\sigma_k}.
+    \alpha_k^* = \frac{\rho_{1,k}\sigma_1}{\sigma_k}, \quad k= 2, \ldots, K.
 \end{equation}
 If $1 \le m_1 < m_2 < \ldots < m_K$, \eqref{eq:MFMC_weights} is the unique solution.
+If $m_k = m_{k-1}$ for some $k \in \{ 2, \ldots, K \}$, then the $k$-th term in  \eqref{eq:MFMC_variance0} 
+vanishes and all $\alpha_k^* \in \real$ and also solutions.
 With the optimal weights \eqref{eq:MFMC_weights}, the MFMC estimator  variance \eqref{eq:MFMC_variance0} 
 \begin{subequations}  \label{eq:MFMC_variance}
 \begin{align}
@@ -170,7 +175,7 @@ As noted earlier,  $m_1 \ge 1$ is needed to ensure the unbiasedness \eqref{eq:MF
 of the MFMC estimator.
 The expression  \eqref{eq:MFMC_variance_a} for the variance reveals that if
 $m_k = m_{k-1}$ for some model $k$, then this model does not contribute to the variance reduction, i.e.,
-\begin{equation}  \label{eq:MFMC_variance_k}
+\begin{equation}  \label{eq:MFMC_variance_ka}
     \mathcal{V}^{\text{MF}}(m_1, \ldots, m_K)
     :=  \mathbb{V}[A^{\text{MF}}]
     = \frac{\sigma_1^2}{m_1} 
@@ -178,3 +183,12 @@ $m_k = m_{k-1}$ for some model $k$, then this model does not contribute to the v
    = \sigma_1^2\sum_{m_k > m_{k-1}} \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k},
 \end{equation}
 where again $\rho_{1,K+1} :=0$ and $m_0 := 0$.
+Similarly,  \eqref{eq:MFMC_variance_b} shows that if $\rho_{1,k}^2 = \rho_{1,k+1}^2$ for some model $k$, 
+then this model does not contribute to the variance reduction, i.e.,
+\begin{equation}  \label{eq:MFMC_variance_kb}
+    \mathcal{V}^{\text{MF}}(m_1, \ldots, m_K)
+    :=  \mathbb{V}[A^{\text{MF}}]
+   = \sigma_1^2\sum_{\rho_{1,k}^2 \not= \rho_{1,k+1}^2} \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k}.
+\end{equation}
+The next step is to compute the sample sizes.
+

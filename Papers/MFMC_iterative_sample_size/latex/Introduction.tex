@@ -1,8 +1,9 @@
+%!TEX root = main.tex
 % ====================================================
 \section{Introduction}\label{sec:Intro}
 % ====================================================
 
-Monte Carlo (MC) methods are widely used for estimating statistical quantities in scientific and engineering applications. However, their computational cost can become prohibitive when each high-fidelity (HF) model evaluation is expensive. Multi-fidelity Monte Carlo (MFMC) methods \cite{PeWiGu:2016} address this challenge by exploiting correlations between models of varying accuracy and cost. By combining high-fidelity and low-fidelity (LF) evaluations within a single estimator, MFMC reduces the variance under a fixed computational budget while preserving the accuracy of the HF model.
+Monte Carlo (MC) methods are widely used for estimating statistical quantities in scientific and engineering applications. However, their computational cost can become prohibitive when each high-fidelity (HF) model evaluation is expensive. Multi-fidelity Monte Carlo (MFMC) methods \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a} address this challenge by exploiting correlations between models of varying accuracy and cost. By combining high-fidelity and low-fidelity (LF) evaluations within a single estimator, MFMC reduces the variance under a fixed computational budget while preserving the accuracy of the HF model.
 
 
 A crucial aspect of MFMC is determining the optimal sample allocation across different model fidelities. In the standard formulation, the sample sizes are obtained by solving a continuous optimization problem that minimizes the estimator variance under a prescribed cost constraint. This yields real-valued sample sizes, which are then rounded to integers for practical implementation. Although rounding is computationally convenient, it introduces a discrepancy between the theoretical and implemented allocations, leading to potential suboptimality. This issue is particularly pronounced when the computational budget is limited or when model costs vary significantly.
