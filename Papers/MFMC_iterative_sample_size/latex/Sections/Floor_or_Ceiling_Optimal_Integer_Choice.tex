@@ -56,6 +56,49 @@ showing that $f$ is strictly convex on its domain. Thus the continuous minimizer
 
 Monotonicity should be enforced explicitly because the subproblem at step $j$ should include the constraint $m_j \ge \overline{m}_{j-1}$; with this, $\overline{m}_1 \le \overline{m}_2 \le \cdots \le \overline{m}_K$.
 
+%
+\begin{subequations}\label{eq:Adaptive_Optimization}
+\begin{align}
+    \min \quad & \sum_{k=1}^{j-1}\frac{\Delta_k}{\overline{m}_k}
+    + \frac{\Delta_j}{m_j}
+    + \frac{\Big(\sum_{k=j+1}^K \sqrt{C_k\Delta_k}\Big)^2}
+    {\,b_j - C_j m_j\,},\\
+    % \text{s.t.} \quad & \sum_{k=j}^K C_k m_k=C_jm_j+\sum_{k=j+1}^K\sqrt{C_k\Delta_k}\frac{b_k}{\sum_{i=k}^K\sqrt{C_i\Delta_i}} \le b_j=b - \sum_{k=1}^{j-1} C_k\overline{m}_k, \\
+    \text{s.t.} \quad & 0\le C_j m_j \le b_j=b - \sum_{k=1}^{j-1} C_k\overline{m}_k, \\
+    & m_j \ge \overline{m}_{j-1},\qquad m_k \ge m_{k-1}, \quad k=j+1,\ldots,K, \label{eq:Adaptive_Optimization_obj_c}\\
+    & m_j,\ldots,m_K \in \mathbb{R}.
+\end{align}
+\end{subequations}
+%
+
+For $k=j+1$, the constraint $m_{j+1}\ge m_j$, by the formula of $m_{j+1}$, wehave
+\[
+\sqrt{\frac{\Delta_{j+1}}{C_{j+1}}}\frac{b_j-C_jm_j}{\sum_{k=j+1}^K\sqrt{C_k\Delta_k}}\ge m_j
+\]
+let $S_j = \sum_{k=j}^K \sqrt{C_k\Delta_k}$, $B_j = \sqrt{\frac{\Delta_j}{C_j}}$, then
+\[
+m_j\le \frac{B_{j+1}b_j}{S_{j+1}+C_jB_{j+1}}
+\]
+therefore, 
+\[
+m_j\le \min\left\{\frac{b_j}{C_j}, \frac{B_{j+1}b_j}{S_{j+1}+C_jB_{j+1}}\right\}
+\]
+For the later monotonicity constraints for $k\ge j+1$ ( such as $m_{j+2}\ge m_{j+1}$), they are automatically satisfied in the continuous optimal solution without integer constraints (because the variables scale the same). Therefore, the problem becomes
+%
+\begin{subequations}\label{eq:Adaptive_Optimization}
+\begin{align}
+    \min \quad & f(m_j) = \sum_{k=1}^{j-1}\frac{\Delta_k}{\overline{m}_k}
+    + \frac{\Delta_j}{m_j}
+    + \frac{S_{j+1}^2}
+    {\,b_j - C_j m_j\,},\\
+    \text{s.t.} \quad & b_j=b - \sum_{k=1}^{j-1} C_k\overline{m}_k, \\
+    & \overline{m}_{j-1}\le m_j \le \min\left\{\frac{b_j}{C_j}, \frac{B_{j+1}b_j}{S_{j+1}+C_jB_{j+1}}\right\} \\
+    & m_j\in \mathbb{R}.
+\end{align}
+\end{subequations}
+%
+
+
 The proposed method is a forward greedy algorithm that preserves the structure of the continuous optimization problem while yielding integer-feasible allocations. Each step requires solving a simple one-dimensional convex problem and evaluating two integer candidates, giving an overall complexity of $\mathcal{O}(K)$. This makes the approach highly scalable for multifidelity settings with many models. Because integer constraints destroy optimal substructure, global integer optimality cannot be guaranteed. Nevertheless, the method produces high-quality feasible allocations at very low computational cost. Numerical experiments (Section~\ref{sec:Num_Result}) show that 
 
 % the average deviation from the integer-programming optimum is below $2\%$, while computation time is reduced by an order of magnitude.
