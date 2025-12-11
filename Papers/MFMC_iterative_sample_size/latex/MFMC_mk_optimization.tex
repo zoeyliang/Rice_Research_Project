@@ -55,25 +55,33 @@ computational cost \eqref{eq:Optimization_sample_size_Nz_budget}.
 % ====================================================
 \subsection{Relaxation}  \label{sec:MFMC_mk_optimize_relax}
 % ====================================================
-Instead of solving the integer programming problem \eqref{eq:Optimization_sample_size_Nz} or
-even \eqref{eq:Optimization_sample_size_N}, previous papers including
+Instead of solving the integer programming problem \eqref{eq:Optimization_sample_size_N},
+let alone \eqref{eq:Optimization_sample_size_Nz}, previous papers including
 \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a} and \cite{AGruber_MGunzburger_LJu_ZWang_2023a}
-have considered a relaxation  and then used rounding to obtain integer sample sizes.
-Specifically, \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a}
-considered the problem
+have considered a relaxation and then used rounding to obtain integer sample sizes.
+
+In the following, we use $m_k$ to denote an integer-valued sample size for model $k$, 
+and $x_k$ to denote real-valued relaxations of the sample size for model $k$.
+Moreoer, for $x \in \real$, we use $\lfloor x \rfloor$ to denote the largest integer less than or equal to $x$,
+and we use $\lceil x \rceil$ to denote the smallest integer greater than or equal to $x$.
+
+
+
+In \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a} the following relaxation 
+of \eqref{eq:Optimization_sample_size_N} was considered,
 \begin{subequations}\label{eq:Optimization_sample_size_m_relaxed}
     \begin{align}
     \label{eq:Optimization_sample_size_m_relaxed_obj}
-    \min \quad &\sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k},   \\
-       \text{s.t.}\quad & \sum_{k=1}^K C_km_k \le b,       \\
-                                & m_1\ge 0,\quad  m_k \ge m_{k-1}, \quad k=2\ldots,K,\\
-                                &m_1,\ldots, m_K\in \real.
+    \min \quad &\sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{x_k},   \\
+       \text{s.t.}\quad & \sum_{k=1}^K C_k x_k \le b,       \\
+                                & x_1\ge 0,\quad  x_k \ge x_{k-1}, \quad k=2\ldots,K,\\
+                                &x_1,\ldots, x_K\in \real.
     \end{align}
 \end{subequations}
-The formulation \eqref{eq:Optimization_sample_size_m_relaxed} potentially suffers from the same isses as 
-\eqref{eq:Optimization_sample_size_N}, namely that if  $m_k = m_{k-1}$, the $k$-th model does not
-provide variance reduction, but its cost is included. Moreover, $m_1\ge 0$ s imposed instead of 
-$m_1\ge 1$ to allow analytical solution of \eqref{eq:Optimization_sample_size_m_relaxed}  under
+The formulation \eqref{eq:Optimization_sample_size_m_relaxed} potentially suffers from the same issues as 
+\eqref{eq:Optimization_sample_size_N}, namely that if  $x_k = x_{k-1}$, the $k$-th model does not
+provide variance reduction, but its cost is included. Moreover, $x_1\ge 0$ is imposed instead of 
+$x_1\ge 1$ to allow the analytical solution of \eqref{eq:Optimization_sample_size_m_relaxed}  under
 suitable conditions.
 
 
@@ -82,8 +90,7 @@ Because of the monotone correlations assumption \eqref{eq:correlation_assumption
 solution.
 Under conditions specified in the following Theorem~\ref{thm:Sample_size_real}, the 
 real valued solution
-of \eqref{eq:Optimization_sample_size_m_relaxed} can be computed analytically, and it satisfies
-$0  < m_1^* < m_2^* <  \ldots < m_K^*$.
+of \eqref{eq:Optimization_sample_size_m_relaxed} can be computed analytically.
 The following theorem is proven in \cite[Th.~3.4]{BPeherstorfer_KWillcox_MDGunzburger_2016a}.
 
 \begin{theorem}[Optimal MFMC Real-Valued Sample Allocation]   \label{thm:Sample_size_real}
@@ -103,43 +110,40 @@ The following theorem is proven in \cite[Th.~3.4]{BPeherstorfer_KWillcox_MDGunzb
     \end{subequations}
     hold, where $\rho_{1,K+1} :=0$, then the unique solution of \eqref{eq:Optimization_sample_size_m_relaxed} is
     \begin{equation}\label{eq:MFMC_RealValued_Sample_Size}
-             m_k^* = \sqrt{\frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{C_k}} \; 
+             x_k^* = \sqrt{\frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{C_k}} \; 
                           \frac{b}{\sum_{l=1}^K \sqrt{C_l (\rho_{1,l}^2 - \rho_{1,l+1}^2)}},
              \quad k = 1, \ldots, K, 
      \end{equation}
-    the cost constraint is active $\sum_{k=1}^K C_km_k^* = p$, 
+    the cost constraint is active $\sum_{k=1}^K C_k x_k^* = p$, 
     and the resulting minimal variance of the MFMC estimator is
      \begin{equation}\label{eq:MFMC_variance_optimal}
-           \mathcal{V}^{\text{MF}}(m_1^*, \ldots, m_K^*)
-           =   \sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k^*}
+           \mathcal{V}^{\text{MF}}(x_1^*, \ldots, x_K^*)
+           =   \sigma_1^2  \sum_{k=1}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{x_k^*}
            =  \frac{\sigma_1^2}{b}\!\left(\sum_{k=1}^K \sqrt{C_k (\rho_{1,k}^2 - \rho_{1,k+1}^2) }\right)^{\!2}.
        \end{equation}
 \end{theorem}
 
 Note that because of the cost-correlation ratio assumption \eqref{eq:Sample_size_real_assumptions_b}, 
 the  solution \eqref{eq:MFMC_RealValued_Sample_Size}
-satisfies $0  < m_1^* < m_2^* <  \ldots < m_K^*$.
+satisfies $0  < x_1^* < x_2^* <  \ldots < x_K^*$.
 
 
-Integer sample sizes are computed by rounding.
-For $x \in \real$, we use $\lfloor x \rfloor$ to denote the largest integer less than or equal to $x$,
-and we use $\lceil x \rceil$ to denote the smallest integer greater than or equal to $x$.
 
 To obtain integer samples,  \cite[p.~A3171]{BPeherstorfer_KWillcox_MDGunzburger_2016a}
-round down, i.e., use $\lfloor m_1^* \rfloor, \ldots, \lfloor m_K^* \rfloor$. 
+round down, i.e., use $m_1 = \lfloor x_1^* \rfloor, \ldots, m_K = \lfloor x_K^* \rfloor$. 
 Rounding down reduces the cost, i.e., the rounded down sample sizes are still feasible for
 \eqref{eq:Optimization_sample_size_m_relaxed}.  However, rounding down increases the variance.
 Thus, rounding down the sample sizes of more costly, higher fidelity samples, frees up computational 
 budget that could be used for additional samples of less costly, lower fidelity samples to reduce the variance.
 Our adaptive sample size computation adresses this shorcoming of rounding down.
 
-Rounding down may lead to $\lfloor m_1^* \rfloor = 0$, which introduces bias,  
+Rounding down may lead to $\lfloor x_1^* \rfloor = 0$, which introduces bias,  
 $\mathbb{E}[A^{\text{MF}}] \not=  \mathbb{E}[u_1]$.
-Rounding down may also lead to $\lfloor m_k^* \rfloor = \lfloor m_{k-1}^* \rfloor$ for some $k \in \{ 2, \ldots, K\}$, 
+Rounding down may also lead to $\lfloor x_k^* \rfloor = \lfloor x_{k-1}^* \rfloor$ for some $k \in \{ 2, \ldots, K\}$, 
 which means the $k$-th model does not contribute to variance reduction, but its cost is included in the
 computational budget.
-The case $\lfloor m_1^* \rfloor = 0$ can happen if the computational budget $b$ is small.
-If $0< m_1^* < 1$, \cite{AGruber_MGunzburger_LJu_ZWang_2023a} use $\lceil m_1^* \rceil = 1$,
+The case $\lfloor x_1^* \rfloor = 0$ can happen if the computational budget $b$ is small.
+If $0< x_1^* < 1$, \cite{AGruber_MGunzburger_LJu_ZWang_2023a} use $m_1 = \lceil x_1^* \rceil = 1$,
 and iteratively recompute integer sample sizes from a modified version of 
 Theorem~\ref{thm:Sample_size_real}. See Algorithm~2 in \cite{AGruber_MGunzburger_LJu_ZWang_2023a}.
 However, their iterative sample size computation can generate integer sample sizes
@@ -148,11 +152,11 @@ See Tables~1 and 2 in \cite{AGruber_MGunzburger_LJu_ZWang_2023a}.
 In this case, the models $2$ to $l$ do not contribute to variance reduction, but their cost is included in the
 computational budget.
 
-Finally, while the  solution \eqref{eq:MFMC_RealValued_Sample_Size} satisfies $0  < m_1^* < m_2^* <  \ldots < m_K^*$,
-some rounded down sample sizes may be identical,  $\lfloor m_k^* \rfloor = \lfloor m_{k-1}^* \rfloor$ for some 
+Finally, while the  solution \eqref{eq:MFMC_RealValued_Sample_Size} satisfies $0  < x_1^* < x_2^* <  \ldots < x_K^*$,
+some rounded down sample sizes may be identical,  $\lfloor x_k^* \rfloor = \lfloor x_{k-1}^* \rfloor$ for some 
 $k \in \{ 2, \ldots, K\}$, in which case the samples of the $k$-th model do not contribute to variance
 reduction, but their costs are charged to the budget. 
-The issues $\lfloor m_1^* \rfloor = 0$ or $\lfloor m_k^* \rfloor = \lfloor m_{k-1}^* \rfloor$ for some 
+The issues $\lfloor x_1^* \rfloor = 0$ or $\lfloor x_k^* \rfloor = \lfloor x_{k-1}^* \rfloor$ for some 
 $k \in \{ 2, \ldots, K\}$, are more likely to occur when the total computational budget $b$ is small relative
  to the cost $C_1$ of the HF.
 See, e.g., the numerical examples in  \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a} or \cite{AGruber_MGunzburger_LJu_ZWang_2023a}.

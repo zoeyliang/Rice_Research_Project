@@ -5,59 +5,59 @@
    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Recursive computation of sample sizes}   
-Assume that we have computed integer samples $1 \le m_1^* \le \ldots \le m_{j-1}^*$.
-If $m_k^* = m_{k-1}^*$ for some $k \in \{ 2, \ldots, j-1 \}$, then model
+Assume that we have computed integer samples $1 \le m_1 \le \ldots \le m_{j-1}$.
+If $m_k = m_{k-1}$ for some $k \in \{ 2, \ldots, j-1 \}$, then model
 $k$ is not used and we set $z_k = 0$; otherwise $z_k = 1$.
-The remaining computational budget is $b_j = b -  \sum_{k=1}^{j-1} z_k C_k m_k^*$.
+The remaining computational budget is $b_j = b -  \sum_{k=1}^{j-1} z_k C_k m_k$.
 
 To compute the sample size $m_j^*$,  we consider the problem 
 \begin{subequations}\label{eq:Sequential_Optimization}
     \begin{align}
     \label{eq:Sequential_Optimization_obj}
-    \min \quad &\sigma_1^2  \sum_{k=j}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_k},   \\
-       \text{s.t.}\quad & \sum_{k=j}^K C_km_k \le b_j,       \\
-                                & m_j \ge m_{j-1}^*,\quad  m_k \ge m_{k-1}, \quad k=j+1\ldots,K,\label{eq:Sequential_Optimization_obj_c}\\
-                                &m_j,\ldots, m_K\in \real.
+    \min \quad &\sigma_1^2  \sum_{k=j}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{x_k},   \\
+       \text{s.t.}\quad & \sum_{k=j}^K C_k x_k \le b_j,       \\
+                                & x_j \ge m_{j-1},\quad  x_k \ge x_{k-1}, \quad k=j+1\ldots,K,\label{eq:Sequential_Optimization_obj_c}\\
+                                &x_j,\ldots, x_K\in \real.
     \end{align}
 \end{subequations}   
 The problem  \eqref{eq:Sequential_Optimization} has a similar same structure as 
 \eqref{eq:Optimization_sample_size_m_relaxed}, and 
-if $j = 1$, $m_0^* = 0$, and $b_1 = b$, then \eqref{eq:Sequential_Optimization} is
+if $j = 1$, $m_0 = 0$, and $b_1 = b$, then \eqref{eq:Sequential_Optimization} is
 identical to \eqref{eq:Optimization_sample_size_m_relaxed}.
 
 Because of the monotone correlations assumption \eqref{eq:correlation_assumption},
 \eqref{eq:Sequential_Optimization} is a convex optimization problem and has a unique
-solution, which we denote by $m_{j|j}^*, \ldots, m_{K|j}^*$.
+solution, which we denote by $x_{j|j}^*, \ldots, x_{K|j}^*$.
 Theorem~\ref{thm:Sample_size_real} can be used to determine the solution of
-\eqref{eq:Sequential_Optimization} with $m_{j-1}^* = 0$.
+\eqref{eq:Sequential_Optimization} with $m_{j-1} = 0$.
 
 
 \begin{theorem}  \label{thm:Sequential_Optimization_sample_size_real}
    Let the assumption of Theorem~\ref{thm:Sample_size_real} be satisfied and define $\rho_{1,K+1} = 0$.
    \begin{itemize}
-   \item[i.] The unique solution of \eqref{eq:Sequential_Optimization} with $m_{j-1}^* = 0$ is
+   \item[i.] The unique solution of \eqref{eq:Sequential_Optimization} with $m_{j-1} = 0$ is
     \begin{equation}\label{eq:Sequential_Optimization_mjj}
-             m_{k|j}^* = \sqrt{\frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{C_k}} \; 
+             x_{k|j}^* = \sqrt{\frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{C_k}} \; 
                           \frac{b_j}{\sum_{l=j}^K \sqrt{C_l (\rho_{1,l}^2 - \rho_{1,l+1}^2)}},
              \quad k = j, \ldots, K,
      \end{equation}
-    the cost constraint is active $\sum_{k=1}^K C_km_k^* = b_j$, 
+    the cost constraint is active $\sum_{k=1}^K C_kx_k^* = b_j$, 
     and the resulting optimal objective function value is
      \begin{equation}\label{eq:MFMC_variance_optimal-j}
-            \sigma_1^2  \sum_{k=j}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{m_{k|j}^*}
+            \sigma_1^2  \sum_{k=j}^K \frac{ \rho_{1,k}^2 - \rho_{1,k+1}^2}{x_{k|j}^*}
            =  \frac{\sigma_1^2}{b_j}\!\left(\sum_{k=j}^K \sqrt{C_k (\rho_{1,k}^2 - \rho_{1,k+1}^2) }\right)^{\!2}.
        \end{equation}
-    \item[ii.] If $b_j = b - \sum_{k=1}^{j-1} C_k m_{k|k}^*$, then $m_{j|j}^*$ given by
-                  \eqref{eq:Sequential_Optimization_mjj} satisfy $0 < m_{1|1}^* < \ldots < m_{K|K}^*$.
-    \item[iii.] If $b_j = b - \sum_{k=1}^{j-1} C_k m_{k|k}^*$, then 
-                  then $m_{j|j}^*$ given by \eqref{eq:Sequential_Optimization_mjj} and
-                 $m_j^*$ given by \eqref{eq:MFMC_RealValued_Sample_Size} satisfy
-                  $m_1^* = m_{1|1}^*,  \ldots, m_K^* = m_{K|K}^*$.
+    \item[ii.] If $b_j = b - \sum_{k=1}^{j-1} C_k x_{k|k}^*$, then $x_{j|j}^*$ given by
+                  \eqref{eq:Sequential_Optimization_mjj} satisfy $0 < x_{1|1}^* < \ldots < x_{K|K}^*$.
+    \item[iii.] If $b_j = b - \sum_{k=1}^{j-1} C_k x_{k|k}^*$, then 
+                  then $x_{j|j}^*$ given by \eqref{eq:Sequential_Optimization_mjj} and
+                 $x_j^*$ given by \eqref{eq:MFMC_RealValued_Sample_Size} satisfy
+                  $x_1^* = x_{1|1}^*,  \ldots, x_K^* = x_{K|K}^*$.
     \end{itemize}
 \end{theorem}
 \begin{proof}
  \begin{itemize}
-   \item[i.] Because  \eqref{eq:Sequential_Optimization} with $m_{j-1}^* = 0$ has the same structure as 
+   \item[i.] Because  \eqref{eq:Sequential_Optimization} with $m_{j-1} = 0$ has the same structure as 
                 \eqref{eq:Optimization_sample_size_m_relaxed}, the first statement follows from
                 Theorem~\ref{thm:Sample_size_real}.
   \item[ii.] Define
@@ -67,11 +67,11 @@ Theorem~\ref{thm:Sample_size_real} can be used to determine the solution of
         Then 
         \begin{equation}\label{eq:S_j_H_j}
             S_{j-1}=\sqrt{C_{j-1} (\rho_{1,j-1}^2 - \rho_{1,j}^2) }+S_j, \qquad 
-            m_{j|j}^* = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j-1}^2}{C_j}}\frac{b_j}{S_j},
+            x_{j|j}^* = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j-1}^2}{C_j}}\frac{b_j}{S_j},
         \end{equation}
         and
         \begin{equation*}
-                     b_j = b_{j-1} - C_{j-1} m_{j-1|j-1}^* 
+                     b_j = b_{j-1} - C_{j-1} x_{j-1|j-1}^* 
                          = b_{j-1}\left(1 - \frac{\sqrt{C_{j-1}(\rho_{1,j-1}^2 - \rho_{1,j}^2) }}{S_{j-1}}\right) 
                          = b_{j-1}\frac{S_j}{S_{j-1}}.
         \end{equation*}
@@ -82,20 +82,36 @@ Theorem~\ref{thm:Sample_size_real} can be used to determine the solution of
         and, using assumption \eqref{eq:Sample_size_real_assumptions_b}
         of Theorem~\ref{thm:Sample_size_real},
         \[
-             m_{j|j}^* = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j+1}^2}{C_j}} \, \frac{b_j}{S_j}
+             x_{j|j}^* = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j+1}^2}{C_j}} \, \frac{b_j}{S_j}
                            = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j+1}^2}{C_j}} \,  \frac{b_{j-1}}{S_{j-1}}
                             > \sqrt{\frac{\rho_{1,j-1}^2 - \rho_{1,j}^2}{C_{j-1}}} \, \frac{b_{j-1}}{S_{j-1}}
-                           = m_{j-1|j-1}^*.
+                           = x_{j-1|j-1}^*.
         \]
         
       \item[iii.]     Recursive application of  \eqref{eq:b_jS_j} gives $b_j = b S_j / S_1$.
              Substituting this expression into \eqref{eq:S_j_H_j} yields
              \[
-                        m_{j|j}^*   = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j+1}^2}{C_j}} \, \frac{b}{S_1},
+                        x_{j|j}^*   = \sqrt{\frac{\rho_{1,j}^2 - \rho_{1,j+1}^2}{C_j}} \, \frac{b}{S_1},
              \]
-             which coincides with the closed-form MFMC sample size $m_j^*$ in \eqref{eq:MFMC_RealValued_Sample_Size}.  
+             which coincides with the closed-form MFMC sample size $x_j^*$ in \eqref{eq:MFMC_RealValued_Sample_Size}.  
   \end{itemize}
 \end{proof}
+
+Under the conditions of  Theorem~\ref{thm:Sequential_Optimization_sample_size_real},
+the components $x_{j|j}^*$ of the solutions $x_{j|j}^*, \ldots, x_{K|j}^*$ of \eqref{eq:Sequential_Optimization_mjj},
+$j = 1, \ldots, K-1$,  satisfy $0 < x_1^* = x_{1|1}^* <  \ldots < x_K^* = x_{K|K}^*$.
+Thus, the solution $x_{j|j}^*, \ldots, x_{K|j}^*$ of \eqref{eq:Sequential_Optimization_mjj} with $m_{j-1} = 0$ is
+also feasible for  \eqref{eq:Sequential_Optimization_mjj} with $m_{j-1} \le x_{j|j}^* = x_j^*$,
+and therefore optimal for \eqref{eq:Sequential_Optimization_mjj} with $m_{j-1} \le x_{j|j}^* = x_j^*$.
+This leads to the following corollary of Theorem~\ref{thm:Sequential_Optimization_sample_size_real}.
+
+\begin{corollary}  \label{cor:Sequential_Optimization_sample_size_real}
+   Let the assumption of Theorem~\ref{thm:Sample_size_real} be satisfied and define $\rho_{1,K+1} = 0$.
+   The results of Theorem~\ref{thm:Sequential_Optimization_sample_size_real} remain valid
+   if $m_{j-1} = 0$ is replacd by $m_{j-1} \le x_{j|j}^* = x_j^*$.
+\end{corollary}
+
+
 
 There is a benefit in solving sequences of problems \eqref{eq:Sequential_Optimization} when
 one rounds the real-valued sample sizes to integers.
