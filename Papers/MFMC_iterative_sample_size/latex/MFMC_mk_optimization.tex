@@ -72,8 +72,15 @@ considered the problem
 \end{subequations}
 The formulation \eqref{eq:Optimization_sample_size_m_relaxed} potentially suffers from the same isses as 
 \eqref{eq:Optimization_sample_size_N}, namely that if  $m_k = m_{k-1}$, the $k$-th model does not
-provide variance reduction, but its cost is included. 
-However, under conditions specified in the following Theorem~\ref{thm:Sample_size_real}, the 
+provide variance reduction, but its cost is included. Moreover, $m_1\ge 0$ s imposed instead of 
+$m_1\ge 1$ to allow analytical solution of \eqref{eq:Optimization_sample_size_m_relaxed}  under
+suitable conditions.
+
+
+Because of the monotone correlations assumption \eqref{eq:correlation_assumption},
+\eqref{eq:Optimization_sample_size_m_relaxed} is a convex optimization problem and has a unique
+solution.
+Under conditions specified in the following Theorem~\ref{thm:Sample_size_real}, the 
 real valued solution
 of \eqref{eq:Optimization_sample_size_m_relaxed} can be computed analytically, and it satisfies
 $0  < m_1^* < m_2^* <  \ldots < m_K^*$.
@@ -82,7 +89,7 @@ The following theorem is proven in \cite[Th.~3.4]{BPeherstorfer_KWillcox_MDGunzb
 \begin{theorem}[Optimal MFMC Real-Valued Sample Allocation]   \label{thm:Sample_size_real}
    Let models $u_1, \ldots, u_k \in   L_{\mathbb{b}}^2(W, {\mathcal U})$ with
    standard deviations $\sigma_k$, correlation coefficients $\rho_{1,k}$, $k = 2, \ldots, K$,
-   between the HF model $u_1$  and the  LF models $u_k$, $k = 2, \ldots, K$, and 
+   between the HFM $u_1$  and the  LFMs $u_k$, $k = 2, \ldots, K$, and 
    per-sample costs $C_1, \ldots, C_K$ be given.
    If 
    \begin{subequations}\label{eq:Sample_size_real_assumptions}
@@ -113,6 +120,11 @@ Note that because of the cost-correlation ratio assumption \eqref{eq:Sample_size
 the  solution \eqref{eq:MFMC_RealValued_Sample_Size}
 satisfies $0  < m_1^* < m_2^* <  \ldots < m_K^*$.
 
+
+Integer sample sizes are computed by rounding.
+For $x \in \real$, we use $\lfloor x \rfloor$ to denote the largest integer less than or equal to $x$,
+and we use $\lceil x \rceil$ to denote the smallest integer greater than or equal to $x$.
+
 To obtain integer samples,  \cite[p.~A3171]{BPeherstorfer_KWillcox_MDGunzburger_2016a}
 round down, i.e., use $\lfloor m_1^* \rfloor, \ldots, \lfloor m_K^* \rfloor$. 
 Rounding down reduces the cost, i.e., the rounded down sample sizes are still feasible for
@@ -122,8 +134,8 @@ budget that could be used for additional samples of less costly, lower fidelity 
 Our adaptive sample size computation adresses this shorcoming of rounding down.
 
 Rounding down may lead to $\lfloor m_1^* \rfloor = 0$, which introduces bias,  
-$\mathbb{E}[A^{\text{MF}}] \not=  \mathbb{E}[u_1]$,
-or may lead to $\lfloor m_k^* \rfloor = \lfloor m_{k-1}^* \rfloor$ for some $k \in \{ 2, \ldots, K\}$, 
+$\mathbb{E}[A^{\text{MF}}] \not=  \mathbb{E}[u_1]$.
+Rounding down may also lead to $\lfloor m_k^* \rfloor = \lfloor m_{k-1}^* \rfloor$ for some $k \in \{ 2, \ldots, K\}$, 
 which means the $k$-th model does not contribute to variance reduction, but its cost is included in the
 computational budget.
 The case $\lfloor m_1^* \rfloor = 0$ can happen if the computational budget $b$ is small.

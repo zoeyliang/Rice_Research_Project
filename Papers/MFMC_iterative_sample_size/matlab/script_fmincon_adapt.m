@@ -1,6 +1,9 @@
 %% Load data
 Example = 'Example_5';
 
+ MFMC_examples(number)
+ 
+
 switch Example
     case 'Example_1'
         % Jiaxing's paper:

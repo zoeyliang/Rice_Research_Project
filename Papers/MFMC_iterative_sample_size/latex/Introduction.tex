@@ -3,13 +3,29 @@
 \section{Introduction}\label{sec:Intro}
 % ====================================================
 
-Monte Carlo (MC) methods are widely used for estimating statistical quantities in scientific and engineering applications. However, their computational cost can become prohibitive when each high-fidelity (HF) model evaluation is expensive. Multi-fidelity Monte Carlo (MFMC) methods \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a} address this challenge by exploiting correlations between models of varying accuracy and cost. By combining high-fidelity and low-fidelity (LF) evaluations within a single estimator, MFMC reduces the variance under a fixed computational budget while preserving the accuracy of the HF model.
+Monte Carlo (MC) methods are widely used for estimating statistical quantities in scientific and engineering applications. However, their computational cost can become prohibitive when sampling requires the evaluation of 
+high-fidelity models (HFMs). 
+Multi-fidelity Monte Carlo (MFMC) methods \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a} address this 
+challenge by exploiting correlations between models of varying accuracy and cost. 
+By combining the HFM and the low-fidelity models (LFMs) within a single estimator, MFMC computes an
+unbiased estimate of the HFM output with a reduced variance compared to MC estimator, given a fixed computational budget.
 
-
-A crucial aspect of MFMC is determining the optimal sample allocation across different model fidelities. In the standard formulation, the sample sizes are obtained by solving a continuous optimization problem that minimizes the estimator variance under a prescribed cost constraint. This yields real-valued sample sizes, which are then rounded to integers for practical implementation. Although rounding is computationally convenient, it introduces a discrepancy between the theoretical and implemented allocations, leading to potential suboptimality. This issue is particularly pronounced when the computational budget is limited or when model costs vary significantly.
-
-
-This work introduces a novel iterative scheme that computes integer-valued sample allocations to solve the budget under-utilization problem. The proposed approach generates admissible integer allocations through sequentially generating a sequence of proxy variables at each fidelity level, where each component is updated based on residual budget after flooring previous allocations. This recursive procedure implicitly enforces integer feasibility,  ensuring stricter adherence to total cost constraints, and preserving the structural properties of the optimal continuous solution.
+This paper develops approaches for computing sample size allocations across the different models. While sample
+size allocation is a crucial ingredient of MFMC, it has received limited attention in the literature.
+The original MFMC paper \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a} poses the sample size allocation 
+problem as an optimization problem in real variables, provides an analytic solution to this optimization problem
+under additional assumptions on the model correlations and costs, and proposed to round down the real-valued
+solutions to obtain integer-valued sample sizes. Obtaining integer-valued sample sizes ensures that the
+resulting MFMC estimator stays within the computational budget, but it can increase the estimator variance substantially.
+When the computational budget is small, simply rounding down can result in zero samples for the HFM, which introduces
+bias in the MFMC estimator. To ensure that the MFMC estimator is unbiased, 
+\cite{AGruber_MGunzburger_LJu_ZWang_2023a} modify the approach of  \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a} to ensure that the HFM is always sampled.
+However, rounding down is still used to compute sample sizes of LFMs.
+When rounding down is applied, some computational budget remains unused, which could be used to adjust
+LFM sample sizes for additional variance reduction. Moreover, the current approaches in \cite{BPeherstorfer_KWillcox_MDGunzburger_2016a} and \cite{AGruber_MGunzburger_LJu_ZWang_2023a} 
+can lead to identical sample sizes for subsequent models. In this case, one of these models is not contributing to 
+MFMC variance reduction, but its cost is still allocated to the budget. 
+Our approach addresses these and other shortcomings.
 
 
 
