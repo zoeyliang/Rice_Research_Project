@@ -38,13 +38,13 @@ and has variance $\mathbb{V}[A^{\text{MC}}_{N}] = N^{-1} \mathbb{V}[u_1 ]$.
 
 The MFMC framework uses an ensemble of models with varying computational cost and fidelity 
 to construct an estimator of $\mathbb{E}[u_1 ]$ with reduced variance, compared to the MC estimator.
-In addition to the HFM $u_1 \in   L_{\mathbb{P}}^2(W, {\mathcal U})$ assume that we have lower-fidelity (LF) models
+In addition to the HFM $u_1 \in   L_{\mathbb{P}}^2(W, {\mathcal U})$ assume that we have lower-fidelity models (LFMs)
 $u_2, \ldots u_K \in   L_{\mathbb{P}}^2(W, {\mathcal U})$ that can be sampled with lower computational cost.
 The goal of MFMC is to allocate a fixed computational budget across these models to minimize estimator variance while maintaining unbiasedness.
 
 Given $1 \le m_1 \le m_2 \le \ldots \le m_K$ and i.i.d.\ samples $\omega^{(1)}, \ldots, \omega^{(m_K)}$,
-the MFMC estimator $A^{\text{MF}}$ combines an MC estimate of the high-fidelity model with differences 
-of MC estimates of the lower-fidelity level models.
+the MFMC estimator $A^{\text{MF}}$ combines an MC estimate of the HFM with differences 
+of MC estimates of the LFMs.
 The MFMC estimator is defined as
 \begin{equation}\label{eq:MFMC_estimator}
     A^{\text{MF}}
