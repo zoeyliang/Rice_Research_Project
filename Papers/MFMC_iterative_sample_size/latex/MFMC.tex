@@ -70,23 +70,21 @@ the MFMC estimator \eqref{eq:MFMC_estimator} can be written as
     A^{\text{MF}} 
     = A^{\text{MC}}_{1,m_1} 
       +  \sum_{k=2}^K \alpha_k\left(1-\frac{m_{k-1}}{m_k}\right)
-                               \left(A_{k,m_k\backslash m_{k-1}}^{\text{MC}}-A_{k,m_{k-1}}^{\text{MC}}\right).
+                               \left(A_{k,m_k\backslash m_{k-1}}^{\text{MC}}-A_{k,m_{k-1}}^{\text{MC}}\right)
+   =: U_1 + \sum_{k=2}^K \alpha_k U_k,
 \end{equation}
-In this formulation, the two terms in each correction are evaluated on independent sample sets, 
-which simplifies variance analysis. 
-We also express the MFMC estimator in compact form
-\begin{equation*}\label{eq:MFMC_estimator_Correction}
-          A^{\text{MF}} = U_1 + \sum_{k=2}^K \alpha_k U_k,
-\end{equation*}
-where the correction terms $U_k$ are defined as
+where
 \begin{equation} \label{eq:MFMC_Yk}
        U_1 := A^{\text{MC}}_{1,m_1},\qquad 
        U_k := A^{\text{MC}}_{k,m_k} - A^{\text{MC}}_{k,m_{k-1}}
                =\left(1-\frac{m_{k-1}}{m_k}\right)
                  \left(A_{k,m_k\backslash m_{k-1}}^{\text{MC}}-A_{k,m_{k-1}}^{\text{MC}}\right), \quad k=2\ldots, K.
 \end{equation}
+In the formulation \eqref{eq:MFMC_estimator_independent}, 
+the two terms in each correction are evaluated on independent sample sets, 
+which simplifies variance analysis. 
 %
-Because $\mathbb{E}\big[ A^{\text{MC}}_{k,m} \big] = \mathbb{E}\big[ u_k\big]$, $m \in \{ m_{k-1}, m_k \}$, $k\ge 1$,
+Because $\mathbb{E}\big[ A^{\text{MC}}_{k,m} \big] = \mathbb{E}\big[ u_k\big]$, $m \in \nat$, $k\ge 1$,
 it holds that  $\mathbb{E}[U_1] =  \mathbb{E}[u_1]$ and  
 $\mathbb{E}[U_k] = 0$ for $k\ge 2$.
 Consequently, for any selection of weights $\alpha_k$, 
