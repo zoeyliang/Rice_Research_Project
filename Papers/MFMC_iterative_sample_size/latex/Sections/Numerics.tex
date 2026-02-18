@@ -4,6 +4,7 @@
 We present numerical experiments that demonstrate the effectiveness of the proposed iterative and adaptive integer-valued sample allocation scheme. The method is evaluated against three benchmark strategies: (i) the standard real-valued MFMC allocation, (ii) direct flooring of the real-valued solution, and (iii) the modified rounding method of \cite{GrGuJuWa:2023}. Performance is assessed in terms of realized computational cost and the resulting normalized variance under fixed budget constraints. All experiments are performed in {\tt MATLAB} R2024a on a MacBook Pro with 24 GB RAM and a 14-core Apple M4 Pro processor.
 
 
+\JLcolor{The adaptive approach is very sensitive to the initial condition. For implementation, we will select the initial condition as the closed form solution \eqref{eq:MFMC_RealValued_Sample_Size} such that the solution is as close as possible. }
 
 
 \subsection{First example}
@@ -411,8 +412,8 @@ Iterative (adaptive)
 & [2, 15, 388, 164723]
 & 2.48e+02 & 4.1015e-05 \\ \hline
 Integer program
-& [2,     18,    383, 161933] 
-&2.4800e+02 &4.1089e-05 \\ \hline
+& [2, 15, 388, 164723] 
+&2.48e+02 & 4.1015e-05 \\ \hline
 \end{tabular}
 \end{minipage}
 

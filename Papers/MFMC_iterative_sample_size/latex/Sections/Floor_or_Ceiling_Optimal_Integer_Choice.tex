@@ -1,105 +1,35 @@
 % ====================================================
 \section{Adaptive strategy}
 % ====================================================
+A naive flooring of the continuous MFMC solution may be suboptimal, particularly when the optimal real-valued sample size lies close to its ceiling. Computing the globally optimal integer allocation requires solving a mixed-integer nonlinear program, which is NP-hard and becomes computationally prohibitive as the total budget or the number of fidelity levels increases. Rather than pursuing global integer optimality, we introduce an adaptive rounding strategy that provides a computationally efficient local approximation to the integer-constrained problem.
 
-The iterative allocation scheme requires integer sample sizes, but iterative floor of the continuous solution may not be good enough and can be further improved if the real valued solution is very close to its ceiling. To address these issues, we introduce an adaptive strategy that performs a local look-ahead at each fidelity level. Instead of solving an integer program, the method compares the two nearest integer choices and selects the one that minimizes the total variance while satisfying the monotonicity constraint.
-
-After imposing integer constraints, the monotonicity condition $m_{j-1} \le m_j$ is no longer guaranteed by simple rounding and must be enforced explicitly. To this end, consider the relaxed subproblem for levels $j$ to $K$:
-%
-\begin{subequations}\label{eq:Adaptive_Optimization}
-\begin{align}
-    \min \quad & \sigma_1^2 \sum_{k=j}^K \frac{\Delta_k}{m_k}, \\
-    \text{s.t.} \quad & \sum_{k=j}^K C_k m_k \le b_j, \\
-    & m_j \ge m_{j-1},\qquad m_k \ge m_{k-1}, \quad k=j+1,\ldots,K, \label{eq:Adaptive_Optimization_obj_c}\\
-    & m_j,\ldots,m_K \in \mathbb{R}.
-\end{align}
-\end{subequations}
-%
-Under Assumption~\eqref{eq:Sample_size_real_assumptions_b}, the continuous solution of the original problem~\eqref{eq:Sequential_Optimization} already satisfies monotonicity; therefore the real-valued solutions of~\eqref{eq:Sequential_Optimization} and~\eqref{eq:Adaptive_Optimization} coincide. When integer constraints are imposed, however, the optimal substructure is lost and a stepwise adaptive procedure becomes necessary.
-
-Assume that the integer sample sizes $\overline{m}_1,\ldots,\overline{m}_{k-1}$ have been fixed at levels $1$ through $k-1$. Let $x$ denote the continuous sample size at the current level $k$, and define the remaining budget $b_k = b - \sum_{j=1}^{k-1} C_j \overline{m}_j$. For levels $k+1,\ldots,K$, the continuous optimal allocation is given by~\eqref{eq:Sequential_Optimization_mjj}. Substituting these continuous expressions yields an objective at level $k$
-%
-\begin{equation}\label{eq:Objective_adaptive_strategy}
-    f(x)=\sum_{j=1}^{k-1}\frac{\Delta_j}{\overline{m}_j}
-    + \frac{\Delta_k}{x}
-    + \frac{\Big(\sum_{j=k+1}^K \sqrt{C_j\Delta_j}\Big)^2}
-    {\,b_k - C_k x\,},
-    \qquad 0 < x < \frac{b_k}{C_k}.
-\end{equation}
-%
-The last term represents the optimal variance from levels $k+1,\ldots,K$, which is feasible only if sufficient budget remains. Differentiating twice gives
-%
-\[
-f''(x)
-= \frac{2\Delta_k}{x^3}
-+ \frac{2C_k^2\Big(\sum_{j=k+1}^K \sqrt{C_j\Delta_j}\Big)^2}
-{(b_k - C_k x)^3}
-> 0,
-\]
-%
-showing that $f$ is strictly convex on its domain. Thus the continuous minimizer $m_k^*$ is unique, and any optimal integer choice must be either $\lfloor m_k^* \rfloor$ or $\lceil m_k^* \rceil$. This observation forms the basis of the adaptive rounding rule. We now describe the forward greedy procedure used to construct an integer-feasible allocation. Starting from $k=1$, each level is processed once
-%
-\begin{algorithm}[!ht]
- Initialize $b_1 = b$.
- 
-\For{$j = 1, 2, \dots, K$}{
-    Compute the continuous minimizer $m_j^*$ of $f(x)$ in \eqref{eq:Objective_adaptive_strategy}.
-    
-    Evaluate the total variance when $m_j = \lfloor m_j^* \rfloor$ and $m_j = \lceil m_j^* \rceil$.
-    
-    Select $\overline{m}_j$ as the integer such that $\overline{m}_j \ge \overline{m}_{j-1}$ and  producing the smaller objective function.
-    
-    Update the remaining budget: $b_{j+1} = b_j - C_j \overline{m}_j$.
-}
-\end{algorithm}
-
-
-Monotonicity should be enforced explicitly because the subproblem at step $j$ should include the constraint $m_j \ge \overline{m}_{j-1}$; with this, $\overline{m}_1 \le \overline{m}_2 \le \cdots \le \overline{m}_K$.
-
+Specifically, suppose that integer sample sizes $\overline{m}_1,\ldots,\overline{m}_{j-1}$ have already been fixed for fidelity levels $1$ through $j-1$. Conditional on these decisions, we consider the following continuous subproblem governing the remaining allocation
 %
 \begin{subequations}\label{eq:Adaptive_Optimization}
 \begin{align}
     \min \quad & \sum_{k=1}^{j-1}\frac{\Delta_k}{\overline{m}_k}
-    + \frac{\Delta_j}{m_j}
-    + \frac{\Big(\sum_{k=j+1}^K \sqrt{C_k\Delta_k}\Big)^2}
-    {\,b_j - C_j m_j\,},\\
+    + \frac{\Delta_j}{x_j}
+    + \ldots + \frac{\Delta_K}{x_K},\\
     % \text{s.t.} \quad & \sum_{k=j}^K C_k m_k=C_jm_j+\sum_{k=j+1}^K\sqrt{C_k\Delta_k}\frac{b_k}{\sum_{i=k}^K\sqrt{C_i\Delta_i}} \le b_j=b - \sum_{k=1}^{j-1} C_k\overline{m}_k, \\
-    \text{s.t.} \quad & 0\le C_j m_j \le b_j=b - \sum_{k=1}^{j-1} C_k\overline{m}_k, \\
-    & m_j \ge \overline{m}_{j-1},\qquad m_k \ge m_{k-1}, \quad k=j+1,\ldots,K, \label{eq:Adaptive_Optimization_obj_c}\\
-    & m_j,\ldots,m_K \in \mathbb{R}.
+    \text{s.t.} \quad &\sum_{k=j}^K C_k x_k \le b - \sum_{k=1}^{j-1} C_k\overline{m}_k, \\
+    & x_j \ge \overline{m}_{j-1},\qquad x_k \ge x_{k-1}, \quad k=j+1,\ldots,K, \label{eq:Adaptive_Optimization_obj_c}\\
+    & x_j,\ldots,x_K \in \mathbb{R}.
 \end{align}
 \end{subequations}
 %
+Once the lower-fidelity allocations are fixed, the remaining variance contribution is a strictly convex function of the continuous variables $\{x_j,\ldots,x_K\}$, while the budget and monotonicity constraints remain linear. Consequently, the relaxed subproblem admits a unique real-valued minimizer $x_j^*$ at level~$j$. When integer constraints are imposed, the globally optimal integer solution need not coincide with either $\lfloor x_j^* \rfloor$ or $\lceil x_j^* \rceil$, and may in principle lie farther away due to coupling with downstream allocations. Nevertheless, because the objective is locally well-approximated by its second-order expansion near $x_j^*$, the nearest integer points provide a natural and computationally inexpensive approximation to the integer optimum. Motivated by this observation, we restrict attention to the two nearest integer candidates $m_j \in \{\lfloor x_j^* \rfloor, \lceil x_j^* \rceil\}$ and, for each candidate, solve \eqref{eq:Adaptive_Optimization} to determine the optimal continuous continuation. The candidate yielding the smaller total variance is selected, with the monotonicity constraint enforced explicitly. Unlike the fully relaxed formulation in \eqref{eq:Optimization_sample_size_m_relaxed}, monotonicity is no longer guaranteed after rounding and must therefore be imposed at each step.
 
-For $k=j+1$, the constraint $m_{j+1}\ge m_j$, by the formula of $m_{j+1}$, wehave
-\[
-\sqrt{\frac{\Delta_{j+1}}{C_{j+1}}}\frac{b_j-C_jm_j}{\sum_{k=j+1}^K\sqrt{C_k\Delta_k}}\ge m_j
-\]
-let $S_j = \sum_{k=j}^K \sqrt{C_k\Delta_k}$, $B_j = \sqrt{\frac{\Delta_j}{C_j}}$, then
-\[
-m_j\le \frac{B_{j+1}b_j}{S_{j+1}+C_jB_{j+1}}
-\]
-therefore, 
-\[
-m_j\le \min\left\{\frac{b_j}{C_j}, \frac{B_{j+1}b_j}{S_{j+1}+C_jB_{j+1}}\right\}
-\]
-For the later monotonicity constraints for $k\ge j+1$ ( such as $m_{j+2}\ge m_{j+1}$), they are automatically satisfied in the continuous optimal solution without integer constraints (because the variables scale the same). Therefore, the problem becomes
-%
-\begin{subequations}\label{eq:Adaptive_Optimization}
-\begin{align}
-    \min \quad & f(m_j) = \sum_{k=1}^{j-1}\frac{\Delta_k}{\overline{m}_k}
-    + \frac{\Delta_j}{m_j}
-    + \frac{S_{j+1}^2}
-    {\,b_j - C_j m_j\,},\\
-    \text{s.t.} \quad & b_j=b - \sum_{k=1}^{j-1} C_k\overline{m}_k, \\
-    & \overline{m}_{j-1}\le m_j \le \min\left\{\frac{b_j}{C_j}, \frac{B_{j+1}b_j}{S_{j+1}+C_jB_{j+1}}\right\} \\
-    & m_j\in \mathbb{R}.
-\end{align}
-\end{subequations}
-%
+Each stage of the adaptive procedure involves solving a one-dimensional convex optimization problem and evaluating two integer candidates, resulting in an overall computational complexity of $\mathcal{O}(K)$. Although this approach does not guarantee global integer optimality, it consistently produces high-quality feasible allocations that closely track the continuous MFMC solution at negligible additional computational cost, making it well suited for large-scale multifidelity applications.
 
 
-The proposed method is a forward greedy algorithm that preserves the structure of the continuous optimization problem while yielding integer-feasible allocations. Each step requires solving a simple one-dimensional convex problem and evaluating two integer candidates, giving an overall complexity of $\mathcal{O}(K)$. This makes the approach highly scalable for multifidelity settings with many models. Because integer constraints destroy optimal substructure, global integer optimality cannot be guaranteed. Nevertheless, the method produces high-quality feasible allocations at very low computational cost. Numerical experiments (Section~\ref{sec:Num_Result}) show that 
+
+
+
+
+
+
+
+
 
 % the average deviation from the integer-programming optimum is below $2\%$, while computation time is reduced by an order of magnitude.
 
@@ -117,7 +47,7 @@ The proposed method is a forward greedy algorithm that preserves the structure o
 
 
 \begin{algorithm}[!ht]
-\caption{Improved Sequential Rounding for Minimizing Variance}
+\caption{Adaptive sample size allocation}
 \label{alg:improved_rounding}
 \DontPrintSemicolon
 
@@ -130,84 +60,66 @@ The proposed method is a forward greedy algorithm that preserves the structure o
 }
 
 Set $b_1=b$.  
-Compute $\Delta_k = \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k=1,\ldots,K$ with $\rho_{1,K+1}=0$.
+Compute $\Delta_k \leftarrow \rho_{1,k}^2 - \rho_{1,k+1}^2$ for $k=1,\ldots,K$ with $\rho_{1,K+1}=0$.
 
 {\tt RestartFlag} = {\tt true}.\;
 
 \While{{\tt RestartFlag}}{
 {\tt RestartFlag} = {\tt false}.\;
 
+Set initial condition.
+
 \For{$k = 1$ \KwTo $K$}{
 
-    Compute real-valued proxy
-    \[
-    m_k^* = \sqrt{\frac{\Delta_k}{C_k}}
-        \frac{b_k}{\sum_{j=k}^K \sqrt{C_j \Delta_j}}.
-    \]
+    % Compute real-valued proxy 
+    % \[
+    % m_k^* = \sqrt{\frac{\Delta_k}{C_k}}
+    %     \frac{b_k}{\sum_{j=k}^K \sqrt{C_j \Delta_j}}.
+    % \]
+    For $m_k \in \{\lfloor m_k^* \rfloor,\ \lceil m_k^* \rceil\}$: Solve \eqref{eq:Adaptive_Optimization} using software.\;
+    
+     Compute the objective$f(x)$ in \eqref{eq:Adaptive_Optimization} with  
+    fixed $\overline{m}_1,\dots,\overline{m}_{k-1}$.\;
 
-    For $x \in \{\lfloor m_k^* \rfloor,\ \lceil m_k^* \rceil\}$: Compute $f(x)$ using \eqref{eq:Objective_adaptive_strategy} with  
-    fixed $\overline{m}_1,\dots,\overline{m}_{k-1}$ and remaining budget $b_k - C_k x$.\;
-
-    Select $\overline{m}_k = \arg\min_x f(x)$  (break ties by smaller cost).\;
-
-    Update $b_{k+1}= b_k - C_k\,\overline{m}_k$.\;
+    Select $\overline{m}_k = \arg\min_{m_k} f(x)$  (break ties by smaller cost) and update $b_{k+1} \leftarrow b_k - C_k\,\overline{m}_k$.\;
 
     % ----- Consistency and nondecreasing checks -----
-    \If{$f(\lceil m_k^* \rceil)<f(\lfloor m_k^* \rfloor)\quad$ \& $\quad\max(\lceil m_k^* \rceil,\overline{m}_{k-1})\cdot\sum_{j=k}^K C_j <b-\sum_{j=1}^{k-1}C_j\overline{m}_j$}{
-        $\overline{m}_k = \max(\lceil m_k^* \rceil,\, \overline{m}_{k-1})$.\;
-    }
-    \ElseIf{$\lfloor m_k^* \rfloor<\overline{m}_{k-1}\quad$ \& $\quad\overline{m}_{k-1}\cdot\sum_{j=k}^K C_j <b-\sum_{j=1}^{k-1}C_j\overline{m}_j$}{
-        $\overline{m}_k = \overline{m}_{k-1}$.\;
-    }
-    \Else{
-        $\overline{m}_k = \lfloor m_k^* \rfloor$.\;
-    }
+    % \If{$f(\lceil m_k^* \rceil)<f(\lfloor m_k^* \rfloor)\quad$ \& $\quad\max(\lceil m_k^* \rceil,\overline{m}_{k-1})\cdot\sum_{j=k}^K C_j <b-\sum_{j=1}^{k-1}C_j\overline{m}_j$}{
+    %     $\overline{m}_k = \max(\lceil m_k^* \rceil,\, \overline{m}_{k-1})$.\;
+    % }
+    % \ElseIf{$\lfloor m_k^* \rfloor<\overline{m}_{k-1}\quad$ \& $\quad\overline{m}_{k-1}\cdot\sum_{j=k}^K C_j <b-\sum_{j=1}^{k-1}C_j\overline{m}_j$}{
+    %     $\overline{m}_k = \overline{m}_{k-1}$.\;
+    % }
+    % \Else{
+    %     $\overline{m}_k = \lfloor m_k^* \rfloor$.\;
+    % }
 
     % ----- Model screening -----
-    \If{$k\ge 2$ and $\lfloor M_{k-1}^* \rfloor = \lfloor M_k^* \rfloor$}{
+    \If{$k\ge 2$ \& $\left\lfloor y_{k-1} \right\rfloor=\left\lfloor y_k \right\rfloor$}{
+    
+    
+    
+    Compute updated variance: $\widetilde\Delta_{k-1}\leftarrow\rho_{1,k-1}^2 - \rho_{1,k+1}^2, \widetilde\Delta_k \leftarrow \rho_{1,k+1}^2-\rho_{1,k+2}^2$
 
-    Compute $\Delta \mathcal{V}_{k-1}$ and $\Delta \mathcal{V}_k$.
+    
+    \If{condition $\frac{\widetilde\Delta_{k-1}}{C_{k-1}}<\frac{\widetilde\Delta_{k}}{C_{k+1}}$}{ 
 
-            \If{$\Delta \mathcal{V}_{k-1}>\Delta \mathcal{V}_k$ \& $k\ge 3$}{
+    Discard model $k$, update:  $\boldsymbol{\rho} \leftarrow \boldsymbol{\rho} \setminus \{\rho_{1,k}\}$, $\boldsymbol{C} \leftarrow \boldsymbol{C} \setminus \{C_k\}$, $\Delta_k \leftarrow \rho_{1,k}^2 - \rho_{1,k+1}^2$.\;
+    $K \leftarrow K - 1$.\;
 
-            % Compute merged increments: $\;\;\widetilde\Delta_{k-2} = \rho_{1,k-2}^2 - \rho_{1,k}^2,
-            % \quad
-            % \widetilde\Delta_{k-1}   = \rho_{1,k}^2 - \rho_{1,k+1}^2.$\;
-            % \If{$\frac{\rho_{1,k-2}^2 - \rho_{1,k}^2}{C_{k-2}} < \frac{\rho_{1,k}^2 - \rho_{1,k+1}^2}{C_{k}}$}{
-                Remove model $k-1$; update $\rho$, $C$, and $\Delta$;  \;
-                $K \leftarrow K-1$.\;
-                {\tt RestartFlag} = {\tt true}; \;
-                \textbf{break}.\;
-                }
-                % }
-            \Else{
-            % Compute merged increments: $\;\;\widetilde\Delta_{k-1} = \rho_{1,k-1}^2 - \rho_{1,k+1}^2,
-            % \quad
-            % \widetilde\Delta_{k}   = \rho_{1,k+1}^2 - \rho_{1,k+2}^2.$\;
+    {\tt RestartFlag} = {\tt true}; \;
 
-            % \If{$\frac{\rho_{1,k-1}^2 - \rho_{1,k+1}^2}{C_{k-1}} < \frac{\rho_{1,k+1}^2 - \rho_{1,k+2}^2}{C_{k+1}}$}{
-                Remove model $k$; update $\rho$, $C$, and $\Delta$;  \;
-                $K \leftarrow K-1$.\;
-                {\tt RestartFlag} = {\tt true}; \;
-                \textbf{break}.\;
-            % }
-            }
-
-            % Compute merged increments: $\;\;\widetilde\Delta_{k-1} = \rho_{1,k-1}^2 - \rho_{1,k+1}^2,
-            % \quad
-            % \widetilde\Delta_{k}   = \rho_{1,k+1}^2 - \rho_{1,k+2}^2.$
-
-            % \If{$\widetilde\Delta_{k-1}/C_{k-1} < \widetilde\Delta_k/C_{k+1}$}{
-            %     Remove model $k$; update $\rho$, $C$, and $\Delta$;  \;
-            %     $K \leftarrow K-1$.\;
-            %     {\tt RestartFlag} = {\tt true}; \;
-            %     \textbf{break}.\;
-            % }
-        }
+    \textbf{break}.\;
+    % \scr{Restart iteration with updated parameters and recompute $M_k^*$ from step 5.}
+    }
+    
+    % \Else{Retain model $k$.}
+    
+}
 }
 }
 
-$K_r = K$.\;
+$K_r \leftarrow K$.\;
 \textbf{return} $\overline{m}_1,\dots,\overline{m}_{K_r}$.
 \end{algorithm}
 
